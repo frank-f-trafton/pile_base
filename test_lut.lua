@@ -1,4 +1,5 @@
 -- Test: pile_lut.lua
+-- v1.0.1
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
