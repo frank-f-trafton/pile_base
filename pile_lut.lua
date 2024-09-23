@@ -1,6 +1,6 @@
--- PILE lut v1.0.0
+-- PILE lut v1.0.1
 -- (C) 2024 PILE Contributors
--- License: MIT
+-- License: MIT or MIT-0
 -- https://github.com/rabbitboots/pile_base
 
 
