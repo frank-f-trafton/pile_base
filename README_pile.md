@@ -1,4 +1,4 @@
-**Version:** 1.0.1
+**Version:** 1.1.0
 
 # PILE Base
 
@@ -11,12 +11,14 @@ PILE is a planned utility library for Lua. For now, it's just a set of modules a
 
 * `pile_interp.lua`: String interpolation with position-independent arguments.
 
-* `pile_lut.lua`: Lookup table helpers.
+* `pile_table.lua`: Table helpers.
 
 
 # LICENSE
 
 PILE is provided under two licenses: **MIT** and **MIT-0**. The latter does not require attribution, which may be desirable when including PILE modules in other libraries.
+
+Note that the `test` folder contains libraries which do require attribution.
 
 ```
 MIT License

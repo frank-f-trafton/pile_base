@@ -1,9 +1,9 @@
-**Version:** 1.0.1
+**Version:** 1.1.0
 
 # PILE: argCheck
 
 
-*argCheck* provides some common argument assertion functions.
+*argCheck* provides some common assertions for function arguments.
 
 
 ## Dependencies
@@ -20,7 +20,7 @@ end
 
 foobar(1)
 
---> "XXX: fill in error. Something like: argument #$1: bad type (expected [$2], got $3)"
+--> stdin:1: argument #1: bad type (expected [string], got number)
 ```
 
 
@@ -63,11 +63,35 @@ Raises an error if the argument is not an integer.
 * `v`: The value to check.
 
 
+## argCheck.evalInt
+
+Like `argCheck.int`, but allows `false` and `nil` values.
+
+`argCheck.evalInt(n, v)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+
 ## argCheck.intGE
 
-Raises an error if the argument is not an integer greater than or equal to an arbitrary value.
+Raises an error if the argument is not an integer greater than or equal to a minimum value.
 
 `argCheck.intGE(n, v, min)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+
+## argCheck.evalIntGE
+
+Like `argCheck.intGE`, but allows `false` and `nil` values.
+
+`argCheck.evalIntGE(n, v, min)`
 
 * `n`: The argument number, starting at 1.
 
@@ -89,3 +113,25 @@ Raises an error if the argument is not an integer within a specified range.
 * `min`: The minimum permitted value.
 
 * `max`: The maximum permitted value.
+
+
+## argCheck.evalIntRange
+
+Like `argCheck.intRange`, but allows `false` and `nil` values.
+
+`argCheck.evalIntRange(n, v, min, max)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+* `max`: The maximum permitted value.
+
+
+# Notes
+
+These are run-time checks, so they will add processing overhead to functions where they are used.
+
+It's unlikely that you will require every function in this module, so it has been organized to allow deleting unwanted functions without affecting the others.

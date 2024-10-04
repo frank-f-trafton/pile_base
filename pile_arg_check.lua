@@ -1,4 +1,4 @@
--- PILE argCheck v1.0.1
+-- PILE argCheck v1.1.0
 -- (C) 2024 PILE Contributors
 -- License: MIT or MIT-0
 -- https://github.com/rabbitboots/pile_base
@@ -32,7 +32,7 @@ function argCheck.type(n, v, ...)
 end
 
 
-lang.err_eval_bad = "argument #$1: bad type (expected nil/false or [$2], got $3)"
+lang.err_eval_bad = "argument #$1: bad type (expected false/nil or [$2], got $3)"
 function argCheck.typeEval(n, v, ...)
 	if v then
 		local typ = type(v)
@@ -54,6 +54,14 @@ function argCheck.int(n, v)
 end
 
 
+lang.err_eval_int_bad = "argument #$1: expected false/nil or integer"
+function argCheck.evalInt(n, v)
+	if v and type(v) ~= "number" or math.floor(v) ~= v then
+		error(interp(lang.err_int_bad, n))
+	end
+end
+
+
 lang.err_int_ge_bad = "argument #$1: expected integer greater or equal to $2"
 function argCheck.intGE(n, v, min)
 	if type(v) ~= "number" or math.floor(v) ~= v or v < min then
@@ -62,9 +70,25 @@ function argCheck.intGE(n, v, min)
 end
 
 
+lang.err_eval_int_ge_bad = "argument #$1: expected false/nil or integer greater or equal to $2"
+function argCheck.evalIntGE(n, v, min)
+	if v and (type(v) ~= "number" or math.floor(v) ~= v or v < min) then
+		error(interp(lang.err_eval_int_ge_bad, n, min))
+	end
+end
+
+
 lang.err_int_range_bad = "argument #$1: expected integer within the range of $2 to $3"
 function argCheck.intRange(n, v, min, max)
 	if type(v) ~= "number" or math.floor(v) ~= v or v < min or v > max then
+		error(interp(lang.err_int_range_bad, n, min, max))
+	end
+end
+
+
+lang.err_eval_int_range_bad = "argument #$1: expected false/nil or integer within the range of $2 to $3"
+function argCheck.evalIntRange(n, v, min, max)
+	if v and type(v) ~= "number" or math.floor(v) ~= v or v < min or v > max then
 		error(interp(lang.err_int_range_bad, n, min, max))
 	end
 end

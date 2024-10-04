@@ -1,4 +1,4 @@
-**Version:** 1.0.1
+**Version:** 1.1.0
 
 # PILE: interp
 
@@ -10,6 +10,8 @@
 local interp = require("path.to.pile_interp")
 
 print(interp("The $1 brown fox $3 over the lazy $2.", "quick", "dog", "jumps"))
+
+-->The quick brown fox jumps over the lazy dog.
 ```
 
 

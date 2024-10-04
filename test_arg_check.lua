@@ -1,5 +1,5 @@
 -- Test: pile_arg_check.lua
--- v1.0.1
+-- v1.1.0
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -114,7 +114,7 @@ self:registerJob("argCheck.intGE()", function(self)
 		self:expectLuaReturn("expected behavior", argCheck.intGE, 1, 100, 50)
 		self:expectLuaError("bad type", argCheck.intGE, 1, false, 50)
 		self:expectLuaError("not an integer", argCheck.intGE, 1, 5.5, 1)
-		self:expectLuaError("less than the minimum", argCheck.intGE, 1, 5, 80)
+		self:expectLuaError("under the minimum", argCheck.intGE, 1, 5, 80)
 	end
 	--]====]
 
@@ -129,6 +129,30 @@ end
 )
 --]===]
 
+
+-- [===[
+self:registerFunction("argCheck.evalIntGE()", argCheck.evalIntGE)
+self:registerJob("argCheck.evalIntGE()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.evalIntGE, 1, 100, 50)
+		self:expectLuaReturn("expected behavior (eval false)", argCheck.evalIntGE, 1, false, 50)
+		self:expectLuaError("bad type", argCheck.evalIntGE, 1, true, 50)
+		self:expectLuaError("not an integer", argCheck.evalIntGE, 1, 5.5, 1)
+		self:expectLuaError("under the minimum", argCheck.evalIntGE, 1, 5, 80)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: bad type", argCheck.intGE, 1, true, 0)
+		self:expectLuaError("argument 100: bad type", argCheck.intGE, 100, true, 0)
+	end
+	--]====]
+end
+)
+--]===]
 
 -- [===[
 self:registerFunction("argCheck.intRange()", argCheck.intRange)
