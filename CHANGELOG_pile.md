@@ -2,6 +2,18 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.1.2 (2024-10-09)
+
+* `pile_arg_check.lua`:
+  * Changed internal table name from `argCheck` to `M`.
+
+* `pile_interp.lua`:
+  * Removed unneeded table declaration.
+
+* `pile_utf8_conv.lua`:
+  * Added missing comment with version info at the start of the file.
+
+
 # v1.1.1 (2024-10-07)
 
 * Imported [utf8Tools](https://github.com/rabbitboots/utf8_tools) into PILE Base. Code taken from [kikito/utf8_validator.lua](https://github.com/kikito/utf8_validator.lua) has been removed.

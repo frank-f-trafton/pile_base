@@ -1,10 +1,7 @@
--- PILE interp v1.1.1
+-- PILE interp v1.1.2
 -- (C) 2024 PILE Contributors
 -- License: MIT or MIT-0
 -- https://github.com/rabbitboots/pile_base
-
-
-local interp = {}
 
 
 local min, pairs, select, tostring = math.min, pairs, select, tostring
