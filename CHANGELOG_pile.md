@@ -2,6 +2,25 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.1.3 (2024-10-31)
+
+* `pile_arg_check.lua`:
+  * All integer assertions now reject NaN values.
+  * Fixed order of operations for `pArgCheck.evalInt()` and `pArgCheck.evalIntRange()`.
+  * Added `pArgCheck.numberNotNaN()`.
+  * Added single-value variants: `pArgCheck.type1()`, `pArgCheck.typeEval1()`
+  * Added `pArgCheck.enum()` and `pArgCheck.enumEval()`.
+  * Added `pArgCheck.intRangeStatic` and `pArgCheck.evalIntRangeStatic`. These functions report the range in error messages. The original functions now just state that the integer was out of range.
+
+* `pile_utf8.lua`:
+  * Minor changes to assertions.
+  * No longer prints ranges in error messages due to changes in `pile_arg_check.lua`.
+
+* `pile_utf8_conv.lua`:
+  * Minor changes to assertions.
+  * Removed unnecessary comma.
+
+
 # v1.1.2 (2024-10-09)
 
 * `pile_arg_check.lua`:

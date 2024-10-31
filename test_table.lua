@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.1.2
+-- v1.1.3
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
