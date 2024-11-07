@@ -12,6 +12,8 @@
   * Fixed error strings used in `pArgCheck.numberNotNaN()` ('unexpected' -> 'expected')
   * Added `pArgCheck.numberNotNaNEval()`
   * Added `pArgCheck.notNil()`, `pArgCheck.notNilNotNaN()`, `pArgCheck.notNilNotFalse()`, `pArgCheck.notNilNotFalseNotNaN()`, and `pArgCheck.notNaN()`
+  * Updated some error output to be more descriptive
+
 
 # v1.1.3 (2024-10-31)
 
