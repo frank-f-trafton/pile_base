@@ -1,4 +1,4 @@
-**Version:** 1.1.3
+**Version:** 1.1.4
 
 # PILE: argCheck
 
@@ -39,19 +39,6 @@ Asserts that an argument is one of various Lua types.
 * `...`: Varargs list of accepted type strings (`"boolean"`, etc.)
 
 
-## argCheck.type1
-
-Asserts that an argument is one Lua type.
-
-`argCheck.type(n, v, e)`
-
-* `n`: The argument number, starting at 1.
-
-* `v`: The value to check.
-
-* `e`: The expected type string (`"boolean"`, etc.)
-
-
 ## argCheck.typeEval
 
 Asserts that an argument is `false`, `nil`, or one of various Lua types.
@@ -65,17 +52,90 @@ Asserts that an argument is `false`, `nil`, or one of various Lua types.
 * `...`: Varargs list of accepted type strings (`"boolean"`, etc.)
 
 
-## argCheck.typeEval1
+## argCheck.type1
 
-Asserts that an argument is `false`, `nil`, or one Lua type.
+Asserts that an argument is one Lua type.
 
-`argCheck.typeEval(n, v, ...)`
+`argCheck.type1(n, v, e)`
 
 * `n`: The argument number, starting at 1.
 
 * `v`: The value to check.
 
+* `e`: The expected type string (`"boolean"`, etc.)
+
+
+## argCheck.typeEval1
+
+Asserts that an argument is `false`, `nil`, or one Lua type.
+
+`argCheck.typeEval(n, v, e)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+* `e`: The expected type string (`"boolean"`, etc.)
+
+
+## argCheck.fieldType
+
+Asserts that a field in an argument is one of various Lua types.
+
+`argCheck.fieldType(n, t, id, ...)`
+
+* `n`: The argument number, starting at 1.
+
+* `t`: The table received as the argument.
+
+* `id`: The field to check (`t[id]`).
+
 * `...`: Varargs list of accepted type strings (`"boolean"`, etc.)
+
+
+## argCheck.fieldTypeEval
+
+Asserts that a field in an argument is `false`, `nil`, or one of various Lua types.
+
+`argCheck.fieldTypeEval(n, t, id, ...)`
+
+* `n`: The argument number, starting at 1.
+
+* `t`: The table received as the argument.
+
+* `id`: The field to check (`t[id]`).
+
+* `...`: Varargs list of accepted type strings (`"boolean"`, etc.)
+
+
+## argCheck.fieldType1
+
+Asserts that a field in an argument is one Lua type.
+
+`argCheck.fieldType1(n, t, id, e)`
+
+* `n`: The argument number, starting at 1.
+
+* `t`: The table received as the argument.
+
+* `id`: The field to check (`t[id]`).
+
+* `e`: The expected type string (`"boolean"`, etc.)
+
+
+## argCheck.fieldTypeEval1
+
+Asserts that a field in an argument is `false`, `nil`, or one Lua type.
+
+`argCheck.fieldTypeEval1(n, t, id, e)`
+
+* `n`: The argument number, starting at 1.
+
+* `t`: The table received as the argument.
+
+* `id`: The field to check (`t[id]`).
+
+* `e`: The expected type string (`"boolean"`, etc.)
 
 
 ## argCheck.int
@@ -89,11 +149,11 @@ Asserts that an argument is an integer.
 * `v`: The value to check.
 
 
-## argCheck.evalInt
+## argCheck.intEval
 
 Asserts that an argument is `false`, `nil` or an integer.
 
-`argCheck.evalInt(n, v)`
+`argCheck.intEval(n, v)`
 
 * `n`: The argument number, starting at 1.
 
@@ -113,11 +173,11 @@ Asserts that an argument is an integer, greater or equal to a minimum value.
 * `min`: The minimum permitted value.
 
 
-## argCheck.evalIntGE
+## argCheck.intGEEval
 
 Asserts that an argument is `false`, `nil`, or an integer that is greater or equal to a minimum value.
 
-`argCheck.evalIntGE(n, v, min)`
+`argCheck.intGEEval(n, v, min)`
 
 * `n`: The argument number, starting at 1.
 
@@ -156,11 +216,11 @@ Asserts that an argument is an integer within a specified range. Shows the range
 * `max`: The maximum permitted value.
 
 
-## argCheck.evalIntRange
+## argCheck.intRangeEval
 
 Asserts that an argument is `false`, `nil`, or an integer within a specified range. Does not show the range in error messages.
 
-`argCheck.evalIntRange(n, v, min, max)`
+`argCheck.intRangeEval(n, v, min, max)`
 
 * `n`: The argument number, starting at 1.
 
@@ -171,11 +231,11 @@ Asserts that an argument is `false`, `nil`, or an integer within a specified ran
 * `max`: The maximum permitted value.
 
 
-## argCheck.evalIntRangeStatic
+## argCheck.intRangeStaticEval
 
 Asserts that an argument is `false`, `nil`, or an integer within a specified range. Shows the range in error messages.
 
-`argCheck.evalIntRange(n, v, min, max)`
+`argCheck.intRangeStaticEval(n, v, min, max)`
 
 * `n`: The argument number, starting at 1.
 
@@ -191,6 +251,17 @@ Asserts that an argument is `false`, `nil`, or an integer within a specified ran
 Asserts that an argument is a number and that it isn't NaN ("Not a Number").
 
 `argCheck.numberNotNaN(n, v)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+
+## argCheck.numberNotNaNEval
+
+Asserts that an argument is `false`, `nil`, or a number, and that it isn't NaN ("Not a Number").
+
+`argCheck.numberNotNaNEval(n, v)`
 
 * `n`: The argument number, starting at 1.
 
@@ -227,10 +298,67 @@ Asserts that an argument is `false`, `nil`, or that it appears in a table as a k
 * `e`: The enum table.
 
 
+## argCheck.notNil
+
+Asserts that an argument is not nil.
+
+`argCheck.notNil(n, v)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+
+## argCheck.notNilNotNaN
+
+Asserts that an argument is not nil and not NaN ("Not a Number").
+
+`argCheck.notNilNotNaN(n, v)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+
+## argCheck.notNilNotFalse
+
+Asserts that an argument is not nil and not false.
+
+`argCheck.notNilNotFalse(n, v)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+
+## argCheck.notNilNotFalseNotNaN
+
+Asserts that an argument is not nil, not false, and not NaN ("Not a Number").
+
+`argCheck.notNilNotFalseNotNaN(n, v)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+
+## argCheck.notNaN
+
+Asserts that an argument is not NaN ("Not a Number").
+
+`argCheck.notNaN(n, v)`
+
+* `n`: The argument number, starting at 1.
+
+* `v`: The value to check.
+
+
 # Notes
 
 All integer functions include a check for NaN.
 
-These are run-time checks, so they will add processing overhead to any functions they appear in.
+These are run-time checks, so they will add processing overhead to any functions that they appear in.
 
-It's unlikely that you will require every function in this module, so it has been organized to allow deleting unwanted functions without affecting the others.
+The assertions don't check their own arguments. Incorrect arguments can lead to misleading error messages, or incidental errors being raised inside of the assertions.
+
+It's unlikely that you will need every function in this module, so it has been organized to allow deleting unwanted functions without affecting the others.

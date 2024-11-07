@@ -1,5 +1,5 @@
 -- Test: pile_arg_check.lua
--- v1.1.3
+-- v1.1.4
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -130,6 +130,101 @@ end
 
 
 -- [===[
+self:registerFunction("argCheck.fieldType()", argCheck.fieldType)
+self:registerJob("argCheck.fieldType()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("Correct type, one option", argCheck.fieldType, 1, {foo=100}, "foo", "number")
+		self:expectLuaReturn("Correct type, multiple options", argCheck.fieldType, 1, {foo=true}, "foo", "number", "boolean", "string")
+		self:expectLuaError("will always fail when no options are provided", argCheck.fieldType, 1, {foo=true}, "foo")
+		self:expectLuaReturn("numeric field ID", argCheck.fieldType, 1, {true}, 1, "boolean")
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.fieldType, 1, {foo=true}, "foo", "number")
+		self:expectLuaError("argument 100: error", argCheck.fieldType, 100, {foo=true}, "foo", "number")
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.fieldTypeEval()", argCheck.fieldTypeEval)
+self:registerJob("argCheck.fieldTypeEval()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("Correct type, one option", argCheck.fieldTypeEval, 1, {foo=100}, "foo", "number")
+		self:expectLuaReturn("Correct type, multiple options", argCheck.fieldTypeEval, 1, {foo=true}, "foo", "number", "boolean", "string")
+		self:expectLuaReturn("false is ignored", argCheck.fieldTypeEval, 1, {foo=false}, "foo", "string")
+		self:expectLuaReturn("nil is ignored", argCheck.fieldTypeEval, 1, {}, "foo", "string")
+		self:expectLuaReturn("will permit false and nil when no options are provided", argCheck.fieldTypeEval, 1, {}, "foo")
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.fieldTypeEval, 1, {foo=true}, "foo", "number")
+		self:expectLuaError("argument 100: error", argCheck.fieldTypeEval, 100, {foo=true}, "foo", "number")
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.fieldType1()", argCheck.fieldType1)
+self:registerJob("argCheck.fieldType1()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("Correct type", argCheck.fieldType1, 1, {foo=100}, "foo", "number")
+		self:expectLuaError("Will always fail when no option is provided", argCheck.fieldType1, 1, {foo=true}, "foo")
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.fieldType1, 1, {foo=true}, "foo", "number")
+		self:expectLuaError("argument 100: error", argCheck.fieldType1, 100, {foo=true}, "foo", "number")
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.fieldTypeEval1()", argCheck.fieldTypeEval1)
+self:registerJob("argCheck.fieldTypeEval1()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("Correct type", argCheck.fieldTypeEval1, 1, {foo=100}, "foo", "number")
+		self:expectLuaReturn("false is ignored", argCheck.fieldTypeEval1, 1, {foo=false}, "foo", "string")
+		self:expectLuaReturn("nil is ignored", argCheck.fieldTypeEval1, 1, {}, "foo", "number")
+		self:expectLuaReturn("will permit false and nil when no expected type is provided", argCheck.fieldTypeEval1, 1, {foo=false}, "foo")
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.fieldTypeEval1, 1, {foo=true}, "foo", "number")
+		self:expectLuaError("argument 100: error", argCheck.fieldTypeEval1, 100, {foo=true}, "foo", "number")
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
 self:registerFunction("argCheck.int()", argCheck.int)
 self:registerJob("argCheck.int()", function(self)
 	-- [====[
@@ -146,6 +241,32 @@ self:registerJob("argCheck.int()", function(self)
 	do
 		self:expectLuaError("argument 1: error", argCheck.int, 1, true)
 		self:expectLuaError("argument 100: error", argCheck.int, 100, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.intEval()", argCheck.intEval)
+self:registerJob("argCheck.intEval()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.intEval, 1, 100)
+		self:expectLuaError("bad type", argCheck.intEval, 1, true)
+		self:expectLuaError("not an integer", argCheck.intEval, 1, 5.5)
+		self:expectLuaError("NaN", argCheck.intEval, 1, 0/0)
+		self:expectLuaReturn("accept false", argCheck.intEval, 1, false)
+		self:expectLuaReturn("accept nil", argCheck.intEval, 1, nil)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.intEval, 1, true)
+		self:expectLuaError("argument 100: error", argCheck.intEval, 100, true)
 	end
 	--]====]
 end
@@ -179,24 +300,24 @@ end
 
 
 -- [===[
-self:registerFunction("argCheck.evalIntGE()", argCheck.evalIntGE)
-self:registerJob("argCheck.evalIntGE()", function(self)
+self:registerFunction("argCheck.intGEEval()", argCheck.intGEEval)
+self:registerJob("argCheck.intGEEval()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", argCheck.evalIntGE, 1, 100, 50)
-		self:expectLuaReturn("expected behavior (eval false)", argCheck.evalIntGE, 1, false, 50)
-		self:expectLuaError("bad type", argCheck.evalIntGE, 1, true, 50)
-		self:expectLuaError("not an integer", argCheck.evalIntGE, 1, 5.5, 1)
-		self:expectLuaError("under the minimum", argCheck.evalIntGE, 1, 5, 80)
-		self:expectLuaError("NaN", argCheck.evalIntGE, 1, 0/0, 0)
+		self:expectLuaReturn("expected behavior", argCheck.intGEEval, 1, 100, 50)
+		self:expectLuaReturn("expected behavior (eval false)", argCheck.intGEEval, 1, false, 50)
+		self:expectLuaError("bad type", argCheck.intGEEval, 1, true, 50)
+		self:expectLuaError("not an integer", argCheck.intGEEval, 1, 5.5, 1)
+		self:expectLuaError("under the minimum", argCheck.intGEEval, 1, 5, 80)
+		self:expectLuaError("NaN", argCheck.intGEEval, 1, 0/0, 0)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("argument 1: error", argCheck.evalIntGE, 1, true, 0)
-		self:expectLuaError("argument 100: error", argCheck.evalIntGE, 100, true, 0)
+		self:expectLuaError("argument 1: error", argCheck.intGEEval, 1, true, 0)
+		self:expectLuaError("argument 100: error", argCheck.intGEEval, 100, true, 0)
 	end
 	--]====]
 end
@@ -229,25 +350,25 @@ end
 
 
 -- [===[
-self:registerFunction("argCheck.evalIntRange()", argCheck.evalIntRange)
-self:registerJob("argCheck.evalIntRange()", function(self)
+self:registerFunction("argCheck.intRangeEval()", argCheck.intRangeEval)
+self:registerJob("argCheck.intRangeEval()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", argCheck.evalIntRange, 1, 100, 0, 100)
-		self:expectLuaReturn("accept false", argCheck.evalIntRange, 1, false, 0, 100)
-		self:expectLuaReturn("accept nil", argCheck.evalIntRange, 1, nil, 0, 100)
-		self:expectLuaError("bad type", argCheck.evalIntRange, 1, {}, 50, 55)
-		self:expectLuaError("not an integer", argCheck.evalIntRange, 1, 5.5, 1, 8)
-		self:expectLuaError("less than the minimum", argCheck.evalIntRange, 1, 5, 80, 90)
-		self:expectLuaError("NaN", argCheck.evalIntRange, 1, 0/0, 0, 100)
+		self:expectLuaReturn("expected behavior", argCheck.intRangeEval, 1, 100, 0, 100)
+		self:expectLuaReturn("accept false", argCheck.intRangeEval, 1, false, 0, 100)
+		self:expectLuaReturn("accept nil", argCheck.intRangeEval, 1, nil, 0, 100)
+		self:expectLuaError("bad type", argCheck.intRangeEval, 1, {}, 50, 55)
+		self:expectLuaError("not an integer", argCheck.intRangeEval, 1, 5.5, 1, 8)
+		self:expectLuaError("less than the minimum", argCheck.intRangeEval, 1, 5, 80, 90)
+		self:expectLuaError("NaN", argCheck.intRangeEval, 1, 0/0, 0, 100)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("argument 1: error", argCheck.evalIntRange, 1, true, 0, 100)
-		self:expectLuaError("argument 100: error", argCheck.evalIntRange, 100, true, 0, 100)
+		self:expectLuaError("argument 1: error", argCheck.intRangeEval, 1, true, 0, 100)
+		self:expectLuaError("argument 100: error", argCheck.intRangeEval, 100, true, 0, 100)
 	end
 	--]====]
 end
@@ -283,25 +404,73 @@ end
 
 
 -- [===[
-self:registerFunction("argCheck.evalIntRangeStatic()", argCheck.evalIntRangeStatic)
-self:registerJob("argCheck.evalIntRangeStatic()", function(self)
+self:registerFunction("argCheck.intRangeStaticEval()", argCheck.intRangeStaticEval)
+self:registerJob("argCheck.intRangeStaticEval()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", argCheck.evalIntRangeStatic, 1, 100, 0, 100)
-		self:expectLuaReturn("accept false", argCheck.evalIntRangeStatic, 1, false, 0, 100)
-		self:expectLuaReturn("accept nil", argCheck.evalIntRangeStatic, 1, nil, 0, 100)
-		self:expectLuaError("bad type", argCheck.evalIntRangeStatic, 1, {}, 50, 55)
-		self:expectLuaError("not an integer", argCheck.evalIntRangeStatic, 1, 5.5, 1, 8)
-		self:expectLuaError("less than the minimum", argCheck.evalIntRangeStatic, 1, 5, 80, 90)
-		self:expectLuaError("NaN", argCheck.evalIntRangeStatic, 1, 0/0, 0, 100)
+		self:expectLuaReturn("expected behavior", argCheck.intRangeStaticEval, 1, 100, 0, 100)
+		self:expectLuaReturn("accept false", argCheck.intRangeStaticEval, 1, false, 0, 100)
+		self:expectLuaReturn("accept nil", argCheck.intRangeStaticEval, 1, nil, 0, 100)
+		self:expectLuaError("bad type", argCheck.intRangeStaticEval, 1, {}, 50, 55)
+		self:expectLuaError("not an integer", argCheck.intRangeStaticEval, 1, 5.5, 1, 8)
+		self:expectLuaError("less than the minimum", argCheck.intRangeStaticEval, 1, 5, 80, 90)
+		self:expectLuaError("NaN", argCheck.intRangeStaticEval, 1, 0/0, 0, 100)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("argument 1: error", argCheck.evalIntRangeStatic, 1, true, 0, 100)
-		self:expectLuaError("argument 100: error", argCheck.evalIntRangeStatic, 100, true, 0, 100)
+		self:expectLuaError("argument 1: error", argCheck.intRangeStaticEval, 1, true, 0, 100)
+		self:expectLuaError("argument 100: error", argCheck.intRangeStaticEval, 100, true, 0, 100)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.numberNotNaN()", argCheck.numberNotNaN)
+self:registerJob("argCheck.numberNotNaN()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.numberNotNaN, 1, 5)
+		self:expectLuaError("wrong type", argCheck.numberNotNaN, 1, true)
+		self:expectLuaError("reject NaN", argCheck.numberNotNaN, 1, 0/0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.numberNotNaN, 1, true)
+		self:expectLuaError("argument 100: error", argCheck.numberNotNaN, 100, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.numberNotNaNEval()", argCheck.numberNotNaNEval)
+self:registerJob("argCheck.numberNotNaNEval()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.numberNotNaNEval, 1, 5)
+		self:expectLuaError("wrong type", argCheck.numberNotNaNEval, 1, true)
+		self:expectLuaError("reject NaN", argCheck.numberNotNaNEval, 1, 0/0)
+		self:expectLuaReturn("accept false", argCheck.numberNotNaNEval, 1, false)
+		self:expectLuaReturn("accept nil", argCheck.numberNotNaNEval, 1, nil)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.numberNotNaNEval, 1, true)
+		self:expectLuaError("argument 100: error", argCheck.numberNotNaNEval, 100, true)
 	end
 	--]====]
 end
@@ -348,6 +517,126 @@ self:registerJob("argCheck.enumEval()", function(self)
 	do
 		self:expectLuaError("argument 1: error", argCheck.enumEval, 1, true, "enum", {})
 		self:expectLuaError("argument 100: error", argCheck.enumEval, 100, true, "enum", {})
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.notNil()", argCheck.notNil)
+self:registerJob("argCheck.notNil()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.notNil, 1, "foo")
+		self:expectLuaReturn("accept false", argCheck.notNil, 1, false)
+		self:expectLuaReturn("accept NaN", argCheck.notNil, 1, 0/0)
+		self:expectLuaError("reject nil", argCheck.notNil, 1, nil)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.notNil, 1, nil)
+		self:expectLuaError("argument 100: error", argCheck.notNil, 100, nil)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.notNilNotNaN()", argCheck.notNilNotNaN)
+self:registerJob("argCheck.notNilNotNaN()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.notNilNotNaN, 1, "foo")
+		self:expectLuaError("reject nil", argCheck.notNilNotNaN, 1, nil)
+		self:expectLuaReturn("accept false", argCheck.notNilNotNaN, 1, false)
+		self:expectLuaError("reject NaN", argCheck.notNilNotNaN, 1, 0/0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.notNilNotNaN, 1, nil)
+		self:expectLuaError("argument 100: error", argCheck.notNilNotNaN, 100, nil)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.notNilNotFalse()", argCheck.notNilNotFalse)
+self:registerJob("argCheck.notNilNotFalse()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.notNilNotFalse, 1, "foo")
+		self:expectLuaError("reject nil", argCheck.notNilNotFalse, 1, nil)
+		self:expectLuaError("reject false", argCheck.notNilNotFalse, 1, false)
+		self:expectLuaReturn("accept NaN", argCheck.notNilNotFalse, 1, 0/0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.notNilNotFalse, 1, nil)
+		self:expectLuaError("argument 100: error", argCheck.notNilNotFalse, 100, nil)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.notNilNotFalseNotNaN()", argCheck.notNilNotFalseNotNaN)
+self:registerJob("argCheck.notNilNotFalseNotNaN()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.notNilNotFalseNotNaN, 1, "foo")
+		self:expectLuaError("reject nil", argCheck.notNilNotFalseNotNaN, 1, nil)
+		self:expectLuaError("reject false", argCheck.notNilNotFalseNotNaN, 1, false)
+		self:expectLuaError("reject NaN", argCheck.notNilNotFalseNotNaN, 1, 0/0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.notNilNotFalseNotNaN, 1, nil)
+		self:expectLuaError("argument 100: error", argCheck.notNilNotFalseNotNaN, 100, nil)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("argCheck.notNaN()", argCheck.notNaN)
+self:registerJob("argCheck.notNaN()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", argCheck.notNaN, 1, "foo")
+		self:expectLuaReturn("accept nil", argCheck.notNaN, 1, nil)
+		self:expectLuaReturn("accept false", argCheck.notNaN, 1, false)
+		self:expectLuaError("reject NaN", argCheck.notNaN, 1, 0/0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("argument 1: error", argCheck.notNaN, 1, 0/0)
+		self:expectLuaError("argument 100: error", argCheck.notNaN, 100, 0/0)
 	end
 	--]====]
 end

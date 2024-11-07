@@ -2,6 +2,17 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.1.4 (2024-11-06)
+* `pile_arg_check.lua`:
+  * Added `pArgCheck.fieldType()`, `pArgCheck.fieldType1()`, `pArgCheck.fieldTypeEval()`, `pArgCheck.fieldTypeEval1()`
+  * Renamed `pArgCheck.evalInt()` to `pArgCheck.intEval()`
+  * Renamed `pArgCheck.evalIntGE()` to `pArgCheck.intGEEval()`
+  * Renamed `pArgCheck.evalIntRange()` to `pArgCheck.intRangeEval()`
+  * Renamed `pArgCheck.evalIntRangeStatic()` to `pArgCheck.intRangeStaticEval()`
+  * Fixed error strings used in `pArgCheck.numberNotNaN()` ('unexpected' -> 'expected')
+  * Added `pArgCheck.numberNotNaNEval()`
+  * Added `pArgCheck.notNil()`, `pArgCheck.notNilNotNaN()`, `pArgCheck.notNilNotFalse()`, `pArgCheck.notNilNotFalseNotNaN()`, and `pArgCheck.notNaN()`
+
 # v1.1.3 (2024-10-31)
 
 * `pile_arg_check.lua`:
