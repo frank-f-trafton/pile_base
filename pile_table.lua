@@ -54,7 +54,9 @@ _deepCopy2 = function(dst, k, v)
 	if type(k) == "table" then
 		error(lang.err_deep_key)
 	end
-	dst[k] = type(v) == "table" and _deepCopy1({}, v) or v
+	if dst[k] == nil then
+		dst[k] = type(v) == "table" and _deepCopy1({}, v) or v
+	end
 end
 
 
@@ -62,11 +64,8 @@ _deepCopy1 = function(dst, src)
 	for i, v in ipairs(src) do
 		_deepCopy2(dst, i, v)
 	end
-	local n = #src
 	for k, v in pairs(src) do
-		if not (type(v) == "number" and v == math.floor(v) and v >= 1 and v <= n) then
-			_deepCopy2(dst, k, v)
-		end
+		_deepCopy2(dst, k, v)
 	end
 	return dst
 end
