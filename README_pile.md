@@ -1,4 +1,4 @@
-**Version:** 1.1.4
+**Version:** 1.1.5
 
 # PILE Base
 
@@ -6,12 +6,18 @@ PILE is a planned utility library for Lua. For now, it's just a set of modules a
 
 ## PILE Modules
 
-* `pile_arg_check.lua`: Argument assertions for functions (ie type checking).
+* `pile_arg_check.lua`: Assertions for function arguments (type checking, etc.).
   * Requires: `pile_interp.lua`
 
 * `pile_interp.lua`: String interpolation with position-independent arguments.
 
-* `pile_table.lua`: Table helpers.
+* `pile_math.lua`: Some basic math functions.
+
+* `pile_path.lua`: Functions for working with LÖVE virtual filesystem paths.
+
+* `pile_string.lua`: Some common string patterns.
+
+* `pile_table.lua`: Table functions.
 
 * `pile_utf8.lua`: UTF-8 helper functions.
   * Requires: `pile_arg_check.lua`, `pile_interp.lua`
@@ -29,7 +35,7 @@ Note that the `test` folder contains libraries which do require attribution.
 ```
 MIT License
 
-Copyright (c) 2024 PILE Contributors
+Copyright (c) 2024 - 2025 PILE Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +60,7 @@ SOFTWARE.
 ```
 MIT No Attribution
 
-Copyright (c) 2024 PILE Contributors
+Copyright (c) 2024 - 2025 PILE Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

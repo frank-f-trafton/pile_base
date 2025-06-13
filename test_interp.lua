@@ -1,5 +1,5 @@
 -- Test: pile_interp.lua
--- v1.1.4
+-- v1.1.5
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -11,9 +11,6 @@ require(PATH .. "test.strict")
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
 local interp = require(PATH .. "pile_interp")
-
-
-local hex = string.char
 
 
 local cli_verbosity

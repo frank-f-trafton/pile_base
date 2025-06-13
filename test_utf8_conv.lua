@@ -1,5 +1,5 @@
 -- Test: pile_utf8_conv.lua
--- v1.1.4
+-- v1.1.5
 
 
 local REQ_PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -11,10 +11,6 @@ local strict = require(REQ_PATH .. "test.strict")
 local errTest = require(REQ_PATH .. "test.err_test")
 local pUTF8 = require(REQ_PATH .. "pile_utf8")
 local pUTF8Conv = require(REQ_PATH .. "pile_utf8_conv")
-
-
--- (This is only here because Lua 5.1 does not have the '\xff' hex literal escapes for strings.)
-local hex = string.char
 
 
 local cli_verbosity

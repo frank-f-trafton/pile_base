@@ -1,4 +1,4 @@
-**Version:** 1.1.4
+**Version:** 1.1.5
 
 # PILE: interp
 
@@ -13,6 +13,11 @@ print(interp("The $1 brown fox $3 over the lazy $2.", "quick", "dog", "jumps"))
 
 -->The quick brown fox jumps over the lazy dog.
 ```
+
+
+## Dependencies
+
+None.
 
 
 # interp API
@@ -33,4 +38,4 @@ Interpolates up to nine varargs in a string.
 
 * `$` can be escaped in `s` by writing `$$`.
 
-* If you need to interpolate more than `$1` - `$9`, you should consider either breaking the message into smaller strings, or using `string.gsub()` directly with a replacement table. `interp()` can be modified to accept additional character values such as `$:` (ASCII byte 058; argument #10), but it's an ugly hack.
+* If you need to interpolate more than `$1` - `$9`, you should consider either breaking the message into smaller strings, or using `string.gsub()` directly with a replacement table.

@@ -2,6 +2,15 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.1.5 (2025-06-13)
+* Added `pile_math.lua`.
+* Added `pile_path.lua`.
+* Added `pile_string.lua`.
+* `pile_table.lua`:
+  * Added `pTable.clear()`, `pTable.clearArray()`, `pTable.copy()`, `pTable.copyArray()`, `pTable.deepCopy()`, `pTable.isArrayOnlyZero()`, `pTable.makeLUTV()`, `pTable.arrayOfHashKeys()`, `pTable.moveElement()`, `pTable.swapElements()`, `pTable.reverseArray()`, `pTable.assignIfNil()`, and `pTable.assignIfNilOrFalse()`.
+* Updated copyright year.
+
+
 # v1.1.4 (2024-11-06)
 * `pile_arg_check.lua`:
   * Added `pArgCheck.fieldType()`, `pArgCheck.fieldType1()`, `pArgCheck.fieldTypeEval()`, `pArgCheck.fieldTypeEval1()`

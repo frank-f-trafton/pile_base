@@ -1,14 +1,9 @@
-**Version:** 1.1.4
+**Version:** 1.1.5
 
 # PILE: argCheck
 
 
 *argCheck* provides some common assertions for function arguments.
-
-
-## Dependencies
-
-* `pile_interp.lua`
 
 
 ```lua
@@ -22,6 +17,11 @@ foobar(1)
 
 --> stdin:1: argument #1: bad type (expected [string], got number)
 ```
+
+
+## Dependencies
+
+* `pile_interp.lua`
 
 
 # argCheck API
