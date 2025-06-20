@@ -1,4 +1,4 @@
-**Version:** 1.1.5
+**Version:** 1.1.6
 
 # PILE: table
 
@@ -15,7 +15,7 @@ local lut_foo = pTable.makeLUT({"foo", "bar", "baz"})
 
 ## Dependencies
 
-None.
+* `pile_interp.lua`
 
 
 # pTable API
@@ -233,6 +233,19 @@ Reverses the contents of an array.
 * `t`: The array to reverse.
 
 
+## pTable.removeElement
+
+Removes elements from an array that are equal to a value, iterating backwards from the last entry.
+
+`local count = pTable.removeElement(t, v, [n])`
+
+* `t`: The table to scan.
+* `v`: The value to be removed.
+* `[n]`: (*math.huge*) How many elements to remove in this call.
+
+**Returns:** The number of elements removed.
+
+
 ## pTable.assignIfNil
 
 If `table[key]` is nil, assigns the first non-nil value from a vararg list.
@@ -275,3 +288,33 @@ pTable.assignIfNil(t, "foo", nil) -- (No change)
 pTable.assignIfNil(t, "foo", true, 100) --> t[foo] = true
 pTable.assignIfNil(t, "foo", false) -- (No change)
 ```
+
+
+## pTable.resolve
+
+Looks up a value in a nested table structure by following a string of fields delimited by slashes (`/`).
+
+`local value, count = pTable.resolve(t, str, [raw])`
+
+* `t`: The starting table.
+* `str`: The string of delimited fields to check. Each field must begin with a slash.
+* `[raw]`: When true, uses `rawget()` to read table fields (thus ignoring the mechanisms of Lua metatables).
+
+**Returns:** 1) The resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.
+
+**Notes:**
+
+* The function will raise a Lua error if the initial `t` is not a table, or if any of the fields are empty (like `/foo//bar`).
+
+
+## pTable.assertResolve
+
+A wrapper for `pTable.resolve()` which raises a Lua error if no value was found.
+
+`local value, count = pTable.assertResolve(t, str, [raw])`
+
+* `t`: The starting table.
+* `str`: The string of delimited fields to check. Cannot be an empty string.
+* `[raw]`: When true, uses `rawget()` to read table fields (thus ignoring the mechanisms of Lua metatables).
+
+**Returns:** 1) The resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.

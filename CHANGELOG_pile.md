@@ -2,6 +2,12 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.1.6 (2025-06-20)
+* `pile_table.lua`:
+  * Now depends on `pile_interp.lua`.
+  * Added `pTable.removeElement()`, `pTable.resolve()` and `pTable.assertResolve()`.
+
+
 # v1.1.5 (2025-06-13)
 * Added `pile_math.lua`.
 * Added `pile_path.lua`.

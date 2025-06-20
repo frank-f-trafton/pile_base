@@ -1,4 +1,4 @@
--- PILE Table v1.1.5
+-- PILE Table v1.1.6
 -- (C) 2024 - 2025 PILE Contributors
 -- License: MIT or MIT-0
 -- https://github.com/rabbitboots/pile_base
@@ -7,11 +7,17 @@
 local M = {}
 
 
+local PATH = ... and (...):match("(.-)[^%.]+$") or ""
+
+
 M.lang = {}
 local lang = M.lang
 
 
-local ipairs, pairs, type = ipairs, pairs, type
+local interp = require(PATH .. "pile_interp")
+
+
+local ipairs, pairs, rawget, select, table, type = ipairs, pairs, rawget, select, table, type
 
 
 function M.clear(t)
@@ -186,6 +192,22 @@ function M.reverseArray(t)
 end
 
 
+function M.removeElement(t, v, n)
+	n = n or math.huge
+	local c = 0
+	for i = #t, 1, -1 do
+		if c >= n then
+			break
+
+		elseif rawget(t, i) == v then
+			table.remove(t, i)
+			c = c + 1
+		end
+	end
+	return c
+end
+
+
 lang.err_k_nil = "the key to assign is nil"
 function M.assignIfNil(t, k, ...)
 	if k == nil then
@@ -216,6 +238,50 @@ function M.assignIfNilOrFalse(t, k, ...)
 			end
 		end
 	end
+end
+
+lang.err_res_bad_t = "argument #$1: expected a table"
+lang.err_res_bad_s = "argument #$1: expected a non-empty string"
+lang.err_res_field_empty = "cannot resolve an empty field"
+function M.resolve(t, str, raw)
+	if type(t) ~= "table" then
+		error(interp(lang.err_res_bad_t, 1))
+
+	elseif type(str) ~= "string" or #str == 0 then
+		error(interp(lang.err_res_bad_s, 2))
+	end
+
+	local val = t
+	local i, j, count, len = 1, 1, 0, #str
+	while i <= len do
+		if type(val) ~= "table" then
+			return nil, count
+		end
+		local fld
+		i, j, fld = str:find("^/([^/]+)", i)
+		if not fld then
+			error(lang.err_res_field_empty)
+		end
+		if raw then
+			val = rawget(val, fld)
+		else
+			val = val[fld]
+		end
+		i = j + 1
+		count = count + 1
+	end
+
+	return val, count
+end
+
+
+lang.err_res_assert = "value resolution failed. String: $1, failed at token #$2."
+function M.assertResolve(t, str, raw)
+	local ret, count = M.resolve(t, str, raw)
+	if ret == nil then
+		error(interp(lang.err_res_assert, str, count))
+	end
+	return ret, count
 end
 
 

@@ -1,8 +1,8 @@
-**Version:** 1.1.5
+**Version:** 1.1.6
 
 # PILE Base
 
-PILE is a planned utility library for Lua. For now, it's just a set of modules and snippets that are used in other libraries.
+A utility library for Lua.
 
 ## PILE Modules
 
@@ -17,7 +17,8 @@ PILE is a planned utility library for Lua. For now, it's just a set of modules a
 
 * `pile_string.lua`: Some common string patterns.
 
-* `pile_table.lua`: Table functions.
+* `pile_table.lua`: Table, array functions.
+  * Requires: `pile_interp.lua`
 
 * `pile_utf8.lua`: UTF-8 helper functions.
   * Requires: `pile_arg_check.lua`, `pile_interp.lua`
