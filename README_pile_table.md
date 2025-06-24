@@ -1,4 +1,4 @@
-**Version:** 1.1.6
+**Version:** 1.1.7
 
 # PILE: table
 
@@ -297,14 +297,16 @@ Looks up a value in a nested table structure by following a string of fields del
 `local value, count = pTable.resolve(t, str, [raw])`
 
 * `t`: The starting table.
-* `str`: The string of delimited fields to check. Each field must begin with a slash.
+* `str`: The string of delimited fields to check.
 * `[raw]`: When true, uses `rawget()` to read table fields (thus ignoring the mechanisms of Lua metatables).
 
 **Returns:** 1) The resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.
 
 **Notes:**
 
-* The function will raise a Lua error if the initial `t` is not a table, or if any of the fields are empty (like `/foo//bar`).
+* The call `local v = pTable.resolve(tbl, "foo/bar")` is analogous to `local v = tbl.foo.bar`.
+
+* The function will raise a Lua error if the initial `t` is not a table, or if any of the fields are empty (like `foo//bar`).
 
 
 ## pTable.assertResolve

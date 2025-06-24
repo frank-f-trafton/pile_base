@@ -2,6 +2,11 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.1.7 (2025-06-24)
+* `pile_table.lua`:
+  * Changed `pTable.resolve()` strings so that the initial delimiter is omitted (e.g. change `/foo/bar` to `foo/bar`).
+
+
 # v1.1.6 (2025-06-20)
 * `pile_table.lua`:
   * Now depends on `pile_interp.lua`.

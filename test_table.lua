@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.1.6
+-- v1.1.7
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -726,9 +726,9 @@ self:registerJob("pTable.resolve()", function(self)
 
 	self:expectLuaError("arg #2 bad type", pTable.resolve, {}, nil)
 	self:expectLuaError("arg #2 cannot resolve an empty string", pTable.resolve, {}, "")
-	self:expectLuaError("arg #2 empty fields are not allowed (start)", pTable.resolve, {}, "//bar")
-	self:expectLuaError("arg #2 empty fields are not allowed (middle)", pTable.resolve, {foo={[""]={bar=true}}}, "/foo//bar")
-	self:expectLuaError("arg #2 empty fields are not allowed (last)", pTable.resolve, {foo={bar={[""]=true}}}, "/foo/bar/")
+	self:expectLuaError("arg #2 empty fields are not allowed (start)", pTable.resolve, {}, "/bar")
+	self:expectLuaError("arg #2 empty fields are not allowed (middle)", pTable.resolve, {foo={[""]={bar=true}}}, "foo//bar")
+	self:expectLuaError("arg #2 empty fields are not allowed (last)", pTable.resolve, {foo={bar={[""]=true}}}, "foo/bar/")
 
 	-- [====[
 	do
@@ -738,7 +738,7 @@ self:registerJob("pTable.resolve()", function(self)
 			}
 		}
 		self:print(4, "OK lookup")
-		local v, c = pTable.resolve(t, "/foo/bar")
+		local v, c = pTable.resolve(t, "foo/bar")
 		self:isEqual(v, "zoop")
 		self:isEqual(c, 2)
 		self:lf(1)
@@ -753,7 +753,7 @@ self:registerJob("pTable.resolve()", function(self)
 			}
 		}
 		self:print(4, "Failed (but non-fatal) lookup")
-		local v, c = pTable.resolve(t, "/foo/bar/zyp")
+		local v, c = pTable.resolve(t, "foo/bar/zyp")
 		self:isEqual(v, nil)
 		self:isEqual(c, 2)
 		self:lf(1)
@@ -771,7 +771,7 @@ self:registerJob("pTable.resolve()", function(self)
 		}
 		setmetatable(t.foo, mt)
 		self:print(4, "OK lookup with metatables")
-		local v, c = pTable.resolve(t, "/foo/dip")
+		local v, c = pTable.resolve(t, "foo/dip")
 		self:isEqual(v, "flip")
 		self:isEqual(c, 2)
 		self:lf(1)
@@ -789,7 +789,7 @@ self:registerJob("pTable.resolve()", function(self)
 		}
 		setmetatable(t.foo, mt)
 		self:print(4, "Failed (but non-fatal) lookup, ignoring metatables")
-		local v, c = pTable.resolve(t, "/foo/dip", true)
+		local v, c = pTable.resolve(t, "foo/dip", true)
 		self:isEqual(v, nil)
 		self:isEqual(c, 2)
 		self:lf(1)
@@ -810,7 +810,7 @@ self:registerJob("pTable.assertResolve()", function(self)
 			}
 		}
 		self:print(4, "OK lookup")
-		local v, c = pTable.assertResolve(t, "/foo/bar")
+		local v, c = pTable.assertResolve(t, "foo/bar")
 		self:isEqual(v, "zoop")
 		self:isEqual(c, 2)
 		self:lf(1)
@@ -824,7 +824,7 @@ self:registerJob("pTable.assertResolve()", function(self)
 				bar = "zoop"
 			}
 		}
-		self:expectLuaError("Failed, fatal lookup", pTable.assertResolve, t, "/foo/bar/zyp")
+		self:expectLuaError("Failed, fatal lookup", pTable.assertResolve, t, "foo/bar/zyp")
 	end
 	--]====]
 
@@ -839,7 +839,7 @@ self:registerJob("pTable.assertResolve()", function(self)
 		}
 		setmetatable(t.foo, mt)
 		self:print(4, "OK lookup with metatables")
-		local v, c = pTable.assertResolve(t, "/foo/dip")
+		local v, c = pTable.assertResolve(t, "foo/dip")
 		self:isEqual(v, "flip")
 		self:isEqual(c, 2)
 		self:lf(1)
@@ -856,7 +856,7 @@ self:registerJob("pTable.assertResolve()", function(self)
 			}
 		}
 		setmetatable(t.foo, mt)
-		self:expectLuaError("Failed, fatal lookup, ignoring metatables", pTable.assertResolve, t, "/foo/dip", true)
+		self:expectLuaError("Failed, fatal lookup, ignoring metatables", pTable.assertResolve, t, "foo/dip", true)
 	end
 	--]====]
 end
