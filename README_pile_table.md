@@ -1,4 +1,4 @@
-**Version:** 1.1.7
+**Version:** 1.1.8
 
 # PILE: table
 
@@ -77,6 +77,20 @@ Makes a recursive "deep" copy of a table.
   * It does not handle tables as keys: `t = {[{true}] = "foo"}`
   * It does not handle loops ('A' referring to 'B' referring back to 'A'; the stack will overflow)
   * Multiple appearances of the same table in the source will generate unique tables in the destination.
+
+
+## pTable.deepPatch
+
+Given two tables, copies values from the second table to the first. The procedure runs recursively on all sub-tables in the patch table. If the source table is lacking a sub-table that is present in the patch table, then a new table will be allocated and assigned.
+
+`pTable.deepPatch(a, b)`
+
+* `a`: The table to be modified.
+* `b`: The table with patch values.
+
+**Notes:**
+
+* This implementation assumes that all of the tables involved are unique objects, and it does not handle tables as keys.
 
 
 ## pTable.isArray
@@ -244,6 +258,19 @@ Removes elements from an array that are equal to a value, iterating backwards fr
 * `[n]`: (*math.huge*) How many elements to remove in this call.
 
 **Returns:** The number of elements removed.
+
+
+## pTable.valueInArray
+
+Checks if a value is in an array.
+
+`local index = pTable.valueInArray(t, v, [i])`
+
+* `t`: The array to check.
+* `v`: The value.
+* `[i]`: (*1*) The starting index.
+
+**Returns:** The index of the value when found, or nil if it was not found.
 
 
 ## pTable.assignIfNil

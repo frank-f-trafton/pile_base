@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.1.7
+-- v1.1.8
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -185,6 +185,62 @@ self:registerJob("pTable.deepCopy()", function(self)
 		self:isNotEqual(t2.x, t2.y)
 		self:isNotEqual(t2.x, t2.z)
 		self:isNotEqual(t2.y, t2.z)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTable.deepPatch()", pTable.deepPatch)
+
+
+-- [===[
+self:registerJob("pTable.deepPatch()", function(self)
+	-- [====[
+	do
+		self:expectLuaError("arg #1 bad type", pTable.deepPatch, 123, {})
+		self:expectLuaError("arg #2 bad type", pTable.deepPatch, {}, 123)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t1, t2 = {}, {}
+		self:expectLuaReturn("empty tables", pTable.deepPatch, t1, t2)
+		self:isNil(next(t1))
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t1, t2 = {}, {a={b={c={d="foo", dd="bar", ddd=123, dddd=false}}}}
+		self:expectLuaReturn("create new sub-tables", pTable.deepPatch, t1, t2)
+		self:isEvalTrue(t1.a)
+		self:isEvalTrue(t1.a.b)
+		self:isEvalTrue(t1.a.b.c)
+		self:isEqual(t1.a.b.c.d, "foo")
+		self:isEqual(t1.a.b.c.dd, "bar")
+		self:isEqual(t1.a.b.c.ddd, 123)
+		self:isEqual(t1.a.b.c.dddd, false)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t1, t2 = {a={b={c={d="bar"}}}}, {a={b={c={d="zoop"}}}}
+		self:expectLuaReturn("patch existing sub-tables", pTable.deepPatch, t1, t2)
+		self:isEvalTrue(t1.a)
+		self:isEvalTrue(t1.a.b)
+		self:isEvalTrue(t1.a.b.c)
+		self:isEqual(t1.a.b.c.d, "zoop")
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t1, t2 = {}, { [{true}] = "foo"}
+		self:expectLuaError("doesn't support tables as keys", pTable.deepPatch, t1, t2)
 	end
 	--]====]
 end
@@ -617,6 +673,62 @@ self:registerJob("pTable.removeElement()", function(self)
 		self:isEqual(t[3], "e")
 		self:isEqual(c, 0)
 		self:lf(1)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTable.valueInArray()", pTable.valueInArray)
+
+
+-- [===[
+self:registerJob("pTable.valueInArray()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.valueInArray, 123)
+	-- Don't check arg 2
+
+	-- [====[
+	do
+		local t = {"a", "b", "c", "d", "e", "f", "g"}
+		local ret = self:expectLuaReturn("find the index for 'c'", pTable.valueInArray, t, "c")
+		self:isEqual(ret, 3)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {"a", "b", "c", "d", "e", "f", "g"}
+		local ret = self:expectLuaReturn("look unsuccessfully for 'x'", pTable.valueInArray, t, "x")
+		self:isEqual(ret, nil)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {"a", "b", "c", "c", "b", "a"}
+		self:print(4, "find all indices with values of 'b'")
+		local indices = {}
+		local i = 1
+		while i do
+			i = pTable.valueInArray(t, "b", i)
+			if i then
+				table.insert(indices, i)
+				i = i + 1
+			end
+		end
+
+		self:isEqual(indices[1], 2)
+		self:isEqual(indices[2], 5)
+		self:isEqual(indices[3], nil)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {"a", "b", "c", nil}
+		local ret = self:expectLuaReturn("looking for nil always returns nil", pTable.valueInArray, t, nil)
+		self:isEqual(ret, nil)
 	end
 	--]====]
 end
