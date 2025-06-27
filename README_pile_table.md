@@ -90,7 +90,11 @@ Given two tables, copies values from the second table to the first. The procedur
 
 **Notes:**
 
-* This implementation assumes that all of the tables involved are unique objects, and it does not handle tables as keys.
+* Limitations:
+  * It assumes that all of the tables involved are unique objects.
+  * It does not handle tables as keys.
+  * It cannot replace whole tables in the source table; it can only modify them.
+  * Since `pairs()` is used, it can't guarantee the order (ie array indices) in which values are patched.
 
 
 ## pTable.isArray
