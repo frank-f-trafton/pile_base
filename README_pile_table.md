@@ -1,4 +1,4 @@
-**Version:** 1.1.8
+**Version:** 1.1.9
 
 # PILE: table
 
@@ -75,26 +75,57 @@ Makes a recursive "deep" copy of a table.
 
 * There are many ways to copy a Lua table, and no single way covers all use cases. This is a pretty narrow implementation:
   * It does not handle tables as keys: `t = {[{true}] = "foo"}`
-  * It does not handle loops ('A' referring to 'B' referring back to 'A'; the stack will overflow)
-  * Multiple appearances of the same table in the source will generate unique tables in the destination.
+  * It does not handle loops ('A' referring to 'B' referring back to 'A'); the Lua stack will overflow.
+  * Multiple appearances of the same table in the source will generate unique tables in the copy.
+
+
+## pTable.patch
+
+Given two tables, copies values from the second table to the first.
+
+`pTable.patch(a, b, overwrite)`
+
+* `a`: The table to be modified.
+* `b`: The table with patch values.
+* `overwrite`: When true, existing values in `a` are overwritten by those in `b` with matching keys. When false, existing values in `a` (including `false`) are preserved.
+
+
+**Notes:**
+
+* Sub-tables within `b` are copied by reference to `a`.
 
 
 ## pTable.deepPatch
 
-Given two tables, copies values from the second table to the first. The procedure runs recursively on all sub-tables in the patch table. If the source table is lacking a sub-table that is present in the patch table, then a new table will be allocated and assigned.
+Given two tables, recursively copies values from the second table to the first. The procedure runs on all table values in the patch table. If the destination table is lacking a sub-table that is present in the patch table, then a new table will be assigned.
 
-`pTable.deepPatch(a, b)`
+`pTable.deepPatch(a, b, overwrite)`
 
 * `a`: The table to be modified.
 * `b`: The table with patch values.
+* `overwrite`: When true, existing values in `a` are overwritten by those in `b` with matching keys. When false, existing values in `a` (including `false`) are preserved.
 
 **Notes:**
 
 * Limitations:
-  * It assumes that all of the tables involved are unique objects.
-  * It does not handle tables as keys.
-  * It cannot replace whole tables in the source table; it can only modify them.
-  * Since `pairs()` is used, it can't guarantee the order (ie array indices) in which values are patched.
+  * All tables involved *must* be unique.
+  * It does not support tables as keys.
+  * It can modify, but not replace existing tables in the destination.
+
+
+## pTable.hasAnyDuplicateTables
+
+Checks a list of tables for duplicate table references.
+
+`local t = pTable.hasAnyDuplicateTables(...)`
+
+* `...`: A vararg list of tables to check.
+
+**Returns:** The first duplicate table encountered, or nil if there are no duplicates.
+
+**Notes:**
+
+* Does not check metatables.
 
 
 ## pTable.isArray

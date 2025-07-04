@@ -2,6 +2,15 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.1.9 (2025-07-03)
+* `pile_table.lua`:
+  * Now depends on `pile_arg_check.lua`.
+  * Added `pTable.patch()` and `pTable.hasAnyDuplicateTables()`.
+  * Changed `pTable.deepPatch()` to accept another argument, `overwrite`, which controls whether existing key-value pairs in the destination table are overwritten.
+  * `pTable.deepPatch()` now verifies that there are no duplicate table references in the provided tables.
+  * Changed the internals of `pTable.deepCopy()` and `pTable.deepPatch()` to write array indices from the patch table first. This might help place array indices in the array part of Lua tables, in cases where the patch table contains numeric indices starting from 1.
+
+
 # v1.1.8 (2025-06-27)
 * `pile_table.lua`:
   * Added `pTable.deepPatch()` and `pTable.valueInArray()`.

@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.1.8
+-- v1.1.9
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -201,6 +201,14 @@ self:registerJob("pTable.deepPatch()", function(self)
 	do
 		self:expectLuaError("arg #1 bad type", pTable.deepPatch, 123, {})
 		self:expectLuaError("arg #2 bad type", pTable.deepPatch, {}, 123)
+		-- Don't type-check 'overwrite'.
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t1, t2 = {}, { [{true}] = "foo"}
+		self:expectLuaError("doesn't support tables as keys", pTable.deepPatch, t1, t2)
 	end
 	--]====]
 
@@ -229,7 +237,7 @@ self:registerJob("pTable.deepPatch()", function(self)
 	-- [====[
 	do
 		local t1, t2 = {a={b={c={d="bar"}}}}, {a={b={c={d="zoop"}}}}
-		self:expectLuaReturn("patch existing sub-tables", pTable.deepPatch, t1, t2)
+		self:expectLuaReturn("patch existing sub-tables", pTable.deepPatch, t1, t2, true)
 		self:isEvalTrue(t1.a)
 		self:isEvalTrue(t1.a.b)
 		self:isEvalTrue(t1.a.b.c)
@@ -239,8 +247,70 @@ self:registerJob("pTable.deepPatch()", function(self)
 
 	-- [====[
 	do
-		local t1, t2 = {}, { [{true}] = "foo"}
-		self:expectLuaError("doesn't support tables as keys", pTable.deepPatch, t1, t2)
+		local t1, t2 = {a={b={c={d="bar", dd="boop", ddd="zoop"}}}}, {a={b={c={d="we", dd="wee", ddd="weee"}}}}
+		self:expectLuaReturn("do not overwrite existing fields", pTable.deepPatch, t1, t2, false)
+		self:isEvalTrue(t1.a)
+		self:isEvalTrue(t1.a.b)
+		self:isEvalTrue(t1.a.b.c)
+		self:isEqual(t1.a.b.c.d, "bar")
+		self:isEqual(t1.a.b.c.dd, "boop")
+		self:isEqual(t1.a.b.c.ddd, "zoop")
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTable.patch()", pTable.patch)
+
+
+-- [===[
+self:registerJob("pTable.patch()", function(self)
+	-- [====[
+	do
+		self:expectLuaError("arg #1 bad type", pTable.patch, 123, {})
+		self:expectLuaError("arg #2 bad type", pTable.patch, {}, 123)
+		-- Don't type-check 'overwrite'.
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t1, t2 = {}, {}
+		self:expectLuaReturn("empty tables", pTable.patch, t1, t2)
+		self:isNil(next(t1))
+	end
+	--]====]
+
+	-- [====[
+	do
+		local tk = {true}
+		local t1, t2 = {}, { [tk] = "foo"}
+		self:expectLuaReturn("supports tables as keys (which are just copied by reference)", pTable.patch, t1, t2)
+		self:isEqual(next(t1), tk)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t1, t2 = {a="z", b="x", c="c", d="v"}, {a="q", b="w", c="e", d="r"}
+		self:expectLuaReturn("patch existing values", pTable.patch, t1, t2, true)
+		self:isEqual(t1.a, "q")
+		self:isEqual(t1.b, "w")
+		self:isEqual(t1.c, "e")
+		self:isEqual(t1.d, "r")
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t1, t2 = {a="z", b="x", c="c", d="v"}, {a="q", b="w", c="e", d="r"}
+		self:expectLuaReturn("do not overwrite existing fields", pTable.patch, t1, t2, false)
+		self:isEqual(t1.a, "z")
+		self:isEqual(t1.b, "x")
+		self:isEqual(t1.c, "c")
+		self:isEqual(t1.d, "v")
 	end
 	--]====]
 end
@@ -832,6 +902,9 @@ end
 --]===]
 
 
+self:registerFunction("pTable.resolve()", pTable.resolve)
+
+
 -- [===[
 self:registerJob("pTable.resolve()", function(self)
 	self:expectLuaError("arg #1 bad type", pTable.resolve, 123, "foo/bar")
@@ -912,6 +985,9 @@ end
 --]===]
 
 
+self:registerFunction("pTable.assertResolve()", pTable.assertResolve)
+
+
 -- [===[
 self:registerJob("pTable.assertResolve()", function(self)
 	-- [====[
@@ -975,5 +1051,65 @@ end
 )
 --]===]
 
+
+self:registerFunction("pTable.hasAnyDuplicateTables()", pTable.hasAnyDuplicateTables)
+
+-- [===[
+self:registerJob("pTable.hasAnyDuplicateTables()", function(self)
+
+	-- [====[
+	do
+		self:expectLuaError("no arguments passed", pTable.hasAnyDuplicateTables)
+		self:expectLuaError("arg #1 bad type", pTable.hasAnyDuplicateTables, false)
+		self:expectLuaError("arg #2 bad type", pTable.hasAnyDuplicateTables, {}, false)
+		-- etc.
+
+	end
+	--]====]
+
+	-- [====[
+	do
+		local rv = self:expectLuaReturn("no duplicates", pTable.hasAnyDuplicateTables, {})
+		self:isNil(rv)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {}
+		local rv = self:expectLuaReturn("duplicates in passed arguments", pTable.hasAnyDuplicateTables, t, t)
+		self:isEqual(t, rv)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {}
+		local a1, a2 = {x=t}, {y=t}
+		local rv = self:expectLuaReturn("duplicates within tables", pTable.hasAnyDuplicateTables, a1, a2)
+		self:isEqual(t, rv)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local a1, a2 = {}, {}
+		a2.z = a1
+		local rv = self:expectLuaReturn("one arg appears as a value in another arg", pTable.hasAnyDuplicateTables, a1, a2)
+		self:isEqual(a1, rv)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {}
+		local a1, a2 = {{{{x=t}}}}, {{{{y=t}}}}
+		local rv = self:expectLuaReturn("duplicates within tables (more deeply nested)", pTable.hasAnyDuplicateTables, a1, a2)
+		self:isEqual(t, rv)
+	end
+	--]====]
+end
+)
+--]===]
 
 self:runJobs()
