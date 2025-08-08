@@ -1,4 +1,4 @@
-**Version:** 1.1.9
+**Version:** 1.1.91
 
 # PILE: table
 
@@ -89,6 +89,8 @@ Given two tables, copies values from the second table to the first.
 * `b`: The table with patch values.
 * `overwrite`: When true, existing values in `a` are overwritten by those in `b` with matching keys. When false, existing values in `a` (including `false`) are preserved.
 
+
+**Returns:** A count of how many fields were overwritten (or if `overwrite` is false, then how many fields were *not* overwritten).
 
 **Notes:**
 
@@ -326,7 +328,7 @@ If `table[key]` is nil, assigns the first non-nil value from a vararg list.
 local t = {}
 pTable.assignIfNil(t, "foo", nil) -- (No change)
 pTable.assignIfNil(t, "foo", "bar", "zoop") --> t[foo] = "bar"
-pTable.assignIfNil(t, "foo", false) --> t[foo] = false
+pTable.assignIfNil(t, "foo", false) --> (No change)
 ```
 
 
@@ -368,7 +370,7 @@ Looks up a value in a nested table structure by following a string of fields del
 
 * The call `local v = pTable.resolve(tbl, "foo/bar")` is analogous to `local v = tbl.foo.bar`.
 
-* The function will raise a Lua error if the initial `t` is not a table, or if any of the fields are empty (like `foo//bar`).
+* The function will raise a Lua error if `t`'s starting value is not a table, or if any of the fields are empty (like `foo//bar`).
 
 
 ## pTable.assertResolve

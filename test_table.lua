@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.1.9
+-- v1.1.91
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -278,8 +278,9 @@ self:registerJob("pTable.patch()", function(self)
 	-- [====[
 	do
 		local t1, t2 = {}, {}
-		self:expectLuaReturn("empty tables", pTable.patch, t1, t2)
+		local count = self:expectLuaReturn("empty tables", pTable.patch, t1, t2)
 		self:isNil(next(t1))
+		self:isEqual(count, 0)
 	end
 	--]====]
 
@@ -287,30 +288,33 @@ self:registerJob("pTable.patch()", function(self)
 	do
 		local tk = {true}
 		local t1, t2 = {}, { [tk] = "foo"}
-		self:expectLuaReturn("supports tables as keys (which are just copied by reference)", pTable.patch, t1, t2)
+		local count = self:expectLuaReturn("supports tables as keys (which are just copied by reference)", pTable.patch, t1, t2)
 		self:isEqual(next(t1), tk)
+		self:isEqual(count, 0)
 	end
 	--]====]
 
 	-- [====[
 	do
 		local t1, t2 = {a="z", b="x", c="c", d="v"}, {a="q", b="w", c="e", d="r"}
-		self:expectLuaReturn("patch existing values", pTable.patch, t1, t2, true)
+		local count = self:expectLuaReturn("patch existing values", pTable.patch, t1, t2, true)
 		self:isEqual(t1.a, "q")
 		self:isEqual(t1.b, "w")
 		self:isEqual(t1.c, "e")
 		self:isEqual(t1.d, "r")
+		self:isEqual(count, 4)
 	end
 	--]====]
 
 	-- [====[
 	do
 		local t1, t2 = {a="z", b="x", c="c", d="v"}, {a="q", b="w", c="e", d="r"}
-		self:expectLuaReturn("do not overwrite existing fields", pTable.patch, t1, t2, false)
+		local count = self:expectLuaReturn("do not overwrite existing fields", pTable.patch, t1, t2, false)
 		self:isEqual(t1.a, "z")
 		self:isEqual(t1.b, "x")
 		self:isEqual(t1.c, "c")
 		self:isEqual(t1.d, "v")
+		self:isEqual(count, 4)
 	end
 	--]====]
 end

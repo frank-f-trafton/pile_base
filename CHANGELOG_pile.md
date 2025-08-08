@@ -2,6 +2,13 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.1.91 (2025-08-08)
+* `pile_table.lua`:
+  * Changed `pTable.patch()` to return a count of fields overwritten (or not overwritten).
+
+* Minor changes to documentation.
+
+
 # v1.1.9 (2025-07-03)
 * `pile_table.lua`:
   * Now depends on `pile_arg_check.lua`.
