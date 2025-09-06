@@ -1,6 +1,6 @@
-**Version:** 1.1.91
+**Version:** 1.200
 
-# PILE String
+# PILE: String
 
 This module is a dumping ground for string functions and patterns.
 
@@ -10,7 +10,7 @@ This module is a dumping ground for string functions and patterns.
 None.
 
 
-# PILE String API
+# String API
 
 ## pString.ptn_dollar
 

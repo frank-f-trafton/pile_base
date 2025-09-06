@@ -1,6 +1,6 @@
-**Version:** 1.1.91
+**Version:** 1.200
 
-# PILE: table
+# PILE: Table
 
 Provides helper functions for Lua tables.
 
@@ -18,7 +18,7 @@ local lut_foo = pTable.makeLUT({"foo", "bar", "baz"})
 * `pile_interp.lua`
 
 
-# pTable API
+# Table API
 
 
 ## pTable.clear

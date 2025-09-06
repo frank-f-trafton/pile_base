@@ -1,4 +1,4 @@
-**Version:** 1.1.91
+**Version:** 1.200
 
 # PILE: UTF-8
 
@@ -37,7 +37,7 @@ print(pUTF8.check("bad" .. string.char(0xff) .. "string"))
 * `pile_utf8.lua`
 
 
-# pUTF8 API
+# UTF8 API
 
 ## pUTF8.getCheckSurrogates
 
@@ -185,7 +185,7 @@ This function **raises a Lua error** if it encounters a problem with the code po
 * This function allocates a temporary table. To convert single code points, `pUTF8.stringFromCode()` can be used instead.
 
 
-# pUTF8Conv API
+# UTF8Conv API
 
 ## pUTF8Conv.latin1_utf8
 

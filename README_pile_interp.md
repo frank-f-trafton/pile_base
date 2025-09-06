@@ -1,7 +1,6 @@
-**Version:** 1.1.91
+**Version:** 1.200
 
-# PILE: interp
-
+# PILE: Interp
 
 *interp* interpolates strings with position-independent arguments.
 
@@ -20,7 +19,7 @@ print(interp("The $1 brown fox $3 over the lazy $2.", "quick", "dog", "jumps"))
 None.
 
 
-# interp API
+# Interp API
 
 ## interp
 

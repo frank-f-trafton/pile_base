@@ -1,6 +1,6 @@
-**Version:** v1.1.91
+**Version:** v1.200
 
-# PILE Math
+# PILE: Math
 
 A small collection of math functions.
 
@@ -19,7 +19,7 @@ print(pMath.clamp(100, 1, 50)) --> 50
 None.
 
 
-# PILE Math API
+# Math API
 
 
 ## pMath.clamp

@@ -2,6 +2,36 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.200 (2025-09-05)
+* Changed versioning scheme from `N.N.N` to `N.NNN…`.
+
+* `pile_arg_check.lua`:
+  * Updated functions that accept an argument number to use generic error messages when the number is omitted (by passing false/nil).
+
+  * Added these functions, which check values in tables:
+    * `pArgCheck.fieldInt()`
+    * `pArgCheck.fieldIntEval()`
+    * `pArgCheck.fieldIntGE()`
+    * `pArgCheck.fieldIntGEEval()`
+    * `pArgCheck.fieldIntRange()`
+    * `pArgCheck.fieldIntRangeEval()`
+    * `pArgCheck.fieldIntRangeStatic()`
+    * `pArgCheck.fieldIntRangeStaticEval()`
+    * `pArgCheck.fieldNumberNotNaN()`
+    * `pArgCheck.fieldNumberNotNaNEval()`
+    * `pArgCheck.fieldEnum()`
+    * `pArgCheck.fieldEnumEval()`
+    * `pArgCheck.fieldNotNil()`
+    * `pArgCheck.fieldNotNilNotNaN()`
+    * `pArgCheck.fieldNotNilNotFalse()`
+    * `pArgCheck.fieldNotNilNotFalseNotNaN()`
+    * `pArgCheck.fieldNotNaN()`
+
+  * Changed the arguments and error messages of the existing `pArgCheck.fieldType()`, `pArgCheck.fieldType1()`, `pArgCheck.fieldTypeEval()`, and `pArgCheck.fieldTypeEval1()` functions.
+
+* Minor fixes to documentation. Updated the git repository URL in some places.
+
+
 # v1.1.91 (2025-08-08)
 * `pile_table.lua`:
   * Changed `pTable.patch()` to return a count of fields overwritten (or not overwritten).

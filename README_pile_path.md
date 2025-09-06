@@ -1,6 +1,6 @@
-**Version:** v1.1.91
+**Version:** v1.200
 
-# PILE Path
+# PILE: Path
 
 Functions for working with paths.
 
@@ -19,7 +19,7 @@ local my_path = pPath.join("foo", "bar") --> "foo/bar"
 None.
 
 
-# PILE Path API
+# Path API
 
 ## pPath.getExtension
 
