@@ -2,6 +2,12 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.201 (2025-09-10)
+
+* `pile_table.lua`:
+  * Added `mt_restrict`, a metatable that raises an error when unpopulated fields in a table are read or assigned.
+
+
 # v1.200 (2025-09-05)
 * Changed versioning scheme from `N.N.N` to `N.NNN…`.
 

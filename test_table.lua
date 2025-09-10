@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.200
+-- v1.201
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -1115,5 +1115,130 @@ self:registerJob("pTable.hasAnyDuplicateTables()", function(self)
 end
 )
 --]===]
+
+
+-- [===[
+self:registerJob("pTable.mt_restrict", function(self)
+
+	local mt = pTable.mt_restrict
+
+	-- [====[
+	do
+		local t = {foo=false}
+		setmetatable(t, mt)
+		local function testIt()
+			local t2 = {}
+			t2.x = t.foo
+			return t2
+		end
+		local rv = self:expectLuaReturn("expected behavior (read)", testIt)
+		self:isEqual(rv.x, false)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {foo="bar"}
+		setmetatable(t, mt)
+		local function testIt()
+			t.foo = "bop"
+			return true
+		end
+		self:expectLuaReturn("expected behavior (write)", testIt)
+		self:isEqual(t.foo, "bop")
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {}
+		setmetatable(t, mt)
+		local function testIt()
+			return rawget(t, "nothin'")
+		end
+		local rv = self:expectLuaReturn("can't stop rawget", testIt)
+		self:isEqual(rv, nil)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {}
+		setmetatable(t, mt)
+		local function testIt()
+			return rawset(t, "somethin'", true)
+		end
+		self:expectLuaReturn("can't stop rawset", testIt)
+		self:isEqual(t["somethin'"], true)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {}
+		setmetatable(t, mt)
+		local function testIt()
+			table.insert(t, "zoop")
+			return t[1]
+		end
+
+		--[[
+		In Lua 5.3, the table library was changed to respect metamethods.
+		https://www.lua.org/manual/5.3/manual.html#8.2
+		--]]
+
+		if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+			local rv = self:expectLuaReturn("Lua 5.1, 5.2: can't stop table.insert()", testIt)
+			self:isEqual(t[1], rv)
+
+		elseif _VERSION == "Lua 5.3" or _VERSION == "Lua 5.4" then
+			self:expectLuaError("Lua 5.3, 5.4: stop table.insert()", testIt)
+
+		else
+			error("unsupported Lua version: " .. tostring(_VERSION))
+		end
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {"fwoowf"}
+		setmetatable(t, mt)
+		local function testIt()
+			return table.remove(t)
+		end
+		local rv = self:expectLuaReturn("can't stop table.remove()", testIt)
+		self:isEqual(rv, "fwoowf")
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {}
+		setmetatable(t, mt)
+		local function testIt()
+			local t2 = {}
+			t2.x = t.foo
+			return t2
+		end
+		local rv = self:expectLuaError("field read blocked", testIt)
+	end
+	--]====]
+
+	-- [====[
+	do
+		local t = {}
+		setmetatable(t, mt)
+		local function testIt()
+			t.foo = "bop"
+			return true
+		end
+		self:expectLuaError("field write blocked", testIt)
+	end
+	--]====]
+end
+)
+--]===]
+
 
 self:runJobs()

@@ -1,4 +1,4 @@
-**Version:** 1.200
+**Version:** 1.201
 
 # PILE: Table
 
@@ -384,3 +384,23 @@ A wrapper for `pTable.resolve()` which raises a Lua error if no value was found.
 * `[raw]`: When true, uses `rawget()` to read table fields (thus ignoring the mechanisms of Lua metatables).
 
 **Returns:** 1) The resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.
+
+
+## pTable.mt_restrict
+
+A metatable that raises an error when accessing or assigning unpopulated fields in a table *(see notes)*.
+
+```lua
+my_table = {foo=1, bar=2}
+setmetatable(my_table, pTable.mt_restrict)
+my_table.foo = 3
+my_table.zut = 4 -- Error
+```
+
+### Notes
+
+This metatable is similar in purpose to the ([strict.lua](https://www.lua.org/extras/)) snippet, but it has enough differences in behavior that it cannot be treated as a drop-in replacement.
+
+`mt_restrict` cannot do anything about the usage of `rawget()` or `rawset()`.
+
+The behavior of `table.insert()` changed in Lua 5.3, as the langauge designers updated the `table` library to respect metamethods.
