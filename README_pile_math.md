@@ -1,4 +1,4 @@
-**Version:** v1.201
+**Version:** 1.202
 
 # PILE: Math
 
@@ -29,7 +29,9 @@ Clamps a number within a range.
 `local clamped = pMath.clamp(n, a, b)`
 
 * `n`: The number to clamp.
+
 * `a`: The minimum value.
+
 * `b`: The maximum value.
 
 **Returns:** The clamped value.
@@ -46,7 +48,9 @@ Gets a value between two numbers, using [linear interpolation](https://en.wikipe
 `local lerped = pMath.lerp(a, b, v)`
 
 * `a`: The first point.
+
 * `b`: The second point.
+
 * `v`: The input value, between 0.0 and 1.0.
 
 **Returns:** The interpolated value.
@@ -54,6 +58,26 @@ Gets a value between two numbers, using [linear interpolation](https://en.wikipe
 **Notes:**
 
 * This function does not clamp the input value.
+
+
+## pMath.roundInf
+
+Rounds a number towards infinity. `0.5` rounds to `1.0`; `-0.5` rounds to `-1.0`.
+
+`local rounded = pMath.roundInf(n)`
+
+* `n`: The number to round.
+
+**Returns:** The rounded number.
+
+**Notes**:
+
+* This function is susceptible to floating point rounding error when the input is extremely close to, but not exactly 0.5 or -0.5:
+
+```lua
+print(pMath.roundInf(0.49999999999999994)) --> 1
+print(pMath.roundInf(-0.49999999999999994)) --> -1
+```
 
 
 ## pMath.sign

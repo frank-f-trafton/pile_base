@@ -1,4 +1,4 @@
-**Version:** 1.201
+**Version:** 1.202
 
 # PILE Base
 
@@ -15,10 +15,16 @@ A utility library for Lua.
 
 * `pile_path.lua`: Functions for working with LÖVE virtual filesystem paths.
 
+* `pile_pool.lua`: Pooling of objects. **Experimental**
+  * Requires: `pile_arg_check.lua`
+
+* `pile_rectangle.lua`: Positioning and manipulation of rectangle structures.
+  * Requires: `pile_arg_check.lua`, `pile_math.lua`
+
 * `pile_string.lua`: Some common string patterns.
 
 * `pile_table.lua`: Table, array functions.
-  * Requires: `pile_interp.lua`
+  * Requires: `pile_arg_check.lua`, `pile_interp.lua`
 
 * `pile_utf8.lua`: UTF-8 helper functions.
   * Requires: `pile_arg_check.lua`, `pile_interp.lua`

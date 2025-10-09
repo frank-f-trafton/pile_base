@@ -2,6 +2,20 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.202 (2025-10-09)
+
+* Added `pile_rectangle.lua` and `pile_pool.lua`.
+
+* `pile_math.lua`:
+  * Added `pMath.roundInf()`.
+
+* `pile_table.lua`:
+  * Added `pTable.wrap1Array()`.
+
+* `pile_arg_check.lua`:
+  * Simplified the implementation of error messages. Removed the 'field' variants of functions, and added a way to get the equivalent 'table X, field X' messaging in the remaining functions.
+
+
 # v1.201 (2025-09-10)
 
 * `pile_table.lua`:

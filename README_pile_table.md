@@ -1,4 +1,4 @@
-**Version:** 1.201
+**Version:** 1.202
 
 # PILE: Table
 
@@ -384,6 +384,23 @@ A wrapper for `pTable.resolve()` which raises a Lua error if no value was found.
 * `[raw]`: When true, uses `rawget()` to read table fields (thus ignoring the mechanisms of Lua metatables).
 
 **Returns:** 1) The resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.
+
+
+## pTable.wrap1Array
+
+Returns the element at the wrapped array index position.
+
+`local element = pTable.wrap1Array(t, n)`
+
+* `t`: The table to access.
+
+* `n`: The index to wrap.
+
+**Returns:** The element at the wrapped position.
+
+**Notes:**
+
+* The behavior is undefined when the array length is zero.
 
 
 ## pTable.mt_restrict

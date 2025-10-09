@@ -1,5 +1,5 @@
 -- Test: pile_math.lua
--- v1.201
+-- v1.202
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -85,6 +85,41 @@ self:registerJob("pMath.lerp", function(self)
 		-- [[
 		local output = self:expectLuaReturn("This lerp function does not clamp the input", pMath.lerp, 0, 10, 2.0)
 		self:isEqual(output, 20)
+		--]]
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pMath.roundInf", pMath.roundInf)
+
+
+-- [===[
+self:registerJob("pMath.roundInf", function(self)
+	-- [====[
+	do
+		local output
+
+		-- [[
+		output = self:expectLuaReturn("round up, positive", pMath.roundInf, 0.5)
+		self:isEqual(output, 1.0)
+		--]]
+
+		-- [[
+		output = self:expectLuaReturn("round down, positive", pMath.roundInf, 0.4)
+		self:isEqual(output, 0.0)
+		--]]
+
+		-- [[
+		output = self:expectLuaReturn("round down, negative", pMath.roundInf, -0.5)
+		self:isEqual(output, -1.0)
+		--]]
+
+		-- [[
+		output = self:expectLuaReturn("round up, negative", pMath.roundInf, -0.4)
+		self:isEqual(output, 0.0)
 		--]]
 	end
 	--]====]

@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.201
+-- v1.202
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -1110,6 +1110,41 @@ self:registerJob("pTable.hasAnyDuplicateTables()", function(self)
 		local a1, a2 = {{{{x=t}}}}, {{{{y=t}}}}
 		local rv = self:expectLuaReturn("duplicates within tables (more deeply nested)", pTable.hasAnyDuplicateTables, a1, a2)
 		self:isEqual(t, rv)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTable.wrap1Array()", pTable.wrap1Array)
+
+-- [===[
+self:registerJob("pTable.wrap1Array()", function(self)
+
+	-- [====[
+	do
+		local t = {"one", "two", "three"}
+		local rv = self:expectLuaReturn("index 2", pTable.wrap1Array, t, 2)
+		self:isEqual(rv, "two")
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {"one", "two", "three"}
+		local rv = self:expectLuaReturn("index 4", pTable.wrap1Array, t, 4)
+		self:isEqual(rv, "one")
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {"one", "two", "three"}
+		local rv = self:expectLuaReturn("index 0", pTable.wrap1Array, t, 0)
+		self:isEqual(rv, "three")
 	end
 	--]====]
 end
