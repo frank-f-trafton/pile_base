@@ -20,9 +20,9 @@
 
   * Removed some unncesseary checks for NaN (`v ~= v`) in integer assertions, where `math.floor(v) == v` already catches them.
 
-  * Removed `pArg.intRangeStatic()` and `pArg.intRangeStaticEval()` (variants that display the min and max allowed numbers in error messages). I don't think they offer enough context to be helpful, and the user or developer will have to investigate why an out-of-range number was passed as an argument anyways.
+  * Removed `pArg.intRangeStatic()` and `pArg.intRangeStaticEval()` (variants that display the min and max allowed numbers in error messages). I don't think they offer enough context to be helpful, and the user or developer will have to investigate why an out-of-range number was passed to a function anyways.
 
-  * Replaced `pArg.enum()` and `pArg.enumEval()` with functions that take `pTable` Enum objects. Doing it this way eliminates the possibility of mislabeling enums (as the old versions of these functions took a name argument for every call).
+  * Replaced `pArg.enum()` and `pArg.enumEval()` with functions that take `pTable` Enum objects. Doing it this way eliminates the possibility of mislabeling enums (as the old versions of these functions took a 'name' argument for every call).
 
   * Added `pArg.oneOf()`.
 

@@ -13,7 +13,7 @@ local pSchema = require("pile_schema")
 local rectangle = {x=0, y=0, w=32, h=64}
 
 local models, handlers = pSchema.models, pSchema.handlers
-local Validator = pSchema.newValidator("Rectangle", nil, {
+local Validator = pSchema.newValidator("Rectangle", {
 	main = models.keys {
 		x = handlers.number,
 		y = handlers.number,
@@ -22,12 +22,21 @@ local Validator = pSchema.newValidator("Rectangle", nil, {
 	}
 })
 
+local function printErr(err)
+	if err then
+		print(table.concat(err, "\n"))
+	end
+end
+
 local ok, err
-ok, err = Validator:validate(rectangle) -- OK
+
+ok, err = Validator:validate(rectangle)
+printErr(err) -- OK
 
 local rect_outta_spec = {x="foo", y="bar", w=-100, h=true}
 
 ok, err = Validator:validate(rect_outta_spec)
+printErr(err)
 --> Rectangle > x: expected number
 --> Rectangle > y: expected number
 --> Rectangle > w: number is out of range
@@ -290,7 +299,7 @@ A function that validates one value in a table.
 
 **Notes:**
 
-* On success Handlers *must* return boolean true, not just a value that evaluates to true. This helps weed out functions that have been incorrectly assigned as Handlers.
+* On success, Handlers *must* return boolean true, not just a value that evaluates to true. This helps weed out functions that have been incorrectly assigned as Handlers.
 
 * When a Handler is called on a metatable, `k` is nil, since it didn't originate from a table key.
 
@@ -338,7 +347,7 @@ Use a Model name in place of a Handler to check a table within a table. (Watch o
 
 ```lua
 local handlers, models = pSchema.handlers, pSchema.models
-local Validator = pSchema.newValidator("TestVal", nil, {
+local Validator = pSchema.newValidator("TestVal", {
 	main = models.keys {
 		bip = handlers.number,
 		bop = "aux" -- !
@@ -827,7 +836,7 @@ Performs a basic type check assertion on a value. This function is wrapped by se
 
 ```lua
 local handlers, models = pSchema.handlers, pSchema.models
-local Validator = pSchema.newValidator(nil, nil, {
+local Validator = pSchema.newValidator("Test", {
 	main = models.keys {
 		foo = handlers.number,
 		foo = handlers.string,

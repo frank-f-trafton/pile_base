@@ -462,7 +462,7 @@ M.handlers = {
 
 	number = function(k, v, opts)
 		if type(v) ~= "number" then
-			return false, "expected integer"
+			return false, "expected number"
 		end
 
 		local min, max = -math.huge, math.huge
