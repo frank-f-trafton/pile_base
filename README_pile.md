@@ -1,4 +1,4 @@
-**Version:** 1.202
+**Version:** 1.300
 
 # PILE Base
 
@@ -20,6 +20,9 @@ A utility library for Lua.
 
 * `pile_rectangle.lua`: Positioning and manipulation of rectangle structures.
   * Requires: `pile_arg_check.lua`, `pile_math.lua`
+
+* `pile_schema.lua`: Lua table validation.
+  * Requires: `pile_arg_check.lua`, `pile_interp.lua`, `pile_table.lua`
 
 * `pile_string.lua`: Some common string patterns.
 

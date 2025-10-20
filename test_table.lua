@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.202
+-- v1.300
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -456,16 +456,16 @@ end
 )
 
 
-self:registerFunction("pTable.makeLUT()", pTable.makeLUT)
+self:registerFunction("pTable.newLUT()", pTable.newLUT)
 
 
 -- [===[
-self:registerJob("pTable.makeLUT()", function(self)
-	self:expectLuaError("arg #1 bad type", pTable.makeLUT, 123)
+self:registerJob("pTable.newLUT()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.newLUT, 123)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("empty table", pTable.makeLUT, {})
+		local output = self:expectLuaReturn("empty table", pTable.newLUT, {})
 		self:isEqual(next(output), nil)
 	end
 	--]====]
@@ -473,7 +473,7 @@ self:registerJob("pTable.makeLUT()", function(self)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("create lookup table", pTable.makeLUT, {1, 2, "a", "Z"})
+		local output = self:expectLuaReturn("create lookup table", pTable.newLUT, {1, 2, "a", "Z"})
 		self:isEqual(output[1], true)
 		self:isEqual(output[2], true)
 		self:isEqual(output.a, true)
@@ -485,16 +485,16 @@ end
 --]===]
 
 
-self:registerFunction("pTable.makeLUTV()", pTable.makeLUTV)
+self:registerFunction("pTable.newLUTV()", pTable.newLUTV)
 
 
 -- [===[
-self:registerJob("pTable.makeLUTV()", function(self)
-	self:expectLuaError("arg #1 bad type", pTable.makeLUTV, nil)
+self:registerJob("pTable.newLUTV()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.newLUTV, nil)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("empty vararg", pTable.makeLUTV)
+		local output = self:expectLuaReturn("empty vararg", pTable.newLUTV)
 		self:isEqual(next(output), nil)
 	end
 	--]====]
@@ -502,7 +502,7 @@ self:registerJob("pTable.makeLUTV()", function(self)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("create lookup table", pTable.makeLUTV, 1, 2, "a", "Z")
+		local output = self:expectLuaReturn("create lookup table", pTable.newLUTV, 1, 2, "a", "Z")
 		self:isEqual(output[1], true)
 		self:isEqual(output[2], true)
 		self:isEqual(output.a, true)
@@ -1145,6 +1145,150 @@ self:registerJob("pTable.wrap1Array()", function(self)
 		local t = {"one", "two", "three"}
 		local rv = self:expectLuaReturn("index 0", pTable.wrap1Array, t, 0)
 		self:isEqual(rv, "three")
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTable.safeTableConcat()", pTable.safeTableConcat)
+
+
+-- [===[
+self:registerJob("pTable.safeTableConcat()", function(self)
+	-- M.safeTableConcat(t, sep, i, j)
+
+	-- [====[
+	do
+		local rv
+		rv = self:expectLuaReturn("success", pTable.safeTableConcat, {"F", "O", 0, "B", true, "R"}, "*")
+		self:isEqual(rv, "F*O*0*B*true*R")
+
+		rv = self:expectLuaReturn("test partial concatenation", pTable.safeTableConcat, {1, 2, 3, 4, 5, 6, 7, 8}, ":", 3, 6)
+		self:isEqual(rv, "3:4:5:6")
+	end
+	--]====]
+
+	-- [====[
+	do
+		self:expectLuaError("arg 1 bad type", pTable.safeTableConcat, true, "!", 1, 4)
+		self:expectLuaError("arg 2 bad type", pTable.safeTableConcat, {}, true, 1, 4)
+		self:expectLuaError("arg 3 bad type", pTable.safeTableConcat, {}, "!", true, 4)
+		self:expectLuaError("arg 4 bad type", pTable.safeTableConcat, {}, "!", 3, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTable.newEnum()", pTable.newEnum)
+
+-- [===[
+self:registerJob("pTable.newEnum()", function(self)
+
+	-- [====[
+	do
+		local t = {left=0.0, center=0.5, right=1.0}
+		local rv = self:expectLuaReturn("success", pTable.newEnum, "ObjectSide", t)
+		self:isEqual(t, rv)
+		self:isEqual(getmetatable(rv), pTable.mt_enum)
+		self:isEqual(rv:getName(), "ObjectSide")
+	end
+	--]====]
+
+	-- [====[
+	do
+		self:expectLuaError("arg 1 bad type", pTable.newEnum, true, {})
+		self:expectLuaError("arg 2 bad type", pTable.newEnum, "Foobar", true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTable.newEnumV()", pTable.newEnumV)
+
+
+-- [===[
+self:registerJob("pTable.newEnumV()", function(self)
+
+	-- [====[
+	do
+		local rv = self:expectLuaReturn("success", pTable.newEnumV, "ObjectSide", "left", "center", "right")
+		self:isEqual(rv.left, true)
+		self:isEqual(rv.center, true)
+		self:isEqual(rv.right, true)
+		self:isEqual(getmetatable(rv), pTable.mt_enum)
+		self:isEqual(rv:getName(), "ObjectSide")
+	end
+	--]====]
+
+	-- [====[
+	do
+		self:expectLuaError("arg 1 bad type", pTable.newEnumV, true, 1, 2, 3)
+		self:expectLuaError("vararg cannot be explicit nil", pTable.newEnumV, "Foobar", nil)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("Enum:setName()", pTable.mt_enum.setName)
+self:registerFunction("Enum:getName()", pTable.mt_enum.getName)
+
+
+-- [===[
+self:registerJob("Enum:setName(), Enum:getName()", function(self)
+
+	-- [====[
+	do
+		local enum = pTable.newEnum("Condition", {red=true, yellow=true, green=true})
+
+		local rv = self:expectLuaReturn("getName: success", pTable.mt_enum.getName, enum)
+		self:isEqual(rv, "Condition")
+
+		self:expectLuaReturn("setName: success", pTable.mt_enum.setName, enum, "LampColor")
+		self:isEqual(enum:getName(), "LampColor")
+	end
+	--]====]
+
+	-- [====[
+	do
+		local enum = pTable.newEnum("HatStyle", {bowler=true, breton=true, porkpie=true})
+		self:expectLuaError("setName arg 1 bad type", pTable.mt_enum.setName, enum, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTable.safeGetEnumName()", pTable.safeGetEnumName)
+
+
+-- [===[
+self:registerJob("pTable.safeGetEnumName()", function(self)
+	-- [====[
+	do
+		local object_enum = pTable.newEnum("MyEnumHasAFirstName", {foo="bar"})
+		local plain_table = {zoop="doop"}
+
+		local rv
+		rv = self:expectLuaReturn("fetch name from Enum object", pTable.safeGetEnumName, object_enum)
+		self:isEqual(rv, "MyEnumHasAFirstName")
+
+		rv = self:expectLuaReturn("gracefully handle a plain table without a registered name", pTable.safeGetEnumName, plain_table)
+		self:isEqual(rv, "Enum")
+	end
+	--]====]
+
+	-- [====[
+	do
+		self:expectLuaError("arg 1 bad type", pTable.safeGetEnumName, function() end)
 	end
 	--]====]
 end

@@ -1,4 +1,4 @@
-**Version:** 1.202
+**Version:** 1.300
 
 # PILE: Interp
 
@@ -37,4 +37,4 @@ Interpolates up to nine varargs in a string.
 
 * `$` can be escaped in `s` by writing `$$`.
 
-* If you need to interpolate more than `$1` - `$9`, you should consider either breaking the message into smaller strings, or using `string.gsub()` directly with a replacement table.
+* If you need to interpolate more than `$1` - `$9`, consider breaking the message into smaller strings, or use `string.gsub()` directly with a replacement table.

@@ -1,4 +1,4 @@
-**Version:** 1.202
+**Version:** 1.300
 
 # PILE: Rectangle
 
@@ -24,7 +24,7 @@ print(r2.w, r2.h) --> 16 16
 
 ## Structures
 
-PILE Rectangle does not come with functions to create the following structures. Any table that contains the expected fields may be used. Out of concern for overhead, function arguments are not validated by default.
+PILE Rectangle does not come with functions to create these structures. Any table that contains the expected fields may be used. Out of concern for overhead, function arguments are not validated by default.
 
 ### Rectangle
 
@@ -95,7 +95,7 @@ Resizes a Rectangle by shifting its sides.
 
 ## pRect.expandT, pRect.reduceT
 
-Like `pRect.expand()` and `pRect.reduce()`, but takes a SideDelta table.
+These functions are Like `pRect.expand()` and `pRect.reduce()`, but they take SideDelta tables.
 
 `pRect.expandT(r, sd)`
 
@@ -489,14 +489,3 @@ Checks if a point is within a Rectangle.
 * `x`, `y`: The point's position.
 
 **Returns:** true if the point overlaps the Rectangle, false if not.
-
-
-## pRect.toString
-
-Returns a string containing a Rectangle's position and dimensions, in the form of `{x=0, y=0, w=0, h=0}`. Intended for debugging.
-
-`local s = pRect.toString(r)`
-
-* `r`: The Rectangle.
-
-**Returns:** A string, suitable for printing to the terminal.

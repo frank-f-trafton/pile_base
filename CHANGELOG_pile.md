@@ -2,6 +2,35 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.300 (2025-10-20)
+
+* Added `pile_schema.lua`.
+
+* `pile_table.lua`:
+
+  * Added an `Enum` object, and the functions `pTable.newEnum()`, `pTable.newEnumV()`, and `pTable.safeGetEnumName()`.
+
+  * Added `pTable.safeTableConcat()`.
+
+  * Renamed `pTable.makeLUT()` to `pTable.newLUT()`, and `pTable.makeLUTV()` to `pTable.newLUTV()`.
+
+* `pile_arg_check.lua`:
+
+  * Fixed error messages (incorrect string interpolation) for `pArg.type()` and `pArg.type1()`.
+
+  * Removed some unncesseary checks for NaN (`v ~= v`) in integer assertions, where `math.floor(v) == v` already catches them.
+
+  * Removed `pArg.intRangeStatic()` and `pArg.intRangeStaticEval()` (variants that display the min and max allowed numbers in error messages). I don't think they offer enough context to be helpful, and the user or developer will have to investigate why an out-of-range number was passed as an argument anyways.
+
+  * Replaced `pArg.enum()` and `pArg.enumEval()` with functions that take `pTable` Enum objects. Doing it this way eliminates the possibility of mislabeling enums (as the old versions of these functions took a name argument for every call).
+
+  * Added `pArg.oneOf()`.
+
+* `pile_rectangle.lua`:
+
+  * Removed the function `Rect.tostring()`. It was too ambiguous when Rectangle functions are part of a more complex object.
+
+
 # v1.202 (2025-10-09)
 
 * Added `pile_rectangle.lua` and `pile_pool.lua`.

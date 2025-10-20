@@ -1,4 +1,4 @@
-**Version:** 1.202
+**Version:** 1.300
 
 # PILE: Table
 
@@ -8,7 +8,7 @@ Provides helper functions for Lua tables.
 ```lua
 local pTable = require("path.to.pile_table")
 
-local lut_foo = pTable.makeLUT({"foo", "bar", "baz"})
+local lut_foo = pTable.newLUT({"foo", "bar", "baz"})
 --> {foo=true, bar=true, baz=true}
 ```
 
@@ -18,7 +18,7 @@ local lut_foo = pTable.makeLUT({"foo", "bar", "baz"})
 * `pile_interp.lua`
 
 
-# Table API
+# API: PILE Table
 
 
 ## pTable.clear
@@ -169,11 +169,11 @@ Checks that a table, with the exception of index zero, *only* contains array ind
 **Returns:** True if the table contains only array indices (and optionally index 0), false otherwise.
 
 
-## pTable.makeLUT
+## pTable.newLUT
 
 Makes a hash lookup table from an array.
 
-`local lookup = pTable.makeLUT(t)`
+`local lookup = pTable.newLUT(t)`
 
 * `t`: The array to convert.
 
@@ -185,15 +185,15 @@ Makes a hash lookup table from an array.
 
 ```lua
 local array = {"one", "two", "three"}
-local hash = pTable.makeLUT(array)
+local hash = pTable.newLUT(array)
 --> {one=true, two=true, three=true}
 ```
 
-## pTable.makeLUTV
+## pTable.newLUTV
 
-Makes a hash lookup table from a varargs list.
+Makes a hash lookup table from a vararg list.
 
-`local lookup = pTable.makeLUTV(...)`
+`local lookup = pTable.newLUTV(...)`
 
 * `...`: Varargs to use as keys.
 
@@ -204,7 +204,7 @@ Makes a hash lookup table from a varargs list.
 * For example:
 
 ```lua
-local hash = pTable.makeLUTV("four", "five", "six")
+local hash = pTable.newLUTV("four", "five", "six")
 --> {four=true, five=true, six=true}
 ```
 
@@ -403,9 +403,86 @@ Returns the element at the wrapped array index position.
 * The behavior is undefined when the array length is zero.
 
 
+## pTable.safeTableConcat
+
+A wrapper for `table.concat()` which duplicates the table and converts all values to strings. (`table.concat()` normally raises an error if an element cannot be implicitly converted to string.)
+
+`local str = pTable.safeTableConcat(t, sep, i, j)`
+
+* `t`: The input table.
+
+* `sep`: An optional separator string, like `", "`.
+
+* `i`: *(1)* The first index.
+
+* `j`: *(#t)* The last index.
+
+**Returns:** The concatenated string.
+
+
+## pTable.newEnum
+
+Creates an Enum table. (In this implementation, Enums are just Lua hash tables with a metatable and a method for name retrieval.)
+
+`local enum = pTable.newEnum(name, [t])`
+
+* `name`: *("Enum")* The Enum's name.
+
+* `[t]`: An optional pre-filled table. When not provided, a new table will be created.
+
+**Returns:** The table with an attached metatable, so that the name can be retrieved with `Enum:getName()`.
+
+**Notes:**
+
+* For example:
+
+```lua
+	local enum_obj_side = pTable.newEnum("ObjectSide", {left=0.0, center=0.5, right=1.0})
+
+	local function checkEnum(enum, v)
+		if not enum[v] then
+			error("invalid " .. enum:getName() .. ": " .. tostring(v))
+		end
+	end
+
+	checkEnum(enum_obj_side, "sideways")
+	--> invalid ObjectSide: sideways
+```
+
+* The names are stored in a [weak table](https://www.lua.org/manual/5.1/manual.html#2.10.2) in the PILE Table module. Different Enums may share the same name.
+
+
+## pTable.newEnumV
+
+Like `pTable.newEnum()`, but uses a vararg list to populate keys. All values in the returned table are true.
+
+`local enum = pTable.newEnumV(name, ...)`
+
+* `name`: *("Enum")* The Enum's name.
+
+* `...`: A vararg list of values to use as keys.
+
+**Returns:** The Enum table.
+
+
+## ptable.safeGetEnumName
+
+Gets the name of an Enum table, or returns "Enum" if it cannot be retrieved. This function is safe to call on hash tables that were not created with `pTable.newEnum()`.
+
+`local name = pTable.safeGetEnumName(enum)`
+
+* `enum`: The Enum table.
+
+**Returns:** The Enum name, or "Enum" if it could not be found.
+
+
 ## pTable.mt_restrict
 
 A metatable that raises an error when accessing or assigning unpopulated fields in a table *(see notes)*.
+
+### Notes
+
+* For example:
 
 ```lua
 my_table = {foo=1, bar=2}
@@ -414,10 +491,30 @@ my_table.foo = 3
 my_table.zut = 4 -- Error
 ```
 
-### Notes
+* This metatable is similar in purpose to the ([strict.lua](https://www.lua.org/extras/)) snippet, but it has enough differences in behavior that it cannot be treated as a drop-in replacement.
 
-This metatable is similar in purpose to the ([strict.lua](https://www.lua.org/extras/)) snippet, but it has enough differences in behavior that it cannot be treated as a drop-in replacement.
+* `mt_restrict` cannot do anything about the usage of `rawget()` or `rawset()`.
 
-`mt_restrict` cannot do anything about the usage of `rawget()` or `rawset()`.
+* The behavior of `table.insert()` changed in Lua 5.3, as the langauge designers updated the `table` library to respect metamethods.
 
-The behavior of `table.insert()` changed in Lua 5.3, as the langauge designers updated the `table` library to respect metamethods.
+
+# API: Enum
+
+Enums are created with `pTable.newEnum()`.
+
+## Enum:setName
+
+Sets the Enum table's name.
+
+`Enum:setName([name])`
+
+* `[name]`: *("Enum")* The new Enum name, or false/nil to use a default name.
+
+
+## Enum:getName
+
+Gets the Enum table's name.
+
+`local name = Enum:getName()`
+
+**Returns:** The Enum's name, or "Enum" if the name could not be retrieved.
