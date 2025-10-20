@@ -509,7 +509,7 @@ The value is a number.
 
 `key = handlers.number`
 
-`key = {handlers.number, [min], [max]}`
+`key = {handlers.number, [min=-math.huge], [max=math.huge]}`
 
 * `min`: *(-math.huge)* The minimum value.
 
@@ -522,7 +522,7 @@ The value is a number, or false/nil.
 
 `key = handlers.numberEval`
 
-`key = {handlers.numberEval, [min], [max]}`
+`key = {handlers.numberEval, [min=-math.huge], [max=math.huge]}`
 
 * `min`: *(-math.huge)* The minimum value.
 
@@ -535,7 +535,7 @@ The value is a number and an integer.
 
 `key = handlers.integer`
 
-`key = {handlers.integer, [min], [max]}`
+`key = {handlers.integer, [min=-math.huge], [max=math.huge]}`
 
 * `min`: *(-math.huge)* The minimum value.
 
@@ -548,7 +548,7 @@ The value is a number and an integer, or false/nil.
 
 `key = handlers.integerEval`
 
-`key = {handlers.integerEval, [min], [max]}`
+`key = {handlers.integerEval, [min=-math.huge], [max=math.huge]}`
 
 * `min`: *(-math.huge)* The minimum value.
 
