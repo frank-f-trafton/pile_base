@@ -2,6 +2,29 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.310 (2025-10-22)
+
+* `pile_arg_check.lua`:
+
+  * Renamed these functions:
+
+    * `pArg.type()` -> `pArg.types()`
+
+    * `pArg.typeEval()` -> `pArg.typesEval()`
+
+    * `pArg.type1()` -> `pArg.type()`
+
+    * `pArg.typeEval1()` -> `pArg.typeEval()`
+
+* `pile_schema.lua`:
+
+  * Renamed `handler.type` to `handler.types`.
+
+  * Added tests for `handlers.userdata` when running under LuaJIT. (I don't think there's a way to make a userdata object from PUC-Lua, without help from the host program.)
+
+  * Added tests for LuaJIT's `cdata` type. This is skipped when running under PUC-Lua.
+
+
 # v1.300 (2025-10-20)
 
 * Added `pile_schema.lua`.

@@ -1,4 +1,4 @@
-**Version:** 1.300
+**Version:** 1.310
 
 # PILE: Argument Check
 
@@ -17,7 +17,7 @@ end
 
 aStringCalledFoobar(1)
 
---> stdin:1: argument #1: bad type (expected [string], got number)
+--> stdin:1: argument #1: bad type (expected string, got number)
 ```
 
 
@@ -30,35 +30,9 @@ aStringCalledFoobar(1)
 
 ## pArg.type
 
-Asserts that an argument is one of various Lua types.
-
-`pArg.type(n, v, ...)`
-
-* `n`: The argument number.
-
-* `v`: The value to check.
-
-* `...`: Varargs list of accepted type strings (`"boolean"`, etc.)
-
-
-## pArg.typeEval
-
-Asserts that an argument is `false`, `nil`, or one of various Lua types.
-
-`pArg.typeEval(n, v, ...)`
-
-* `n`: The argument number.
-
-* `v`: The value to check.
-
-* `...`: Varargs list of accepted type strings (`"boolean"`, etc.)
-
-
-## pArg.type1
-
 Asserts that an argument is one Lua type.
 
-`pArg.type1(n, v, e)`
+`pArg.type(n, v, e)`
 
 * `n`: The argument number.
 
@@ -67,7 +41,7 @@ Asserts that an argument is one Lua type.
 * `e`: The expected type string (`"boolean"`, etc.)
 
 
-## pArg.typeEval1
+## pArg.typeEval
 
 Asserts that an argument is `false`, `nil`, or one Lua type.
 
@@ -78,6 +52,32 @@ Asserts that an argument is `false`, `nil`, or one Lua type.
 * `v`: The value to check.
 
 * `e`: The expected type string (`"boolean"`, etc.)
+
+
+## pArg.types
+
+Asserts that an argument is one of various Lua types.
+
+`pArg.types(n, v, ...)`
+
+* `n`: The argument number.
+
+* `v`: The value to check.
+
+* `...`: Varargs list of accepted type strings (`"boolean"`, etc.)
+
+
+## pArg.typesEval
+
+Asserts that an argument is `false`, `nil`, or one of various Lua types.
+
+`pArg.typesEval(n, v, ...)`
+
+* `n`: The argument number.
+
+* `v`: The value to check.
+
+* `...`: Varargs list of accepted type strings (`"boolean"`, etc.)
 
 
 ## pArg.int

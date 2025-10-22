@@ -1,5 +1,5 @@
 -- Test: pile_arg_check.lua
--- v1.300
+-- v1.310
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -38,10 +38,8 @@ self:registerFunction("pArg.type()", pArg.type)
 self:registerJob("pArg.type()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("Correct type, one option", pArg.type, 1, 100, "number")
-		self:expectLuaReturn("Correct type, multiple options", pArg.type, 1, true, "number", "boolean", "string")
-		self:expectLuaError("will always fail when no options are provided", pArg.type, 1, true)
-		self:expectLuaError("bad type, multiple options", pArg.type, 1, function() end, "number", "boolean", "string")
+		self:expectLuaReturn("Correct type", pArg.type, 1, 100, "number")
+		self:expectLuaError("Will always fail when no option is provided", pArg.type, 1, true)
 	end
 	--]====]
 
@@ -65,12 +63,10 @@ self:registerFunction("pArg.typeEval()", pArg.typeEval)
 self:registerJob("pArg.typeEval()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("Correct type, one option", pArg.typeEval, 1, 100, "number")
-		self:expectLuaReturn("Correct type, multiple options", pArg.typeEval, 1, true, "number", "boolean", "string")
-		self:expectLuaReturn("false is ignored", pArg.typeEval, 1, false, "number", "string")
-		self:expectLuaReturn("nil is ignored", pArg.typeEval, 1, nil, "number", "string")
-		self:expectLuaReturn("will permit false and nil when no options are provided", pArg.typeEval, 1, false)
-		self:expectLuaError("bad type, multiple options", pArg.typeEval, 1, function() end, "number", "boolean", "string")
+		self:expectLuaReturn("Correct type", pArg.typeEval, 1, 100, "number")
+		self:expectLuaReturn("false is ignored", pArg.typeEval, 1, false, "string")
+		self:expectLuaReturn("nil is ignored", pArg.typeEval, 1, nil, "number")
+		self:expectLuaReturn("will permit false and nil when no expected type is provided", pArg.typeEval, 1, false)
 	end
 	--]====]
 
@@ -90,23 +86,25 @@ end
 
 
 -- [===[
-self:registerFunction("pArg.type1()", pArg.type1)
-self:registerJob("pArg.type1()", function(self)
+self:registerFunction("pArg.types()", pArg.types)
+self:registerJob("pArg.types()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("Correct type", pArg.type1, 1, 100, "number")
-		self:expectLuaError("Will always fail when no option is provided", pArg.type1, 1, true)
+		self:expectLuaReturn("Correct type, one option", pArg.types, 1, 100, "number")
+		self:expectLuaReturn("Correct type, multiple options", pArg.types, 1, true, "number", "boolean", "string")
+		self:expectLuaError("will always fail when no options are provided", pArg.types, 1, true)
+		self:expectLuaError("bad type, multiple options", pArg.types, 1, function() end, "number", "boolean", "string")
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pArg.type1, nil, true, "number")
-		self:expectLuaError("argument 1: error", pArg.type1, 1, true, "number")
-		self:expectLuaError("argument 100: error", pArg.type1, 100, true, "number")
-		self:expectLuaError("arbitrary string: error", pArg.type1, "foo", true, "number")
-		self:expectLuaError("table-key: error", pArg.type1, {"t1", "x"}, true, "number")
+		self:expectLuaError("no argument: error", pArg.types, nil, true, "number")
+		self:expectLuaError("argument 1: error", pArg.types, 1, true, "number")
+		self:expectLuaError("argument 100: error", pArg.types, 100, true, "number")
+		self:expectLuaError("arbitrary string: error", pArg.types, "foo", true, "number")
+		self:expectLuaError("table-key: error", pArg.types, {"t1", "x"}, true, "number")
 	end
 	--]====]
 end
@@ -115,25 +113,27 @@ end
 
 
 -- [===[
-self:registerFunction("pArg.typeEval1()", pArg.typeEval1)
-self:registerJob("pArg.typeEval1()", function(self)
+self:registerFunction("pArg.typesEval()", pArg.typesEval)
+self:registerJob("pArg.typesEval()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("Correct type", pArg.typeEval1, 1, 100, "number")
-		self:expectLuaReturn("false is ignored", pArg.typeEval1, 1, false, "string")
-		self:expectLuaReturn("nil is ignored", pArg.typeEval1, 1, nil, "number")
-		self:expectLuaReturn("will permit false and nil when no expected type is provided", pArg.typeEval1, 1, false)
+		self:expectLuaReturn("Correct type, one option", pArg.typesEval, 1, 100, "number")
+		self:expectLuaReturn("Correct type, multiple options", pArg.typesEval, 1, true, "number", "boolean", "string")
+		self:expectLuaReturn("false is ignored", pArg.typesEval, 1, false, "number", "string")
+		self:expectLuaReturn("nil is ignored", pArg.typesEval, 1, nil, "number", "string")
+		self:expectLuaReturn("will permit false and nil when no options are provided", pArg.typesEval, 1, false)
+		self:expectLuaError("bad type, multiple options", pArg.typesEval, 1, function() end, "number", "boolean", "string")
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pArg.typeEval1, nil, true, "number")
-		self:expectLuaError("argument 1: error", pArg.typeEval1, 1, true, "number")
-		self:expectLuaError("argument 100: error", pArg.typeEval1, 100, true, "number")
-		self:expectLuaError("arbitrary string: error", pArg.typeEval1, "foo", true, "number")
-		self:expectLuaError("table-key: error", pArg.typeEval1, {"t1", "x"}, true, "number")
+		self:expectLuaError("no argument: error", pArg.typesEval, nil, true, "number")
+		self:expectLuaError("argument 1: error", pArg.typesEval, 1, true, "number")
+		self:expectLuaError("argument 100: error", pArg.typesEval, 100, true, "number")
+		self:expectLuaError("arbitrary string: error", pArg.typesEval, "foo", true, "number")
+		self:expectLuaError("table-key: error", pArg.typesEval, {"t1", "x"}, true, "number")
 	end
 	--]====]
 end

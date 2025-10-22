@@ -1,5 +1,5 @@
 -- Test: pile_schema.lua
--- v1.300
+-- v1.310
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -1375,6 +1375,19 @@ end
 --]===]
 
 
+-- LuaJIT stuff.
+local ffi
+local cdata_object
+if rawget(_G, "jit") then
+	ffi = require("ffi")
+	ffi.cdef[[
+		typedef struct {int foo;} noop_t;
+	]]
+
+	cdata_object = ffi.new("noop_t")
+end
+
+
 -- [===[
 self:registerJob("Built-in Handlers", function(self)
 	-- [====[
@@ -1382,8 +1395,8 @@ self:registerJob("Built-in Handlers", function(self)
 		local models, handlers = pSchema.models, pSchema.handlers
 		local v = pSchema.newValidator("Handler Tests", {
 			main = models.keysX {
-				type_bad = {handlers.type, "number", "string", "boolean"},
-				type_ok = {handlers.type, "number", "string", "boolean"},
+				types_bad = {handlers.types, "number", "string", "boolean"},
+				types_ok = {handlers.types, "number", "string", "boolean"},
 
 				number_bad = handlers.number,
 				number_bad_min = {handlers.number, min=5, max=10},
@@ -1442,7 +1455,22 @@ self:registerJob("Built-in Handlers", function(self)
 				function_eval_ok = handlers.functionEval,
 				function_eval_false = handlers.functionEval,
 
-				-- No userdata tests; can only make userdata objects from the C API.
+				-- Cannot make userdata objects from plain Lua.
+				-- In LuaJIT, 'ffi.C' is userdata, so we can test from there.
+				userdata_bad = ffi and handlers.userdata or nil,
+				userdata_ok = ffi and handlers.userdata or nil,
+
+				userdata_eval_bad = ffi and handlers.userdata_eval or nil,
+				userdata_eval_ok = ffi and handlers.userdata_eval or nil,
+				userdata_eval_false = ffi and handlers.userdata_eval or nil,
+
+				-- LuaJIT
+				cdata_bad = ffi and handlers.cdata or nil,
+				cdata_ok = ffi and handlers.cdata or nil,
+
+				cdata_eval_bad = ffi and handlers.cdata_eval or nil,
+				cdata_eval_ok = ffi and handlers.cdata_eval or nil,
+				cdata_eval_false = ffi and handlers.cdata_eval or nil,
 
 				thread_bad = handlers.thread,
 				thread_ok = handlers.thread,
@@ -1504,8 +1532,8 @@ self:registerJob("Built-in Handlers", function(self)
 		})
 
 		local t = {
-			type_bad = function() end,
-			type_ok = true,
+			types_bad = function() end,
+			types_ok = true,
 
 			number_bad = "foo",
 			number_bad_min = 1,
@@ -1564,7 +1592,22 @@ self:registerJob("Built-in Handlers", function(self)
 			function_eval_ok = function() end,
 			function_eval_false = false,
 
-			-- No userdata tests; can only make userdata objects from the C API.
+			-- Cannot make userdata objects from plain Lua.
+			-- In LuaJIT, 'ffi.C' is userdata, so we can test from there.
+			userdata_bad = ffi and true or nil,
+			userdata_ok = ffi and ffi.C or nil,
+
+			userdata_eval_bad = ffi and true or nil,
+			userdata_eval_ok = ffi and ffi.C or nil,
+			userdata_eval_false = ffi and false or nil,
+
+			-- LuaJIT
+			cdata_bad = ffi and true or nil,
+			cdata_ok = ffi and cdata_object or nil,
+
+			cdata_eval_bad = ffi and true or nil,
+			cdata_eval_ok = ffi and cdata_object or nil,
+			cdata_eval_false = ffi and false or nil,
 
 			thread_bad = true,
 			thread_ok = coroutine.create(function() end),

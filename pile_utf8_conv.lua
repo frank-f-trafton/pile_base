@@ -1,4 +1,4 @@
--- PILE UTF-8 Conversion Functions v1.300
+-- PILE UTF-8 Conversion Functions v1.310
 -- (C) 2024 - 2025 PILE Contributors
 -- License: MIT or MIT-0
 -- https://github.com/frank-f-trafton/pile_base
@@ -7,7 +7,7 @@
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
-local _argType1 = require(PATH .. "pile_arg_check").type1
+local _argType = require(PATH .. "pile_arg_check").type
 local interp = require(PATH .. "pile_interp")
 local pUTF8 = require(PATH .. "pile_utf8")
 
@@ -29,7 +29,7 @@ local concat, char = table.concat, string.char
 
 
 local function latin1_utf8(s)
-	_argType1(1, s, "string")
+	_argType(1, s, "string")
 
 	local t = {}
 	for i = 1, #s do
@@ -41,7 +41,7 @@ end
 
 
 local function utf8_latin1(s, unmapped)
-	_argType1(1, s, "string")
+	_argType(1, s, "string")
 	-- don't assert `unmapped`
 
 	if s == "" then return "" end
@@ -83,7 +83,7 @@ end
 
 
 local function utf16_utf8(s, big_en)
-	_argType1(1, s, "string")
+	_argType(1, s, "string")
 
 	local t, i = {}, 1
 	while i <= #s do
@@ -131,7 +131,7 @@ end
 
 
 local function utf8_utf16(s, big_en)
-	_argType1(1, s, "string")
+	_argType(1, s, "string")
 
 	if s == "" then return "" end
 
