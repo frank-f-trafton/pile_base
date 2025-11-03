@@ -1,6 +1,6 @@
-**Version:** 1.310
+**Version:** 1.315
 
-# PILE: Rectangle
+# PILE Rectangle
 
 Functions for placing and mutating axis-aligned rectangles.
 
@@ -18,13 +18,14 @@ print(r2.w, r2.h) --> 16 16
 
 ## Dependencies
 
-* `pile_arg_check.lua`
+* `pile_assert.lua`
+
 * `pile_math.lua`
 
 
 ## Structures
 
-PILE Rectangle does not come with functions to create these structures. Any table that contains the expected fields may be used. Out of concern for overhead, function arguments are not validated by default.
+PILE Rectangle does not come with functions to create the following structures. Any table that contains the expected fields may be used. Out of concern for overhead, function arguments are not validated by default.
 
 ### Rectangle
 

@@ -1,5 +1,5 @@
 -- Test: pile_schema.lua
--- v1.310
+-- v1.315
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -12,15 +12,9 @@ local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
 
 
+local pAssert = require(PATH .. "pile_assert")
 local pSchema = require(PATH .. "pile_schema")
-
-
--- Grab a copy of the Validator metatable.
-local _mt_val
-do
-	local v = pSchema.newValidator()
-	_mt_val = getmetatable(v)
-end
+local pTable = require(PATH .. "pile_table")
 
 
 local cli_verbosity
@@ -36,11 +30,9 @@ end
 
 -- Used in various tests as a stand-in for checking metatables.
 local _dummy_mt = {}
-local function _metatableStandIn(k, v)
-	if v == _dummy_mt then
-		return true
-	else
-		return false, "wrong metatable"
+local function _metatableStandIn(n, v)
+	if v ~= _dummy_mt then
+		error("wrong metatable")
 	end
 end
 
@@ -48,174 +40,39 @@ end
 local self = errTest.new("PILE Schema", cli_verbosity)
 
 
-self:registerFunction("pSchema.newValidator", pSchema.newValidator)
-
-
 -- [===[
-self:registerJob("pSchema.newValidator", function(self)
+self:registerFunction("pSchema.validate()", pSchema.validate)
+self:registerJob("pSchema.validate", function(self)
 	-- [====[
 	do
-		local v = self:expectLuaReturn("factory default new Validator", pSchema.newValidator)
-		self:isEqual(next(v.models), nil)
-		self:isEqual(v.name, "Unnamed")
-		self:isEqual(v.user, false)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local v = self:expectLuaReturn("new Validator with name", pSchema.newValidator, "FooBar")
-		self:isEqual(v.name, "FooBar")
-		self:isEqual(v.user, false)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local models = {}
-		local v = self:expectLuaReturn("new Validator with name and table of Models", pSchema.newValidator, "FooBar", models)
-		self:isEqual(v.name, "FooBar")
-		self:isEqual(v.user, false)
-		self:isEqual(v.models, models)
-	end
-	--]====]
-
-	-- [====[
-	do
-		self:expectLuaError("arg 1 bad type", pSchema.newValidator, true, {})
-		self:expectLuaError("arg 2 bad type", pSchema.newValidator, "Foo", true)
-	end
-	--]====]
-end
-)
---]===]
-
-
-self:registerFunction("Validator:setName", _mt_val.setName)
-self:registerFunction("Validator:getName", _mt_val.getName)
-
-
--- [===[
-self:registerJob("Validator:setName, Validator:getName", function(self)
-	-- [====[
-	do
-		local v = pSchema.newValidator()
-		self:expectLuaReturn("setName", _mt_val.setName, v, "Newwmann")
-		local my_name = self:expectLuaReturn("setName", _mt_val.getName, v)
-		self:isEqual(my_name, "Newwmann")
-	end
-	--]====]
-
-	-- [====[
-	do
-		local v = pSchema.newValidator()
-		self:expectLuaError("arg 1 bad type", _mt_val.setName, v, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
-self:registerFunction("Validator:setModel", _mt_val.setModel)
-self:registerFunction("Validator:getModel", _mt_val.getModel)
-
-
--- [===[
-self:registerJob("Validator:setModel, Validator:getModel", function(self)
-	-- [====[
-	do
-		local models = pSchema.models
-		local model = models.keys {}
-		local v = pSchema.newValidator()
-		self:expectLuaReturn("setModel", _mt_val.setModel, v, "main", model)
-		local get_model = self:expectLuaReturn("getModel", _mt_val.getModel, v, "main")
-		self:isEqual(get_model, model)
-		self:expectLuaReturn("remove Model", _mt_val.setModel, v, "main", false)
-		local get_model2 = self:expectLuaReturn("getModel", _mt_val.getModel, v, "main")
-		self:isEqual(get_model2, nil)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local v = pSchema.newValidator()
-		self:expectLuaError("setModel() arg 1 bad type", _mt_val.setModel, v, true, {})
-		self:expectLuaError("setModel() arg 2 bad type", _mt_val.setModel, v, "main", true)
-
-		self:expectLuaError("getModel() arg 1 bad type", _mt_val.setModel, v, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
-self:registerFunction("Validator:setUserTable", _mt_val.setUserTable)
-self:registerFunction("Validator:getUserTable", _mt_val.getUserTable)
-
-
--- [===[
-self:registerJob("Validator:setUserTable, Validator:getUserTable", function(self)
-	-- [====[
-	do
-		local user = {}
-		local v = pSchema.newValidator()
-		self:expectLuaReturn("setUserTable", _mt_val.setUserTable, v, user)
-		local get_user = self:expectLuaReturn("getUserTable", _mt_val.getUserTable, v)
-		self:isEqual(get_user, user)
-		self:expectLuaReturn("remove User table", _mt_val.setUserTable, v, nil)
-		local get_user2 = self:expectLuaReturn("getUserTable", _mt_val.getUserTable, v)
-		self:isEqual(get_user2, false)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local v = pSchema.newValidator()
-		self:expectLuaError("arg 1 bad type", _mt_val.setUserTable, v, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Validator:validate", function(self)
-	-- [====[
-	do
-		local models = pSchema.models
 		local tbl = {}
-		local v = pSchema.newValidator("empty", {
-			main = models.keys {}
-		})
+		local md = pSchema.newModel {}
 
-		self:expectLuaReturn("validate (empty model, empty target)", _mt_val.validate, v, tbl)
+		self:expectLuaReturn("validate (empty model, empty target)", pSchema.validate, md, tbl, "Test Validate")
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		local models, handlers = pSchema.models, pSchema.handlers
 		local tbl = {foo="bar"}
-		local v = pSchema.newValidator("empty", {
-			main = models.all {
-				ref = handlers.fail
+		local md = pSchema.newModel {
+			keys = {
+				foo = {pAssert.type, "number"}
 			}
-		})
+		}
 
-		self:expectLuaError("validate with 'fatal' setting (raise an error)", _mt_val.validate, v, tbl, nil, true)
+		self:expectLuaError("validate failure, with 'fatal' flag", pSchema.validate, md, tbl, "Test Validate (Fatal)", true)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		local v = pSchema.newValidator()
-		self:expectLuaError("validate() arg 1 bad type", _mt_val.validate, v, true, "main")
-		self:expectLuaError("validate() arg 2 bad type", _mt_val.validate, v, {}, true)
+		self:expectLuaError("pSchema.validate() arg 1 bad type", pSchema.validate, function() end, {}, "Foo")
+		self:expectLuaError("pSchema.validate() arg 2 bad type", pSchema.validate, pSchema.newModel {}, true, "Foo")
+		self:expectLuaError("pSchema.validate() arg 3 bad type", pSchema.validate, pSchema.newModel {}, {}, true)
+		-- don't test arg 4 (fatal)
 	end
 	--]====]
 end
@@ -224,20 +81,139 @@ end
 
 
 -- [===[
-self:registerJob("Model References", function(self)
+self:registerFunction("pSchema.newModel()", pSchema.newModel)
+self:registerJob("pSchema.newModel", function(self)
 	-- [====[
 	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("sub-table test", {
-			main = models.keys {
-				foo = handlers.number,
-				bar = "aux"
+		local m1 = pSchema.newModel{
+			keys = {
+				foo = {pAssert.type, "string"}
+			}
+		}
+
+		local t1 = {
+			foo = "bar",
+		}
+
+		local ok, err
+		ok, err = self:expectLuaReturn("newModel success", pSchema.validate, m1, t1, "Test")
+		self:isEqual(ok, true)
+
+		self:expectLuaError("arg 1 bad type", pSchema.newModel, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("pSchema.newKeysX()", pSchema.newKeysX)
+self:registerJob("pSchema.newKeysX", function(self)
+	-- [====[
+	do
+		local m1 = pSchema.newKeysX {
+			foo = {pAssert.type, "string"}
+		}
+
+		local t1 = {
+			foo = "bar",
+		}
+
+		local ok, err
+		ok, err = self:expectLuaReturn("'newKeysX' model success", pSchema.validate, m1, t1, "Test")
+		self:isEqual(ok, true)
+
+		self:expectLuaError("arg 1 bad type", pSchema.newKeysX, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("pSchema.checkModel()", pSchema.checkModel)
+self:registerJob("pSchema.checkModel", function(self)
+	-- [====[
+	do
+		local base_md = pSchema.newModel {
+			metatable = _metatableStandIn,
+
+			keys = {
+				foo = {pAssert.type, "string"}
 			},
 
-			aux = models.keys {
-				doop = handlers.string
+			array = {pAssert.type, "number"},
+
+			remaining = {pAssert.type, "function"}
+		}
+		self:expectLuaReturn("success", pSchema.checkModel, base_md)
+
+		local m2 = setmetatable(pTable.copy(base_md), getmetatable(base_md))
+		m2.metatable = true
+		self:expectLuaError("bad 'metatable' filter", pSchema.checkModel, m2)
+
+		local m3 = setmetatable(pTable.copy(base_md), getmetatable(base_md))
+		m3.keys = function() end
+		self:expectLuaError("bad 'keys' filter", pSchema.checkModel, m3)
+
+		local m4 = setmetatable(pTable.copy(base_md), getmetatable(base_md))
+		m4.array = 1234
+		self:expectLuaError("bad 'array' filter", pSchema.checkModel, m3)
+
+		local m5 = setmetatable(pTable.copy(base_md), getmetatable(base_md))
+		m5.remaining = true
+		self:expectLuaError("bad 'remaining' filter", pSchema.checkModel, m3)
+
+
+		-- model options
+		local m6 = pSchema.newModel {}
+
+		m6.reject_unhandled = 123
+		self:expectLuaError("option: reject_unhandled, bad type", pSchema.checkModel, m6)
+		m6.reject_unhandled = nil
+
+		m6.array_len = true
+		self:expectLuaError("option: array_len, bad type", pSchema.checkModel, m6)
+		m6.array_len = nil
+
+		m6.array_min = true
+		self:expectLuaError("option: array_min, bad type", pSchema.checkModel, m6)
+		m6.array_min = nil
+
+		m6.array_max = true
+		self:expectLuaError("option: array_max, bad type", pSchema.checkModel, m6)
+		m6.array_max = nil
+
+
+		self:expectLuaError("arg 1 bad type", pSchema.checkModel, true)
+		self:expectLuaError("arg 1 incorrect metatable", pSchema.checkModel, {})
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerJob("Sub-Model References", function(self)
+
+	-- "long form" reference
+	-- [====[
+	do
+		local md_aux = pSchema.newModel {
+			keys = {
+				doop = {pAssert.type, "string"}
 			}
-		})
+		}
+
+		local md_main = pSchema.newModel {
+			keys = {
+				foo = {pAssert.type, "number"},
+				bar = {"sub", md_aux}
+			}
+		}
 
 		local t1 = {
 			foo = 1,
@@ -246,28 +222,34 @@ self:registerJob("Model References", function(self)
 			}
 		}
 
-		local ok, err = self:expectLuaReturn("Model Reference: success", _mt_val.validate, v, t1)
+		local ok, err = self:expectLuaReturn("model reference (long): success", pSchema.validate, md_main, t1, "SubModelTest")
 		if err then
-			self:print(4, table.concat(err, "\n"))
+			self:print(4, err)
 		end
 		self:isEqual(ok, true)
+
+		-- failure
+		md_main.keys.bar[2] = "not a model"
+		self:expectLuaError("failure (not a model)", pSchema.validate, md_main, t1, "SubModelTest")
 	end
 	--]====]
 
 
+	-- "short form" reference
 	-- [====[
 	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("sub-table test", {
-			main = models.keys {
-				foo = handlers.number,
-				bar = "my_invalid_ref"
-			},
-
-			aux = models.keys {
-				doop = handlers.string
+		local md_aux = pSchema.newModel {
+			keys = {
+				doop = {pAssert.type, "string"}
 			}
-		})
+		}
+
+		local md_main = pSchema.newModel {
+			keys = {
+				foo = {pAssert.type, "number"},
+				bar = md_aux
+			}
+		}
 
 		local t1 = {
 			foo = 1,
@@ -276,1390 +258,253 @@ self:registerJob("Model References", function(self)
 			}
 		}
 
-		local ok, err = self:expectLuaReturn("Model Reference: failure (bad Model ID)", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
+		local ok, err = self:expectLuaReturn("model Reference (short): success", pSchema.validate, md_main, t1, "SubModelTest")
+		if err then
+			self:print(4, err)
+		end
+		self:isEqual(ok, true)
+
+		-- failure
+		md_main.keys.bar = "not a model"
+		self:expectLuaError("failure (not a model)", pSchema.validate, md_main, t1, "SubModelTest")
 	end
 	--]====]
-end
-)
---]===]
 
 
--- [===[
-self:registerJob("Problems in Model creation functions", function(self)
+	-- "eval" reference
 	-- [====[
 	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		self:expectLuaError("keys: bad model", models.keys)
-
-		self:expectLuaError("keysX: bad model", models.keysX)
-
-		self:expectLuaError("keysM: bad model", models.keysM)
-		self:expectLuaError("keysM: bad model.metatable", models.keysM, {keys={}})
-		self:expectLuaError("keysM: bad model.keys", models.keysM, {metatable=handlers.pass})
-
-		self:expectLuaError("keysMX: bad model", models.keysMX)
-		self:expectLuaError("keysMX: bad model.metatable", models.keysMX, {keys={}})
-		self:expectLuaError("keysMX: bad model.keys", models.keysMX, {metatable=handlers.pass})
-
-		self:expectLuaError("array: bad model", models.array)
-		self:expectLuaError("array: bad model.ref", models.array, {ref=true})
-		self:expectLuaError("array: bad model.len", models.array, {ref=handlers.pass, len=true})
-		self:expectLuaError("array: bad model.min", models.array, {ref=handlers.pass, min=true})
-		self:expectLuaError("array: bad model.max", models.array, {ref=handlers.pass, max=true})
-
-		self:expectLuaError("arrayX: bad model", models.arrayX)
-		self:expectLuaError("arrayX: bad model.ref", models.arrayX, {ref=true})
-		self:expectLuaError("arrayX: bad model.len", models.arrayX, {ref=handlers.pass, len=true})
-		self:expectLuaError("arrayX: bad model.min", models.arrayX, {ref=handlers.pass, min=true})
-		self:expectLuaError("arrayX: bad model.max", models.arrayX, {ref=handlers.pass, max=true})
-
-		self:expectLuaError("arrayM: bad model", models.arrayM)
-		self:expectLuaError("arrayM: bad model.metatable", models.arrayM, {keys={}})
-		self:expectLuaError("arrayM: bad model.ref", models.arrayM, {metatable=handlers.pass, ref=true})
-		self:expectLuaError("arrayM: bad model.len", models.arrayM, {metatable=handlers.pass, ref=handlers.pass, len=true})
-		self:expectLuaError("arrayM: bad model.min", models.arrayM, {metatable=handlers.pass, ref=handlers.pass, min=true})
-		self:expectLuaError("arrayM: bad model.max", models.arrayM, {metatable=handlers.pass, ref=handlers.pass, max=true})
-
-		self:expectLuaError("arrayMX: bad model", models.arrayMX)
-		self:expectLuaError("arrayMX: bad model.metatable", models.arrayMX, {ref=handlers.pass})
-		self:expectLuaError("arrayMX: bad model.ref", models.arrayMX, {metatable=handlers.pass, ref=true})
-		self:expectLuaError("arrayMX: bad model.len", models.arrayMX, {metatable=handlers.pass, ref=handlers.pass, len=true})
-		self:expectLuaError("arrayMX: bad model.min", models.arrayMX, {metatable=handlers.pass, ref=handlers.pass, min=true})
-		self:expectLuaError("arrayMX: bad model.max", models.arrayMX, {metatable=handlers.pass, ref=handlers.pass, max=true})
-
-		self:expectLuaError("mixed: bad model", models.mixed)
-		self:expectLuaError("mixed: bad model.keys", models.mixed, {keys=true, ref=handlers.pass})
-		self:expectLuaError("mixed: bad model.ref", models.mixed, {keys={}, ref=true})
-		self:expectLuaError("mixed: bad model.len", models.mixed, {keys={}, ref=handlers.pass, len=true})
-		self:expectLuaError("mixed: bad model.min", models.mixed, {keys={}, ref=handlers.pass, min=true})
-		self:expectLuaError("mixed: bad model.max", models.mixed, {keys={}, ref=handlers.pass, max=true})
-
-		self:expectLuaError("mixedX: bad model", models.mixedX)
-		self:expectLuaError("mixedX: bad model.keys", models.mixedX, {keys=true, ref=handlers.pass})
-		self:expectLuaError("mixedX: bad model.ref", models.mixedX, {keys={}, ref=true})
-		self:expectLuaError("mixedX: bad model.len", models.mixedX, {keys={}, ref=handlers.pass, len=true})
-		self:expectLuaError("mixedX: bad model.min", models.mixedX, {keys={}, ref=handlers.pass, min=true})
-		self:expectLuaError("mixedX: bad model.max", models.mixedX, {keys={}, ref=handlers.pass, max=true})
-
-		self:expectLuaError("mixedM: bad model", models.mixedM)
-		self:expectLuaError("mixedM: bad model.metatable", models.mixedM, {keys={}, ref=handlers.pass})
-		self:expectLuaError("mixedM: bad model.keys", models.mixedM, {metatable=handlers.pass, keys=true, ref=handlers.pass})
-		self:expectLuaError("mixedM: bad model.ref", models.mixedM, {metatable=handlers.pass, keys={}, ref=true})
-		self:expectLuaError("mixedM: bad model.len", models.mixedM, {metatable=handlers.pass, keys={}, ref=handlers.pass, len=true})
-		self:expectLuaError("mixedM: bad model.min", models.mixedM, {metatable=handlers.pass, keys={}, ref=handlers.pass, min=true})
-		self:expectLuaError("mixedM: bad model.max", models.mixedM, {metatable=handlers.pass, keys={}, ref=handlers.pass, max=true})
-
-		self:expectLuaError("mixedMX: bad model", models.mixedMX)
-		self:expectLuaError("mixedMX: bad model.metatable", models.mixedMX, {keys={}, ref=handlers.pass})
-		self:expectLuaError("mixedMX: bad model.keys", models.mixedMX, {metatable=handlers.pass, keys=true, ref=handlers.pass})
-		self:expectLuaError("mixedMX: bad model.ref", models.mixedMX, {metatable=handlers.pass, keys={}, ref=true})
-		self:expectLuaError("mixedMX: bad model.len", models.mixedMX, {metatable=handlers.pass, keys={}, ref=handlers.pass, len=true})
-		self:expectLuaError("mixedMX: bad model.min", models.mixedMX, {metatable=handlers.pass, keys={}, ref=handlers.pass, min=true})
-		self:expectLuaError("mixedMX: bad model.max", models.mixedMX, {metatable=handlers.pass, keys={}, ref=handlers.pass, max=true})
-
-		self:expectLuaError("all: bad model", models.all)
-		self:expectLuaError("all: bad model.ref", models.all, {ref=123})
-
-		self:expectLuaError("allM: bad model", models.allM)
-		self:expectLuaError("allM: bad model.metatable", models.allM, {ref=handlers.pass})
-		self:expectLuaError("allM: bad model.ref", models.allM, {metatable=handlers.pass, ref=123})
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: keys", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("key_test", {
-			main = models.keys {
-				foo = {handlers.string, "^yes$"},
-				[false] = {handlers.this, 12345}
+		local md_aux = pSchema.newModel {
+			keys = {
+				doop = {pAssert.type, "string"}
 			}
-		})
-
-		local ok, err
-
-		local t1 = {foo="no", [false] = 54321}
-		ok, err = self:expectLuaReturn("keys: failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {foo="yes", [false] = 12345}
-		ok, err = self:expectLuaReturn("keys: success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: keysM", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("key_test", {
-			main = models.keysM {
-				metatable = _metatableStandIn,
-
-				keys = {
-					foo = {handlers.string, "^yes$"}
-				}
-			}
-		})
-
-		local ok, err
-
-		local t1 = {foo="yes"}
-		ok, err = self:expectLuaReturn("keysM: metatable failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = setmetatable({foo="yes"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keysM: metatable success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = setmetatable({}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keysM: keys failure", _mt_val.validate, v, t3)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: keysX", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("keysX Test", {
-			main = models.keysX {
-				[false] = {handlers.this, 12345}
-			}
-		})
-
-		local ok, err
-
-		local t1 = {[false] = 12345, foo="no"}
-		ok, err = self:expectLuaReturn("keysX: failure (unhandled key 'foo')", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {[false] = 12345}
-		ok, err = self:expectLuaReturn("keysX: success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
-
--- [===[
-self:registerJob("Model: keysMX", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("keysMX Test", {
-			main = models.keysMX {
-				metatable = _metatableStandIn,
-
-				keys = {
-					foo = {handlers.string, "^yes$"}
-				}
-			}
-		})
-
-		local ok, err
-
-		local t1 = {foo="yes"}
-		ok, err = self:expectLuaReturn("keysMX: metatable failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = setmetatable({foo="yes"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keysMX: metatable success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = setmetatable({[false] = 12345, foo="yes"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keysMX: failure (unhandled key 'foo')", _mt_val.validate, v, t3)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: array", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("array test", {
-			main = models.array {
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2, 3, 4, 5, "foobar"}
-		ok, err = self:expectLuaReturn("array: failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8, 9, 10}
-		ok, err = self:expectLuaReturn("array: success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = {bar="zoop"}
-		ok, err = self:expectLuaReturn("array: pass/ignore non-array keys", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-
-		local t4 = {}
-		ok, err = self:expectLuaReturn("array: pass empty table", _mt_val.validate, v, t4)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("array test", {
-			main = models.array {
-				len = 3,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2}
-		ok, err = self:expectLuaReturn("array: wrong length", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("array: correct length", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("array test", {
-			main = models.array {
-				min = 2,
-				max = 4,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1}
-		ok, err = self:expectLuaReturn("array: below the minimum", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, 5}
-		ok, err = self:expectLuaReturn("array: above the maximum", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("array: in range", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: arrayX", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayX test", {
-			main = models.arrayX {
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2, 3, 4, 5, "foobar"}
-		ok, err = self:expectLuaReturn("arrayX: failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8, 9, 10}
-		ok, err = self:expectLuaReturn("arrayX: success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = {bar="zoop"}
-		ok, err = self:expectLuaReturn("arrayX: reject unhandled keys", _mt_val.validate, v, t3)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t4 = {}
-		ok, err = self:expectLuaReturn("arrayX: pass empty table", _mt_val.validate, v, t4)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayX test", {
-			main = models.arrayX {
-				len = 3,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2}
-		ok, err = self:expectLuaReturn("arrayX: wrong length", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("arrayX: correct length", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayX test", {
-			main = models.arrayX {
-				min = 2,
-				max = 4,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1}
-		ok, err = self:expectLuaReturn("arrayX: below the minimum", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, 5}
-		ok, err = self:expectLuaReturn("arrayX: above the maximum", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("arrayX: in range", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: arrayM", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayM test", {
-			main = models.arrayM {
-				metatable = _metatableStandIn,
-
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t0 = {1, 2, 3}
-		ok, err = self:expectLuaReturn("arrayM: metatable failure", _mt_val.validate, v, t0)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t1 = setmetatable({1, 2, 3, 4, 5, "foobar"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("arrayM: failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = setmetatable({6, 7, 8, 9, 10}, _dummy_mt)
-		ok, err = self:expectLuaReturn("arrayM: success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = setmetatable({bar="zoop"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("arrayM: pass/ignore non-array keys", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-
-		local t4 = setmetatable({}, _dummy_mt)
-		ok, err = self:expectLuaReturn("arrayM: pass empty table", _mt_val.validate, v, t4)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayM test", {
-			main = models.arrayM {
-				metatable = handlers.pass,
-
-				len = 3,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2}
-		ok, err = self:expectLuaReturn("arrayM: wrong length", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("arrayM: correct length", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayM test", {
-			main = models.arrayM {
-				metatable = handlers.pass,
-
-				min = 2,
-				max = 4,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1}
-		ok, err = self:expectLuaReturn("arrayM: below the minimum", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, 5}
-		ok, err = self:expectLuaReturn("arrayM: above the maximum", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("arrayM: in range", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: arrayMX", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayMX test", {
-			main = models.arrayMX {
-				metatable = _metatableStandIn,
-
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t00 = {1, 2, 3}
-		ok, err = self:expectLuaReturn("arrayMX: metatable failure", _mt_val.validate, v, t00)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t1 = setmetatable({1, 2, 3, 4, 5, "foobar"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("arrayMX: failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = setmetatable({6, 7, 8, 9, 10}, _dummy_mt)
-		ok, err = self:expectLuaReturn("arrayMX: success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = setmetatable({bar="zoop"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("arrayMX: reject unhandled keys", _mt_val.validate, v, t3)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t4 = setmetatable({}, _dummy_mt)
-		ok, err = self:expectLuaReturn("arrayMX: pass empty table", _mt_val.validate, v, t4)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayMX test", {
-			main = models.arrayMX {
-				metatable = handlers.pass,
-
-				len = 3,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2}
-		ok, err = self:expectLuaReturn("arrayMX: wrong length", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("arrayMX: correct length", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("arrayMX test", {
-			main = models.arrayMX {
-				metatable = handlers.pass,
-
-				min = 2,
-				max = 4,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1}
-		ok, err = self:expectLuaReturn("arrayMX: below the minimum", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, 5}
-		ok, err = self:expectLuaReturn("arrayMX: above the maximum", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("arrayMX: in range", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: mixed", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixed test", {
-			main = models.mixed {
-				keys = {
-					[false] = {handlers.this, 12345}
-				},
-
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {bar=54321}
-		ok, err = self:expectLuaReturn("keys: 'keys' failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, "foo", [false]=12345}
-		ok, err = self:expectLuaReturn("keys: 'array' failure", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {1, 2, 3, 4, 5, [false]=12345}
-		ok, err = self:expectLuaReturn("keys: success", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixed test", {
-			main = models.mixed {
-				keys = {},
-
-				len = 3,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2}
-		ok, err = self:expectLuaReturn("mixed: wrong length", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("mixed: correct length", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixed test", {
-			main = models.mixed {
-				keys = {},
-
-				min = 2,
-				max = 4,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1}
-		ok, err = self:expectLuaReturn("mixed: below the minimum", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, 5}
-		ok, err = self:expectLuaReturn("mixed: above the maximum", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("mixed: in range", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: mixedX", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedX test", {
-			main = models.mixedX {
-				keys = {
-					[false] = {handlers.this, 12345}
-				},
-
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {bar=54321}
-		ok, err = self:expectLuaReturn("keys: 'keys' failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, "foo", [false]=12345}
-		ok, err = self:expectLuaReturn("keys: 'array' failure", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {1, 2, 3, 4, 5, [false]=12345}
-		ok, err = self:expectLuaReturn("keys: success", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-
-		local t4 = {[false]=12345, zoop="doop"}
-		ok, err = self:expectLuaReturn("keys: reject unhandled keys", _mt_val.validate, v, t4)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-	end
-	--]====]
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedX test", {
-			main = models.mixedX {
-				keys = {},
-
-				len = 3,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2}
-		ok, err = self:expectLuaReturn("mixedX: wrong length", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("mixedX: correct length", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedX test", {
-			main = models.mixedX {
-				keys = {},
-
-				min = 2,
-				max = 4,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1}
-		ok, err = self:expectLuaReturn("mixedX: below the minimum", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, 5}
-		ok, err = self:expectLuaReturn("mixedX: above the maximum", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("mixedX: in range", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: mixedM", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedM test", {
-			main = models.mixedM {
-				metatable = _metatableStandIn,
-
-				keys = {
-					[false] = {handlers.this, 12345}
-				},
-
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2, 3, 4, 5, [false]=12345}
-		ok, err = self:expectLuaReturn("keys: 'metatable' failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = setmetatable({1, 2, 3, 4, 5, [false]=12345}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: 'metatable' success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = setmetatable({bar=54321}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: 'keys' failure", _mt_val.validate, v, t3)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t4 = setmetatable({1, 2, 3, 4, "foo", [false]=12345}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: 'array' failure", _mt_val.validate, v, t4)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t5 = setmetatable({1, 2, 3, 4, 5, [false]=12345}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: success", _mt_val.validate, v, t5)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedM test", {
-			main = models.mixedM {
-				metatable = handlers.pass,
-
-				keys = {},
-
-				len = 3,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2}
-		ok, err = self:expectLuaReturn("mixedM: wrong length", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("mixedM: correct length", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedM test", {
-			main = models.mixedM {
-				metatable = handlers.pass,
-
-				keys = {},
-
-				min = 2,
-				max = 4,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1}
-		ok, err = self:expectLuaReturn("mixedM: below the minimum", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, 5}
-		ok, err = self:expectLuaReturn("mixedM: above the maximum", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("mixedM: in range", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: mixedMX", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedMX test", {
-			main = models.mixedMX {
-				metatable = _metatableStandIn,
-
-				keys = {
-					[false] = {handlers.this, 12345}
-				},
-
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2, 3, 4, 5, [false]=12345}
-		ok, err = self:expectLuaReturn("keys: 'metatable' failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = setmetatable({1, 2, 3, 4, 5, [false]=12345}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: 'metatable' success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = setmetatable({[false]=54321}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: 'keys' failure", _mt_val.validate, v, t3)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t4 = setmetatable({1, 2, 3, 4, "foo", [false]=12345}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: 'array' failure", _mt_val.validate, v, t4)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t5 = setmetatable({1, 2, 3, 4, 5, [false]=12345}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: success", _mt_val.validate, v, t5)
-		self:isEqual(ok, true)
-
-		local t6 = setmetatable({zoop="doop"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("keys: reject unhandled keys", _mt_val.validate, v, t6)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-	end
-	--]====]
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedMX test", {
-			main = models.mixedMX {
-				metatable = handlers.pass,
-
-				keys = {},
-
-				len = 3,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1, 2}
-		ok, err = self:expectLuaReturn("mixedMX: wrong length", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("mixedMX: correct length", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("mixedMX test", {
-			main = models.mixedMX {
-				metatable = handlers.pass,
-
-				keys = {},
-
-				min = 2,
-				max = 4,
-				ref = handlers.number
-			}
-		})
-
-		local ok, err
-
-		local t1 = {1}
-		ok, err = self:expectLuaReturn("mixedMX: below the minimum", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {1, 2, 3, 4, 5}
-		ok, err = self:expectLuaReturn("mixedMX: above the maximum", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = {6, 7, 8}
-		ok, err = self:expectLuaReturn("mixedMX: in range", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: all", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("key_test", {
-			main = models.all {
-				ref = handlers.string
-			}
-		})
-
-		local ok, err
-
-		local t1 = {foo=123}
-		ok, err = self:expectLuaReturn("all: failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = {foo="yes", bar="maybe"}
-		ok, err = self:expectLuaReturn("all: success", _mt_val.validate, v, t2)
-		self:isEqual(ok, true)
-
-		local t3 = {}
-		ok, err = self:expectLuaReturn("all: empty table passes", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerJob("Model: allM", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("key_test", {
-			main = models.allM {
-				metatable = _metatableStandIn,
-
-				ref = handlers.string
-			}
-		})
-
-		local ok, err
-
-		local t1 = {foo="yes", bar="maybe"}
-		ok, err = self:expectLuaReturn("allM: metatable failure", _mt_val.validate, v, t1)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t2 = setmetatable({foo=123}, _dummy_mt)
-		ok, err = self:expectLuaReturn("allM: failure", _mt_val.validate, v, t2)
-		self:isEqual(ok, false)
-		self:print(4, table.concat(err, "\n"))
-
-		local t3 = setmetatable({foo="yes", bar="maybe"}, _dummy_mt)
-		ok, err = self:expectLuaReturn("allM: success", _mt_val.validate, v, t3)
-		self:isEqual(ok, true)
-
-		local t4 = setmetatable({}, _dummy_mt)
-		ok, err = self:expectLuaReturn("allM: empty table passes", _mt_val.validate, v, t4)
-		self:isEqual(ok, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- LuaJIT stuff.
-local ffi
-local cdata_object
-if rawget(_G, "jit") then
-	ffi = require("ffi")
-	ffi.cdef[[
-		typedef struct {int foo;} noop_t;
-	]]
-
-	cdata_object = ffi.new("noop_t")
-end
-
-
--- [===[
-self:registerJob("Built-in Handlers", function(self)
-	-- [====[
-	do
-		local models, handlers = pSchema.models, pSchema.handlers
-		local v = pSchema.newValidator("Handler Tests", {
-			main = models.keysX {
-				types_bad = {handlers.types, "number", "string", "boolean"},
-				types_ok = {handlers.types, "number", "string", "boolean"},
-
-				number_bad = handlers.number,
-				number_bad_min = {handlers.number, min=5, max=10},
-				number_bad_max = {handlers.number, min=5, max=10},
-				number_ok = handlers.number,
-				number_ok_range = {handlers.number, min=5, max=10},
-
-				number_eval_bad = handlers.numberEval,
-				number_eval_bad_min = {handlers.numberEval, min=5, max=10},
-				number_eval_bad_max = {handlers.numberEval, min=5, max=10},
-				number_eval_ok = handlers.numberEval,
-				number_eval_ok_range = {handlers.numberEval, min=5, max=10},
-				number_eval_false = handlers.numberEval,
-
-				integer_bad = handlers.integer,
-				integer_fractional = handlers.integer,
-				integer_bad_min = {handlers.integer, min=5, max=10},
-				integer_bad_max = {handlers.integer, min=5, max=10},
-				integer_ok = handlers.integer,
-				integer_eval_ok_range = handlers.integer,
-
-				integer_eval_bad = handlers.integerEval,
-				integer_eval_fractional = handlers.integerEval,
-				integer_eval_bad_min = {handlers.integerEval, min=5, max=10},
-				integer_eval_bad_max = {handlers.integerEval, min=5, max=10},
-				integer_eval_ok = handlers.integerEval,
-				integer_eval_ok_range = handlers.integerEval,
-				integer_eval_false = handlers.integerEval,
-
-				string_bad = handlers.string,
-				string_bad_pattern = {handlers.string, "^foo$"},
-				string_bad_patterns = {handlers.string, "^foo$", "^bar$"},
-				string_ok = handlers.string,
-				string_ok_pattern = {handlers.string, "^foo$"},
-				string_ok_patterns = {handlers.string, "^foo$", "^bar$"},
-
-				string_eval_bad = handlers.stringEval,
-				string_eval_bad_pattern = {handlers.stringEval, "^foo$"},
-				string_eval_bad_patterns = {handlers.stringEval, "^foo$", "^bar$"},
-				string_eval_ok = handlers.stringEval,
-				string_eval_ok_pattern = {handlers.stringEval, "^foo$"},
-				string_eval_ok_patterns = {handlers.stringEval, "^foo$", "^bar$"},
-				string_eval_false = handlers.stringEval,
-
-				table_bad = handlers.table,
-				table_ok = handlers.table,
-
-				table_eval_bad = handlers.tableEval,
-				table_eval_ok = handlers.tableEval,
-				table_eval_false = handlers.tableEval,
-
-				function_bad = handlers["function"],
-				function_ok = handlers["function"],
-
-				function_eval_bad = handlers.functionEval,
-				function_eval_ok = handlers.functionEval,
-				function_eval_false = handlers.functionEval,
-
-				-- Cannot make userdata objects from plain Lua.
-				-- In LuaJIT, 'ffi.C' is userdata, so we can test from there.
-				userdata_bad = ffi and handlers.userdata or nil,
-				userdata_ok = ffi and handlers.userdata or nil,
-
-				userdata_eval_bad = ffi and handlers.userdata_eval or nil,
-				userdata_eval_ok = ffi and handlers.userdata_eval or nil,
-				userdata_eval_false = ffi and handlers.userdata_eval or nil,
-
-				-- LuaJIT
-				cdata_bad = ffi and handlers.cdata or nil,
-				cdata_ok = ffi and handlers.cdata or nil,
-
-				cdata_eval_bad = ffi and handlers.cdata_eval or nil,
-				cdata_eval_ok = ffi and handlers.cdata_eval or nil,
-				cdata_eval_false = ffi and handlers.cdata_eval or nil,
-
-				thread_bad = handlers.thread,
-				thread_ok = handlers.thread,
-
-				thread_eval_bad = handlers.threadEval,
-				thread_eval_ok = handlers.threadEval,
-				thread_eval_false = handlers.threadEval,
-
-				boolean_bad = handlers.boolean,
-				boolean_ok = handlers.boolean,
-
-				boolean_eval_bad = handlers.booleanEval,
-				boolean_eval_ok = handlers.booleanEval,
-				boolean_eval_false = handlers.booleanEval,
-
-				nil_bad = handlers["nil"],
-				nil_ok = handlers["nil"],
-
-				not_nil_bad = handlers.notNil,
-				not_nil_ok = handlers.notNil,
-
-				not_false_not_nil_bad = handlers.notFalseNotNil,
-				not_false_not_nil_bad2 = handlers.notFalseNotNil,
-				not_false_not_nil_ok = handlers.notFalseNotNil,
-
-				not_false_not_nil_bad = handlers.notFalseNotNilNotNan,
-				not_false_not_nil_bad2 = handlers.notFalseNotNilNotNan,
-				not_false_not_nil_bad3 = handlers.notFalseNotNilNotNan,
-				not_false_not_nil_ok = handlers.notFalseNotNilNotNan,
-
-				this_bad = {handlers.this, "bar"},
-				this_ok = {handlers.this, "bar"},
-
-				one_of_bad = {handlers.oneOf, true, 7, "foo"},
-				one_of_ok = {handlers.oneOf, true, 7, "foo"},
-
-				enum_bad = {handlers.enum, {"left", "center", "right"}},
-				enum_ok = {handlers.enum, {"left", "center", "right"}},
-
-				enum_eval_bad = {handlers.enumEval, {"left", "center", "right"}},
-				enum_eval_ok = {handlers.enumEval, {"left", "center", "right"}},
-				enum_eval_false = {handlers.enumEval, {"left", "center", "right"}},
-
-				choice_bad = {handlers.choice,
-					handlers.boolean,
-					handlers.string,
-					{handlers.number, min=1, max=3}
-				},
-				choice_ok = {handlers.choice,
-					handlers.boolean,
-					handlers.string,
-					{handlers.number, min=1, max=3}
-				},
-
-				pass_ok = handlers.pass,
-
-				fail_bad = handlers.fail,
-			}
-		})
-
-		local t = {
-			types_bad = function() end,
-			types_ok = true,
-
-			number_bad = "foo",
-			number_bad_min = 1,
-			number_bad_max = 11,
-			number_bad_ok = 1,
-			number_ok_range = 7,
-
-			number_eval_bad = "foo",
-			number_eval_bad_min = 1,
-			number_eval_bad_max = 11,
-			number_eval_ok = 1,
-			number_eval_ok_range = 7,
-			number_eval_false = false,
-
-			integer_bad = "foo",
-			integer_fractional = 0.5,
-			integer_bad_min = 1,
-			integer_bad_max = 1,
-			integer_ok = 1,
-			integer_ok_eval_range = 7,
-
-			integer_eval_bad = "foo",
-			integer_eval_fractional = 0.5,
-			integer_eval_bad_min = 1,
-			integer_eval_bad_max = 11,
-			integer_eval_ok = 1,
-			integer_eval_ok_range = 7,
-			integer_eval_false = false,
-
-			string_bad = 345,
-			string_bad_pattern = "zoop",
-			string_bad_patterns = "zup",
-			string_ok = "wee",
-			string_ok_pattern = "foo",
-			string_ok_patterns = "bar",
-
-			string_eval_bad = 345,
-			string_eval_bad_pattern = "zoop",
-			string_eval_bad_patterns = "zup",
-			string_eval_ok = "wee",
-			string_eval_ok_pattern = "foo",
-			string_eval_ok_patterns = "bar",
-			string_eval_false = false,
-
-			table_bad = true,
-			table_ok = {},
-
-			table_eval_bad = true,
-			table_eval_ok = {},
-			table_eval_false = false,
-
-			function_bad = true,
-			function_ok = function() end,
-
-			function_eval_bad = true,
-			function_eval_ok = function() end,
-			function_eval_false = false,
-
-			-- Cannot make userdata objects from plain Lua.
-			-- In LuaJIT, 'ffi.C' is userdata, so we can test from there.
-			userdata_bad = ffi and true or nil,
-			userdata_ok = ffi and ffi.C or nil,
-
-			userdata_eval_bad = ffi and true or nil,
-			userdata_eval_ok = ffi and ffi.C or nil,
-			userdata_eval_false = ffi and false or nil,
-
-			-- LuaJIT
-			cdata_bad = ffi and true or nil,
-			cdata_ok = ffi and cdata_object or nil,
-
-			cdata_eval_bad = ffi and true or nil,
-			cdata_eval_ok = ffi and cdata_object or nil,
-			cdata_eval_false = ffi and false or nil,
-
-			thread_bad = true,
-			thread_ok = coroutine.create(function() end),
-
-			thread_eval_bad = true,
-			thread_eval_ok = coroutine.create(function() end),
-			thread_eval_false = false,
-
-			boolean_bad = 5,
-			boolean_ok = true,
-
-			boolean_eval_bad = 5,
-			boolean_eval_ok = true,
-			boolean_eval_false = false,
-
-			nil_bad = true,
-			nil_ok = nil,
-
-			not_nil_bad = nil,
-			not_nil_ok = true,
-
-			not_false_not_nil_bad = nil,
-			not_false_not_nil_bad2 = false,
-			not_false_not_nil_ok = true,
-
-			not_false_not_nil_bad = nil,
-			not_false_not_nil_bad2 = false,
-			not_false_not_nil_bad3 = 0/0,
-			not_false_not_nil_ok = true,
-
-			this_bad = "foo",
-			this_ok = "bar",
-
-			one_of_bad = "zing",
-			one_of_ok = "foo",
-
-			enum_bad = "sideways",
-			enum_ok = "center",
-
-			enum_eval_bad = "sideways",
-			enum_eval_ok = "center",
-			enum_eval_false = false,
-
-			choice_bad = 790,
-			choice_ok = 2,
-
-			pass_ok = "anything will pass here",
-
-			fail_bad = "everything will fail here",
 		}
 
-		self:expectLuaReturn("Test of built-in Handlers", _mt_val.validate, v, t)
+		local md_main = pSchema.newModel {
+			keys = {
+				foo = {pAssert.type, "number"},
+				bar = {"sub-eval", md_aux},
+				baz = {"sub-eval", md_aux}
+			}
+		}
+
+		local t1 = {
+			foo = 1,
+			bar = {
+				doop = "bar"
+			},
+			baz = false,
+		}
+
+		local ok, err = self:expectLuaReturn("model reference (eval): success", pSchema.validate, md_main, t1, "SubModelTest")
+		if err then
+			self:print(4, err)
+		end
+		self:isEqual(ok, true)
+
+		-- failure
+		md_main.keys.bar[2] = "not a model"
+		self:expectLuaError("failure (not a model)", pSchema.validate, md_main, t1, "SubModelTest")
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerJob("model and (some) handler tests", function(self)
+	-- [====[
+	do
+		local m1 = pSchema.newModel {
+			metatable = _metatableStandIn,
+
+			keys = {
+				foo = {pAssert.type, "string"}
+			},
+
+			array = {pAssert.type, "number"},
+
+			remaining = {pAssert.type, "function"}
+		}
+
+		local t1 = setmetatable({
+			foo = "bar",
+			5, 7, 9, 3,
+			[{}] = math.sin
+		}, _dummy_mt)
+
+		local ok, err
+		ok, err = self:expectLuaReturn("model success", pSchema.validate, m1, t1, "Test")
+		self:isEqual(ok, true)
+
+
+		local t2 = {
+			foo = "bar",
+			5, 7, 9, 3,
+			[{}] = math.sin
+		}
+
+		ok, err = self:expectLuaReturn("model failure (metatable)", pSchema.validate, m1, t2, "Test")
+		self:isEqual(ok, false)
+		self:print(4, err)
+
+
+		local t3 = setmetatable({
+			foo = "bar",
+			false, true,
+			[{}] = math.sin
+		}, _dummy_mt)
+
+		ok, err = self:expectLuaReturn("model failure (array)", pSchema.validate, m1, t3, "Test")
+		self:isEqual(ok, false)
+		self:print(4, err)
+
+
+		local t4 = setmetatable({
+			foo = "bar",
+			5, 7, 9, 3,
+			[{}] = false,
+		}, _dummy_mt)
+
+		ok, err = self:expectLuaReturn("model failure (remaining)", pSchema.validate, m1, t4, "Test")
+		self:isEqual(ok, false)
+		self:print(4, err)
+
+
+		local m2 = pSchema.newModel {
+			metatable = _metatableStandIn,
+
+			keys = {
+				foo = {pAssert.type, "string"}
+			},
+
+			array = {pAssert.type, "number"},
+		}
+
+		local t5 = setmetatable({
+			foo = "bar",
+			5, 7, 9, 3,
+			[{}] = false,
+		}, _dummy_mt)
+
+		ok, err = self:expectLuaReturn("model success (ignore unhandled)", pSchema.validate, m2, t5, "Test")
+		self:isEqual(ok, true)
+
+
+		local m3 = pSchema.newModel {
+			reject_unhandled = true,
+
+			metatable = _metatableStandIn,
+
+			keys = {
+				foo = {pAssert.type, "string"}
+			},
+
+			array = {pAssert.type, "number"},
+		}
+
+		local t6 = setmetatable({
+			foo = "bar",
+			5, 7, 9, 3,
+			[{}] = false,
+		}, _dummy_mt)
+
+		ok, err = self:expectLuaReturn("model failure (reject unhandled)", pSchema.validate, m3, t6, "Test")
+		self:isEqual(ok, false)
+		self:print(4, err)
+
+
+		local m4 = pSchema.newModel {
+			-- will adjust 'array_*' options below
+			array = {pAssert.type, "number"},
+		}
+
+		local t7 = {1, 2, 3, 4, 5}
+
+		m4.array_len = 3
+		ok, err = self:expectLuaReturn("model failure (incorrect array length)", pSchema.validate, m4, t7, "Test")
+		self:isEqual(ok, false)
+		self:print(4, err)
+		m4.array_len = nil
+
+		m4.array_min = 30
+		ok, err = self:expectLuaReturn("model failure (array is below the minimum)", pSchema.validate, m4, t7, "Test")
+		self:isEqual(ok, false)
+		self:print(4, err)
+		m4.array_min = nil
+
+		m4.array_max = 2
+		ok, err = self:expectLuaReturn("model failure (array is above the maximum)", pSchema.validate, m4, t7, "Test")
+		self:isEqual(ok, false)
+		self:print(4, err)
+		m4.array_max = nil
+
+
+		local m5 = pSchema.newModel {
+			keys = {
+				[1] = {pAssert.type, "string"},
+				[3] = {pAssert.type, "string"},
+				[5] = {pAssert.type, "string"},
+			},
+
+			array = {pAssert.type, "number"},
+		}
+
+		local t8 = {"foo", 2, "bar", 4, "bop", 6}
+
+		ok, err = self:expectLuaReturn("model success (key filter overrides array filter", pSchema.validate, m5, t8, "Test")
+		self:isEqual(ok, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("pSchema.setMaxMessages()", pSchema.setMaxMessages)
+self:registerFunction("pSchema.getMaxMessages()", pSchema.getMaxMessages)
+self:registerJob("pSchema.setMaxMessages(), pSchema.getMaxMessages()", function(self)
+
+	-- [====[
+	do
+		local tbl = {}
+		for i = 1, 10 do
+			tbl[i] = "foo"
+		end
+
+		local md = pSchema.newModel {
+			array = {pAssert.type, "number"}
+		}
+
+		local ok, err
+
+		pSchema.setMaxMessages(5)
+		ok, err = self:expectLuaReturn("Exhaust max messages", pSchema.validate, md, tbl, "Test Max Messages")
+		self:isEqual(ok, false)
+		self:print(4, err)
+
+		local msg_max = pSchema.lang.msg_max -- "(maximum message size reached)"
+		self:isEqual(err:sub(-#msg_max), msg_max)
+		pSchema.setMaxMessages()
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		pSchema.setMaxMessages(23)
+		local n = self:expectLuaReturn("getMaxMessages", pSchema.getMaxMessages)
+		self:isEqual(n, 23)
+		pSchema.setMaxMessages()
+	end
+	--]====]
+
+	-- [====[
+	do
+		self:expectLuaError("pSchema.setMaxMessages() arg 1 bad type", pSchema.setMaxMessages, true)
+		self:expectLuaError("pSchema.setMaxMessages() arg 1 too low", pSchema.setMaxMessages, 0)
 	end
 	--]====]
 end

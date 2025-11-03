@@ -1,8 +1,8 @@
-**Version:** 1.310
+**Version:** 1.315
 
 **This module is experimental. Please see the notes at the bottom of this README.**
 
-# PILE: Pool
+# PILE Pool
 
 Creates stacks of pooled resources (mainly tables or userdata).
 
@@ -37,7 +37,7 @@ color1 = stack:push(color1) -- 'color1' is now nil
 
 ## Dependencies
 
-* `pile_arg_check.lua`
+* `pile_assert.lua`
 
 
 # PILE Pool API

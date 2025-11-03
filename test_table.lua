@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v1.310
+-- v1.315
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,6 +10,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
+local pName = require(PATH .. "pile_name")
 local pTable = require(PATH .. "pile_table")
 
 
@@ -27,16 +28,16 @@ end
 local self = errTest.new("pTable", cli_verbosity)
 
 
-self:registerFunction("pTable.clear()", pTable.clear)
+self:registerFunction("pTable.clearAll()", pTable.clearAll)
 
 
 -- [===[
-self:registerJob("pTable.clear()", function(self)
+self:registerJob("pTable.clearAll()", function(self)
 	-- [====[
 	do
 		local t = {a="foo", b="bar", c="baz", 4, 5, 6}
 		self:isNotNil(next(t))
-		self:expectLuaReturn("clear table", pTable.clear, t)
+		self:expectLuaReturn("clear table", pTable.clearAll, t)
 		self:isEqual(next(t), nil)
 	end
 	--]====]
@@ -1183,25 +1184,24 @@ end
 --]===]
 
 
-self:registerFunction("pTable.newEnum()", pTable.newEnum)
+self:registerFunction("pTable.newNamedMap()", pTable.newNamedMap)
 
 -- [===[
-self:registerJob("pTable.newEnum()", function(self)
+self:registerJob("pTable.newNamedMap()", function(self)
 
 	-- [====[
 	do
 		local t = {left=0.0, center=0.5, right=1.0}
-		local rv = self:expectLuaReturn("success", pTable.newEnum, "ObjectSide", t)
+		local rv = self:expectLuaReturn("success", pTable.newNamedMap, "ObjectSide", t)
 		self:isEqual(t, rv)
-		self:isEqual(getmetatable(rv), pTable.mt_enum)
-		self:isEqual(rv:getName(), "ObjectSide")
+		self:isEqual(pName.get(rv), "ObjectSide")
 	end
 	--]====]
 
 	-- [====[
 	do
-		self:expectLuaError("arg 1 bad type", pTable.newEnum, true, {})
-		self:expectLuaError("arg 2 bad type", pTable.newEnum, "Foobar", true)
+		self:expectLuaError("arg 1 bad type", pTable.newNamedMap, true, {})
+		self:expectLuaError("arg 2 bad type", pTable.newNamedMap, "Foobar", true)
 	end
 	--]====]
 end
@@ -1209,86 +1209,26 @@ end
 --]===]
 
 
-self:registerFunction("pTable.newEnumV()", pTable.newEnumV)
+self:registerFunction("pTable.newNamedMapV()", pTable.newNamedMapV)
 
 
 -- [===[
-self:registerJob("pTable.newEnumV()", function(self)
+self:registerJob("pTable.newNamedMapV()", function(self)
 
 	-- [====[
 	do
-		local rv = self:expectLuaReturn("success", pTable.newEnumV, "ObjectSide", "left", "center", "right")
+		local rv = self:expectLuaReturn("success", pTable.newNamedMapV, "ObjectSide", "left", "center", "right")
 		self:isEqual(rv.left, true)
 		self:isEqual(rv.center, true)
 		self:isEqual(rv.right, true)
-		self:isEqual(getmetatable(rv), pTable.mt_enum)
-		self:isEqual(rv:getName(), "ObjectSide")
+		self:isEqual(pName.get(rv), "ObjectSide")
 	end
 	--]====]
 
 	-- [====[
 	do
-		self:expectLuaError("arg 1 bad type", pTable.newEnumV, true, 1, 2, 3)
-		self:expectLuaError("vararg cannot be explicit nil", pTable.newEnumV, "Foobar", nil)
-	end
-	--]====]
-end
-)
---]===]
-
-
-self:registerFunction("Enum:setName()", pTable.mt_enum.setName)
-self:registerFunction("Enum:getName()", pTable.mt_enum.getName)
-
-
--- [===[
-self:registerJob("Enum:setName(), Enum:getName()", function(self)
-
-	-- [====[
-	do
-		local enum = pTable.newEnum("Condition", {red=true, yellow=true, green=true})
-
-		local rv = self:expectLuaReturn("getName: success", pTable.mt_enum.getName, enum)
-		self:isEqual(rv, "Condition")
-
-		self:expectLuaReturn("setName: success", pTable.mt_enum.setName, enum, "LampColor")
-		self:isEqual(enum:getName(), "LampColor")
-	end
-	--]====]
-
-	-- [====[
-	do
-		local enum = pTable.newEnum("HatStyle", {bowler=true, breton=true, porkpie=true})
-		self:expectLuaError("setName arg 1 bad type", pTable.mt_enum.setName, enum, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
-self:registerFunction("pTable.safeGetEnumName()", pTable.safeGetEnumName)
-
-
--- [===[
-self:registerJob("pTable.safeGetEnumName()", function(self)
-	-- [====[
-	do
-		local object_enum = pTable.newEnum("MyEnumHasAFirstName", {foo="bar"})
-		local plain_table = {zoop="doop"}
-
-		local rv
-		rv = self:expectLuaReturn("fetch name from Enum object", pTable.safeGetEnumName, object_enum)
-		self:isEqual(rv, "MyEnumHasAFirstName")
-
-		rv = self:expectLuaReturn("gracefully handle a plain table without a registered name", pTable.safeGetEnumName, plain_table)
-		self:isEqual(rv, "Enum")
-	end
-	--]====]
-
-	-- [====[
-	do
-		self:expectLuaError("arg 1 bad type", pTable.safeGetEnumName, function() end)
+		self:expectLuaError("arg 1 bad type", pTable.newNamedMapV, true, 1, 2, 3)
+		self:expectLuaError("vararg cannot be explicit nil", pTable.newNamedMapV, "Foobar", nil)
 	end
 	--]====]
 end

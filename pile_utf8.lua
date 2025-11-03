@@ -1,4 +1,4 @@
--- PILE UTF-8 v1.310
+-- PILE UTF-8 v1.315
 -- (C) 2024 - 2025 PILE Contributors
 -- License: MIT or MIT-0
 -- https://github.com/frank-f-trafton/pile_base
@@ -27,10 +27,10 @@ local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
 local interp = require(PATH .. "pile_interp")
-local pArg = require(PATH .. "pile_arg_check")
+local pAssert = require(PATH .. "pile_assert")
 
 
-local _argType, _argInt, _argIntRange = pArg.type, pArg.int, pArg.intRange
+local _argType, _argInt, _argIntRange = pAssert.type, pAssert.integer, pAssert.integerRange
 
 
 local check_surrogates = true

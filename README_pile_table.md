@@ -1,6 +1,6 @@
-**Version:** 1.310
+**Version:** 1.315
 
-# PILE: Table
+# PILE Table
 
 Provides helper functions for Lua tables.
 
@@ -21,13 +21,18 @@ local lut_foo = pTable.newLUT({"foo", "bar", "baz"})
 # API: PILE Table
 
 
-## pTable.clear
+## pTable.clearAll
 
 Erases all keys in a table.
 
-`pTable.clear(t)`
+`pTable.clearAll(t)`
 
 * `t`: The table to clear.
+
+
+**Notes:**
+
+* When LuaJIT is detected, the LuaJIT function `table.clear()` is substituted for the function defined here.
 
 
 ## pTable.clearArray
@@ -37,6 +42,10 @@ Erases a table's array indices.
 `pTable.clearArray(t)`
 
 * `t`: The table/array to clear.
+
+**Notes:**
+
+* Use this if you want to delete *only* array elements while leaving other fields intact.
 
 
 ## pTable.copy
@@ -52,7 +61,7 @@ Makes a "shallow" copy of a table. Sub-tables are copied as references.
 
 ## pTable.copyArray
 
-Makes a copy of a table's array indices.
+Makes a copy of a table's array elements.
 
 `local copied = pTable.copyArray(t)`
 
@@ -134,13 +143,13 @@ Checks a list of tables for duplicate table references.
 
 Checks that a table is an array, with indices from 1 to its highest integer key, with no gaps. Other keys are ignored.
 
-`local ok pTable.isArray(t)`
+`local ok = pTable.isArray(t)`
 
 **Returns:** `true` if the table has contiguous array indices, `false` otherwise.
 
 **Notes:**
 
-* This function treats tables with no integer indices as arrays that are empty.
+* This function treats tables with no integer indices as arrays that are empty (ie success).
 
 
 ## pTable.isArrayOnly
@@ -155,7 +164,7 @@ Checks that a table *only* contains array indices from 1 to its highest integer 
 
 **Notes:**
 
-* This function treats empty tables as arrays that are empty.
+* This function treats empty tables as arrays that are empty (ie success).
 
 
 ## pTable.isArrayOnlyZero
@@ -420,60 +429,49 @@ A wrapper for `table.concat()` which duplicates the table and converts all value
 **Returns:** The concatenated string.
 
 
-## pTable.newEnum
+## pTable.newNamedMap
 
-Creates an Enum table. (In this implementation, Enums are just Lua hash tables with a metatable and a method for name retrieval.)
+Creates a NamedMap, which is a Lua table that can be registered to the PILE Name Registry. (NamedMaps can be used like Enums in other programming languages.)
 
-`local enum = pTable.newEnum(name, [t])`
+`local n_map = pTable.newNamedMap([name], [t])`
 
-* `name`: *("Enum")* The Enum's name.
+* `[name]`: The NamedMap's name.
 
 * `[t]`: An optional pre-filled table. When not provided, a new table will be created.
 
-**Returns:** The table with an attached metatable, so that the name can be retrieved with `Enum:getName()`.
+**Returns:** The table.
 
 **Notes:**
 
-* For example:
+* The NamedMap's name can be retrieved with `pName.safeGet(n_map, "NamedMap")`. For example:
 
 ```lua
-	local enum_obj_side = pTable.newEnum("ObjectSide", {left=0.0, center=0.5, right=1.0})
+	local nm_obj_side = pTable.newNamedMap("ObjectSide", {left=0.0, center=0.5, right=1.0})
 
-	local function checkEnum(enum, v)
-		if not enum[v] then
-			error("invalid " .. enum:getName() .. ": " .. tostring(v))
+	local function checkNamedMap(n_map, v)
+		if not n_map[v] then
+			error("invalid " .. pName.safeGet(n_map, "NamedMap") .. ": " .. tostring(v))
 		end
 	end
 
-	checkEnum(enum_obj_side, "sideways")
+	checkNamedMap(nm_obj_side, "sideways")
 	--> invalid ObjectSide: sideways
 ```
 
-* The names are stored in a [weak table](https://www.lua.org/manual/5.1/manual.html#2.10.2) in the PILE Table module. Different Enums may share the same name.
+* The names are stored in a [weak table](https://www.lua.org/manual/5.1/manual.html#2.10.2) in the PILE Name Registry. Different NamedMaps may share the same name.
 
 
-## pTable.newEnumV
+## pTable.newNamedMapV
 
-Like `pTable.newEnum()`, but uses a vararg list to populate keys. All values in the returned table are true.
+Like `pTable.newNamedMap()`, but uses a vararg list to populate keys. All values in the returned table are true.
 
-`local enum = pTable.newEnumV(name, ...)`
+`local n_map = pTable.newNamedMapV(name, ...)`
 
-* `name`: *("Enum")* The Enum's name.
+* `name`: *("NamedMap")* The NamedMap's name.
 
 * `...`: A vararg list of values to use as keys.
 
-**Returns:** The Enum table.
-
-
-## ptable.safeGetEnumName
-
-Gets the name of an Enum table, or returns "Enum" if it cannot be retrieved. This function is safe to call on hash tables that were not created with `pTable.newEnum()`.
-
-`local name = pTable.safeGetEnumName(enum)`
-
-* `enum`: The Enum table.
-
-**Returns:** The Enum name, or "Enum" if it could not be found.
+**Returns:** The NamedMap table.
 
 
 ## pTable.mt_restrict
@@ -496,25 +494,3 @@ my_table.zut = 4 -- Error
 * `mt_restrict` cannot do anything about the usage of `rawget()` or `rawset()`.
 
 * The behavior of `table.insert()` changed in Lua 5.3, as the langauge designers updated the `table` library to respect metamethods.
-
-
-# API: Enum
-
-Enums are created with `pTable.newEnum()`.
-
-## Enum:setName
-
-Sets the Enum table's name.
-
-`Enum:setName([name])`
-
-* `[name]`: *("Enum")* The new Enum name, or false/nil to use a default name.
-
-
-## Enum:getName
-
-Gets the Enum table's name.
-
-`local name = Enum:getName()`
-
-**Returns:** The Enum's name, or "Enum" if the name could not be retrieved.

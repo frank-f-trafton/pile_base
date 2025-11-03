@@ -1,6 +1,6 @@
-**Version:** 1.310
+**Version:** 1.315
 
-# PILE: UTF-8
+# PILE UTF-8
 
 *pUTF8* contains a set of UTF-8 utility functions for Lua 5.1 - 5.4.
 
@@ -23,14 +23,14 @@ print(pUTF8.check("bad" .. string.char(0xff) .. "string"))
 
 ### pile_utf8.lua
 
-* `pile_arg_check.lua`
+* `pile_assert.lua`
 
 * `pile_interp.lua`
 
 
 ### pile_utf8_conv.lua
 
-* `pile_arg_check.lua`
+* `pile_assert.lua`
 
 * `pile_interp.lua`
 

@@ -1,4 +1,4 @@
-**Version:** 1.310
+**Version:** 1.315
 
 # PILE Base
 
@@ -6,34 +6,39 @@ A utility library for Lua.
 
 ## PILE Modules
 
-* `pile_arg_check.lua`: Assertions for function arguments (type checking, etc.).
+* `pile_assert.lua`: Assertions for function arguments (type checking, etc.).
   * Requires: `pile_interp.lua`
 
 * `pile_interp.lua`: String interpolation with position-independent arguments.
 
 * `pile_math.lua`: Some basic math functions.
 
+* `pile_name.lua`: Name registry, for associating Lua objects (e.g. metatables) with string IDs.
+
 * `pile_path.lua`: Functions for working with LÖVE virtual filesystem paths.
 
 * `pile_pool.lua`: Pooling of objects. **Experimental**
-  * Requires: `pile_arg_check.lua`
+  * Requires: `pile_assert.lua`
 
 * `pile_rectangle.lua`: Positioning and manipulation of rectangle structures.
-  * Requires: `pile_arg_check.lua`, `pile_math.lua`
+  * Requires: `pile_assert.lua`, `pile_math.lua`
+
+* `pile_scale.lua`: Scaling of numbers and integers.
+  * Requires: `pile_assert.lua`
 
 * `pile_schema.lua`: Lua table validation.
-  * Requires: `pile_arg_check.lua`, `pile_interp.lua`, `pile_table.lua`
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_table.lua`
 
 * `pile_string.lua`: Some common string patterns.
 
 * `pile_table.lua`: Table, array functions.
-  * Requires: `pile_arg_check.lua`, `pile_interp.lua`
+  * Requires: `pile_assert.lua`, `pile_interp.lua`
 
 * `pile_utf8.lua`: UTF-8 helper functions.
-  * Requires: `pile_arg_check.lua`, `pile_interp.lua`
+  * Requires: `pile_assert.lua`, `pile_interp.lua`
 
 * `pile_utf8_conv.lua`: UTF-8 to UTF-16 conversion functions.
-  * Requires: `pile_arg_check.lua`, `pile_interp.lua`, `pile_utf8.lua`
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_utf8.lua`
 
 
 # LICENSE

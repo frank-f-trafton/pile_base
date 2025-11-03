@@ -2,6 +2,59 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.315 (2025-11-03)
+
+* Added `pile_name.lua`.
+
+* Renamed `pile_arg_check.lua` to `pile_assert.lua`.
+
+* `pile_assert.lua`:
+
+  * Argument `n`: added support for functions that return a string.
+
+  * Renamed these integer functions:
+
+	* `pAssert.int()` to `pAssert.integer()`
+
+	* `pAssert.intEval()` to `pAssert.integerEval()`
+
+	* `pAssert.intGE()` to `pAssert.integerGE()`
+
+	* `pAssert.intGEEval()` to `pAssert.integerGEEval()`
+
+	* `pAssert.intRange()` to `pAssert.integerRange()`
+
+	* `pAssert.intRangeEval()` to `pAssert.integerRangeEval()`.
+
+  * Renamed `pAssert.enum()` to `pAssert.namedMap()`
+
+  * Renamed `pAssert.enumEval()` to `pAssert.namedMapEval()`
+
+  * Added `pAssert.fail()` and `pAssert.pass()` (always fail and return, respectively).
+
+* `pile_schema.lua`:
+
+  * Major rewrite. Removed 'Validator' objects entirely. Now, you start the validation procedure by calling `pSchema.validate()` on a model table.
+
+  * Redesigned models to support optional filters (metatable, keys, array, remaining), rather than offering a smorgasbord of model types. Added the function `pSchema.newKeysX()` as a shortcut for the most typical model (filter by key; reject unhandled).
+
+  * Handlers now follow the design of PILE Arg Check functions (beginning with the arguments `n` and `v`; raising an error on failure and returning on success).
+
+  * Removed all of the old built-in handlers, along with the utility functions `pSchema.simpleTypeCheck()`, `pSchema.assertOpts()` and `pSchema.assertOptsSub()`.
+
+  * Changed how nested models are specified. The old way had no means of specifying *optional* model evaluation.
+
+  * Style: removed capitalization of PILE Schema structures (model vs Model, etc.)
+
+* `pile_table.lua`:
+
+  * Renamed `pTable.clear()` to `pTable.clearAll()`, changed its code to remove array indices first, and added an alternate codepath for LuaJIT's `table.clear()`.
+
+  * Removed the metatable for Enums, the function `pTable.getSafeEnumName()`, and migrated the name association logic to `pile_name.lua`.
+
+  * Renamed 'Enum' to 'NamedMap'. (Enumerations are supposed to be ordered.)
+
+
 # v1.310 (2025-10-22)
 
 * `pile_arg_check.lua`:

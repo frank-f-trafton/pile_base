@@ -1,4 +1,4 @@
--- PILE UTF-8 Conversion Functions v1.310
+-- PILE UTF-8 Conversion Functions v1.315
 -- (C) 2024 - 2025 PILE Contributors
 -- License: MIT or MIT-0
 -- https://github.com/frank-f-trafton/pile_base
@@ -7,7 +7,7 @@
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
-local _argType = require(PATH .. "pile_arg_check").type
+local _argType = require(PATH .. "pile_assert").type
 local interp = require(PATH .. "pile_interp")
 local pUTF8 = require(PATH .. "pile_utf8")
 

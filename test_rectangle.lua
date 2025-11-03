@@ -1,5 +1,5 @@
 -- Test: pile_rectangle.lua
--- v1.310
+-- v1.315
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -1604,7 +1604,7 @@ self:registerJob("pRect.split()", function(self)
 	do
 		self:expectLuaError("arg 1 bad Rectangle", pRect.split, false, {x=0, y=0, w=0, h=0}, "left", 0)
 		self:expectLuaError("arg 2 bad Rectangle", pRect.split, {x=0, y=0, w=0, h=0}, false, "left", 0)
-		self:expectLuaError("arg 3 bad type/enum", pRect.split, {x=0, y=0, w=0, h=0}, "sideways", 0)
+		self:expectLuaError("arg 3 bad type/NamedMap key", pRect.split, {x=0, y=0, w=0, h=0}, "sideways", 0)
 		self:expectLuaError("arg 4 bad type", pRect.split, {x=0, y=0, w=0, h=0}, {x=0, y=0, w=0, h=0}, "left", false)
 	end
 	--]====]
@@ -1727,7 +1727,7 @@ self:registerJob("pRect.splitOrOverlay()", function(self)
 	do
 		self:expectLuaError("arg 1 bad Rectangle", pRect.splitOrOverlay, false, {x=0, y=0, w=0, h=0}, "left", 0)
 		self:expectLuaError("arg 2 bad Rectangle", pRect.splitOrOverlay, {x=0, y=0, w=0, h=0}, false, "left", 0)
-		self:expectLuaError("arg 3 bad type/enum", pRect.splitOrOverlay, {x=0, y=0, w=0, h=0}, "sideways", 0)
+		self:expectLuaError("arg 3 bad type/NamedMap key", pRect.splitOrOverlay, {x=0, y=0, w=0, h=0}, "sideways", 0)
 		self:expectLuaError("arg 4 bad type", pRect.splitOrOverlay, {x=0, y=0, w=0, h=0}, {x=0, y=0, w=0, h=0}, "left", false)
 	end
 	--]====]

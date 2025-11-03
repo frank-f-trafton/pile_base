@@ -1,6 +1,6 @@
-**Version:** 1.310
+**Version:** 1.315
 
-# PILE: String
+# PILE String
 
 This module is a dumping ground for string functions and patterns.
 

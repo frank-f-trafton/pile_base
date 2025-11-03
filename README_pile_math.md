@@ -1,6 +1,6 @@
-**Version:** 1.310
+**Version:** 1.315
 
-# PILE: Math
+# PILE Math
 
 A small collection of math functions.
 

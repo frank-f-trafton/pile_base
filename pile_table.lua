@@ -1,4 +1,4 @@
--- PILE Table v1.310
+-- PILE Table v1.315
 -- (C) 2024 - 2025 PILE Contributors
 -- License: MIT or MIT-0
 -- https://github.com/frank-f-trafton/pile_base
@@ -15,15 +15,26 @@ local lang = M.lang
 
 
 local interp = require(PATH .. "pile_interp")
-local pArg = require(PATH .. "pile_arg_check")
+local pAssert = require(PATH .. "pile_assert")
+local pName = require(PATH .. "pile_name")
 
 
 local ipairs, math, pairs, rawget, rawset, select, table, type = ipairs, math, pairs, rawget, rawset, select, table, type
 
 
-function M.clear(t)
-	for k in pairs(t) do
-		t[k] = nil
+local jit = rawget(_G, "jit")
+
+
+if jit then
+	M.clearAll = require("table.clear")
+else
+	function M.clearAll(t)
+		for i = #t, 1, -1 do
+			t[i] = nil
+		end
+		for k in pairs(t) do
+			t[k] = nil
+		end
 	end
 end
 
@@ -77,7 +88,7 @@ end
 
 
 function M.deepCopy(t)
-	pArg.type(1, t, "table")
+	pAssert.type(1, t, "table")
 
 	return _deepCopy1({}, t)
 end
@@ -119,8 +130,8 @@ end
 
 lang.err_dp_dupes = "duplicate table references in destination and patch"
 function M.deepPatch(a, b, overwrite)
-	pArg.type(1, a, "table")
-	pArg.type(2, b, "table")
+	pAssert.type(1, a, "table")
+	pAssert.type(2, b, "table")
 
 	if M.hasAnyDuplicateTables(a, b) then
 		error(lang.err_dp_dupes)
@@ -159,16 +170,16 @@ end
 lang.err_dupes_zero_args = "no arguments provided."
 function M.hasAnyDuplicateTables(...)
 	local ret
-	M.clear(_hash)
+	M.clearAll(_hash)
 	local n = select("#", ...)
 	if n < 1 then
 		error(lang.err_dupes_zero_args)
 	end
 	for i = 1, select("#", ...) do
 		local t = select(i, ...)
-		pArg.type(i, t, "table")
+		pAssert.type(i, t, "table")
 		if _hash[t] then
-			M.clear(_hash)
+			M.clearAll(_hash)
 			return t
 		end
 		_hash[t] = true
@@ -177,7 +188,7 @@ function M.hasAnyDuplicateTables(...)
 			break
 		end
 	end
-	M.clear(_hash)
+	M.clearAll(_hash)
 	return ret
 end
 
@@ -192,8 +203,8 @@ end
 
 
 function M.patch(a, b, overwrite)
-	pArg.type(1, a, "table")
-	pArg.type(2, b, "table")
+	pAssert.type(1, a, "table")
+	pAssert.type(2, b, "table")
 
 	local c = 0
 	for i, v in ipairs(b) do
@@ -380,7 +391,7 @@ end
 lang.err_res_bad_s = "argument #$1: expected a non-empty string"
 lang.err_res_field_empty = "cannot resolve an empty field"
 function M.resolve(t, str, raw)
-	pArg.type(1, t, "table")
+	pAssert.type(1, t, "table")
 	if type(str) ~= "string" or #str == 0 then
 		error(interp(lang.err_res_bad_s, 2))
 	end
@@ -425,10 +436,10 @@ end
 
 
 function M.safeTableConcat(t, sep, i, j)
-	pArg.type(1, t, "table")
-	pArg.typeEval(2, sep, "string")
-	pArg.typeEval(3, i, "number")
-	pArg.typeEval(4, j, "number")
+	pAssert.type(1, t, "table")
+	pAssert.typeEval(2, sep, "string")
+	pAssert.typeEval(3, i, "number")
+	pAssert.typeEval(4, j, "number")
 
 	local t2, len = {}, 1
 	for x = i or 1, j or #t do
@@ -439,50 +450,18 @@ function M.safeTableConcat(t, sep, i, j)
 end
 
 
-M.enum_names = setmetatable({}, {__mode="kv"})
+function M.newNamedMap(name, t)
+	pAssert.typeEval(1, name, "string")
+	pAssert.typeEval(2, t, "table")
 
-
-local _mt_enum = {}
-_mt_enum.__index = _mt_enum
-M.mt_enum = _mt_enum
-
-
-function M.newEnum(name, t)
-	pArg.typeEval(1, name, "string")
-	pArg.typeEval(2, t, "table")
-
-	local e = setmetatable(t or {}, _mt_enum)
-	M.enum_names[e] = name or "Enum"
-	return e
+	t = t or {}
+	pName.set(t, name)
+	return t
 end
 
 
-function M.newEnumV(name, ...)
-	return M.newEnum(name, M.newLUTV(...))
-end
-
-
-function _mt_enum:setName(name)
-	pArg.typeEval(1, name, "string")
-
-	M.enum_names[self] = name or "Enum"
-end
-
-
-function _mt_enum:getName()
-	return M.enum_names[self] or "(Unknown)"
-end
-
-
-function M.safeGetEnumName(enum)
-	pArg.typeEval(1, enum, "table")
-
-	local mt = getmetatable(enum)
-	if mt and mt.getName then
-		return enum:getName()
-	else
-		return "Enum"
-	end
+function M.newNamedMapV(name, ...)
+	return M.newNamedMap(name, M.newLUTV(...))
 end
 
 
