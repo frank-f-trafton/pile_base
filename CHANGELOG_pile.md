@@ -2,6 +2,27 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v1.316 (2025-11-04)
+
+* Edited the documentation for PILE Assert and PILE Schema.
+
+* Added some missing tests to `test_assert.lua`.
+
+* Fixed syntax errors in `test_name.lua`.
+
+* `pile_assert.lua`:
+
+  * Renamed `pAssert.tableHasThisMetatable()` to `pAssert.tableWithMetatable()`.
+
+  * Changed some argument names in `pAssert.namedMap()` and `pAssert.namedMapEval()`. These alterations shouldn't cause any change to behavior.
+
+  * Removed `pAssert.numberGEOrOneOf()` because it was too specific.
+
+* `pile_table.lua`:
+
+  * Put the LuaJIT detection code into a `do...end` block to restrict its scope.
+
+
 # v1.315 (2025-11-03)
 
 * Added `pile_name.lua`.

@@ -1,5 +1,5 @@
 -- Test: pile_name.lua
--- v1.315
+-- v1.316
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -93,7 +93,7 @@ self:registerJob("pName.safeGet()", function(self)
 		self:expectLuaError("arg #1 bad type", pName.safeGet, 123)
 
 		rv = self:expectLuaReturn("Convert any eval-to-true value for 'fallback' to a string", pName.safeGet, v, function() end)
-		self:isEqual(rv:match("^(function:)", "function:")
+		self:isEqual(rv:match("^(function:)"), "function:")
 	end
 	--]====]
 end

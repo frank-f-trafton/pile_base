@@ -1,4 +1,4 @@
-**Version:** 1.315
+**Version:** 1.316
 
 **This module is experimental.**
 
@@ -166,6 +166,10 @@ The handler reference is a table with its function stored in key `[1]`. Array el
 `foo = {someHandlerFunction, "foobar", 12345}`
 
 The above example would call `someHandlerFunction(nil, v, "foobar", 12345)`.
+
+**Important:** Arrays of arguments do not support nil "gaps" because they will break the table length operator (`#`):
+
+`foo = {myHandler, "foo", nil, "baz"}` -- #foo could be 2 or 4!
 
 
 ### Short Form
