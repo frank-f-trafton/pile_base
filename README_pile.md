@@ -1,4 +1,4 @@
-**Version:** 1.316
+**Version:** 2.000
 
 # PILE Base
 
@@ -41,54 +41,20 @@ A utility library for Lua.
   * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_utf8.lua`
 
 
-# LICENSE
+# Contributors
 
-PILE is provided under two licenses: **MIT** and **MIT-0**. The latter does not require attribution, which may be desirable when including PILE modules in other libraries.
-
-Note that the `test` folder contains libraries which do require attribution.
-
-```
-MIT License
-
-Copyright (c) 2024 - 2025 PILE Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+* [Frank F. Trafton](https://github.com/frank-f-trafton/)
 
 
-```
-MIT No Attribution
+# Code Sourced From Other Libraries
 
-Copyright (c) 2024 - 2025 PILE Contributors
+* None (yet)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+# License
+
+As of v2.000, PILE Base is provided under the terms of the MIT License. Please see `LICENSE_pile` for the text and copyright notice.
+
+Versions 1.0.1 through 1.316 had a dual license: **MIT** and **MIT No Attribution**. For v2.000, the latter was removed so that functionality from other MIT-licensed libraries could be included.
+
+The libraries in the `test` subdirectory contain additional license details and copyright info.

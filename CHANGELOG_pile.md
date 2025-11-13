@@ -2,6 +2,15 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.000 (2025-11-13)
+
+* Changed license from dual MIT and MIT No Attribution (MIT-0) to just *MIT*.
+
+* `pile_assert.lua`:
+
+  * Added `pAssert.tableWithMetatableEval()` and `pAssert.tableWithoutMetatableEval()`.
+
+
 # v1.316 (2025-11-04)
 
 * Edited the documentation for PILE Assert and PILE Schema.

@@ -1,4 +1,4 @@
-**Version:** 1.316
+**Version:** 2.000
 
 # PILE Assert
 
@@ -370,11 +370,35 @@ The value is a table which has a specific metatable assigned.
 * `mt`: The metatable to check.
 
 
+## pAssert.tableWithMetatableEval
+
+The value is false/nil, or a table which has a specific metatable assigned.
+
+`pAssert.tableWithMetatableEval(n, v, mt)`
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `mt`: The metatable to check.
+
+
 ## pAssert.tableWithoutMetatable
 
 The value is a table with no metatable assigned.
 
 `pAssert.tableWithoutMetatable(n, v)`
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+
+## pAssert.tableWithoutMetatableEval
+
+The value is false/nil, or a table with no metatable assigned.
+
+`pAssert.tableWithoutMetatableEval(n, v)`
 
 * `n`: The name tag.
 

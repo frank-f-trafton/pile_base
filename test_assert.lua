@@ -1,5 +1,5 @@
 -- Test: pile_assert.lua
--- v1.316
+-- v2.000
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -784,6 +784,36 @@ end
 
 
 -- [===[
+self:registerFunction("pAssert.tableWithMetatableEval()", pAssert.tableWithMetatableEval)
+self:registerJob("pAssert.tableWithMetatableEval()", function(self)
+	-- [====[
+	do
+		local mt, mt2 = {}, {}
+		local t = setmetatable({}, mt)
+		self:expectLuaReturn("expected behavior", pAssert.tableWithMetatableEval, 1, setmetatable({}, mt), mt)
+		self:expectLuaReturn("accept false", pAssert.tableWithMetatableEval, 1, false, mt)
+		self:expectLuaError("missing metatable", pAssert.tableWithMetatableEval, 1, {}, mt)
+		self:expectLuaError("wrong metatable", pAssert.tableWithMetatableEval, 1, setmetatable(t, mt2), mt)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("no argument: error", pAssert.tableWithMetatableEval, nil, true)
+		self:expectLuaError("argument 1: error", pAssert.tableWithMetatableEval, 1, true)
+		self:expectLuaError("argument 100: error", pAssert.tableWithMetatableEval, 100, true)
+		self:expectLuaError("arbitrary string: error", pAssert.tableWithMetatableEval, "foo", true)
+		self:expectLuaError("table-key: error", pAssert.tableWithMetatableEval, {"t1", "x"}, true)
+		self:expectLuaError("function: error", pAssert.tableWithMetatableEval, _funcLabelTest, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
 self:registerFunction("pAssert.tableWithoutMetatable()", pAssert.tableWithoutMetatable)
 self:registerJob("pAssert.tableWithoutMetatable()", function(self)
 	-- [====[
@@ -802,6 +832,33 @@ self:registerJob("pAssert.tableWithoutMetatable()", function(self)
 		self:expectLuaError("arbitrary string: error", pAssert.tableWithoutMetatable, "foo", true)
 		self:expectLuaError("table-key: error", pAssert.tableWithoutMetatable, {"t1", "x"}, true)
 		self:expectLuaError("function: error", pAssert.tableWithoutMetatable, _funcLabelTest, true)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("pAssert.tableWithoutMetatableEval()", pAssert.tableWithoutMetatableEval)
+self:registerJob("pAssert.tableWithoutMetatableEval()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", pAssert.tableWithoutMetatableEval, 1, {})
+		self:expectLuaReturn("accept false", pAssert.tableWithoutMetatableEval, 1, false)
+		self:expectLuaError("has a metatable", pAssert.tableWithoutMetatableEval, 1, setmetatable({}, {}))
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("no argument: error", pAssert.tableWithoutMetatableEval, nil, true)
+		self:expectLuaError("argument 1: error", pAssert.tableWithoutMetatableEval, 1, true)
+		self:expectLuaError("argument 100: error", pAssert.tableWithoutMetatableEval, 100, true)
+		self:expectLuaError("arbitrary string: error", pAssert.tableWithoutMetatableEval, "foo", true)
+		self:expectLuaError("table-key: error", pAssert.tableWithoutMetatableEval, {"t1", "x"}, true)
+		self:expectLuaError("function: error", pAssert.tableWithoutMetatableEval, _funcLabelTest, true)
 	end
 	--]====]
 end
@@ -834,7 +891,6 @@ end
 --]===]
 
 
---M.pass()
 -- [===[
 self:registerFunction("pAssert.pass()", pAssert.pass)
 self:registerJob("pAssert.pass()", function(self)
@@ -850,7 +906,6 @@ end
 --]===]
 
 
---M.assert(n, v, err)
 -- [===[
 self:registerFunction("pAssert.assert()", pAssert.assert)
 self:registerJob("pAssert.assert()", function(self)
