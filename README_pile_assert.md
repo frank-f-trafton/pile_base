@@ -1,4 +1,4 @@
-**Version:** 2.000
+**Version:** 2.010
 
 # PILE Assert
 
@@ -7,7 +7,7 @@
 
 
 ```lua
-local pAssert = require("path.to.pile_assert")
+local pAssert = require("pile_assert")
 
 local function aStringCalledFoobar(a)
 	pAssert.type(1, a, "string")

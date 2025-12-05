@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- v2.000
+-- v2.010
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -46,7 +46,6 @@ end
 --]===]
 
 
-
 self:registerFunction("pTable.clearArray()", pTable.clearArray)
 
 
@@ -60,6 +59,7 @@ self:registerJob("pTable.clearArray()", function(self)
 		self:isEqual(#t, 0)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -120,7 +120,6 @@ end
 --]===]
 
 
-
 self:registerFunction("pTable.deepCopy()", pTable.deepCopy)
 
 
@@ -158,11 +157,13 @@ self:registerJob("pTable.deepCopy()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		self:expectLuaError("deepcopy: can't copy tables as keys", pTable.deepCopy, { [{}] = {} } )
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -172,6 +173,7 @@ self:registerJob("pTable.deepCopy()", function(self)
 		self:expectLuaError("deepcopy: can't copy cycles (stack overflow)", pTable.deepCopy, a)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -193,6 +195,70 @@ end
 --]===]
 
 
+self:registerFunction("pTable.patch()", pTable.patch)
+
+
+-- [===[
+self:registerJob("pTable.patch()", function(self)
+	-- [====[
+	do
+		self:expectLuaError("arg #1 bad type", pTable.patch, 123, {})
+		self:expectLuaError("arg #2 bad type", pTable.patch, {}, 123)
+		-- Don't type-check 'overwrite'.
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t1, t2 = {}, {}
+		local count = self:expectLuaReturn("empty tables", pTable.patch, t1, t2)
+		self:isNil(next(t1))
+		self:isEqual(count, 0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local tk = {true}
+		local t1, t2 = {}, { [tk] = "foo"}
+		local count = self:expectLuaReturn("supports tables as keys (which are just copied by reference)", pTable.patch, t1, t2)
+		self:isEqual(next(t1), tk)
+		self:isEqual(count, 0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t1, t2 = {a="z", b="x", c="c", d="v"}, {a="q", b="w", c="e", d="r"}
+		local count = self:expectLuaReturn("patch existing values", pTable.patch, t1, t2, true)
+		self:isEqual(t1.a, "q")
+		self:isEqual(t1.b, "w")
+		self:isEqual(t1.c, "e")
+		self:isEqual(t1.d, "r")
+		self:isEqual(count, 4)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t1, t2 = {a="z", b="x", c="c", d="v"}, {a="q", b="w", c="e", d="r"}
+		local count = self:expectLuaReturn("do not overwrite existing fields", pTable.patch, t1, t2, false)
+		self:isEqual(t1.a, "z")
+		self:isEqual(t1.b, "x")
+		self:isEqual(t1.c, "c")
+		self:isEqual(t1.d, "v")
+		self:isEqual(count, 4)
+	end
+	--]====]
+end
+)
+--]===]
+
+
 self:registerFunction("pTable.deepPatch()", pTable.deepPatch)
 
 
@@ -206,12 +272,14 @@ self:registerJob("pTable.deepPatch()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t1, t2 = {}, { [{true}] = "foo"}
 		self:expectLuaError("doesn't support tables as keys", pTable.deepPatch, t1, t2)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -220,6 +288,7 @@ self:registerJob("pTable.deepPatch()", function(self)
 		self:isNil(next(t1))
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -235,6 +304,7 @@ self:registerJob("pTable.deepPatch()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t1, t2 = {a={b={c={d="bar"}}}}, {a={b={c={d="zoop"}}}}
@@ -245,6 +315,7 @@ self:registerJob("pTable.deepPatch()", function(self)
 		self:isEqual(t1.a.b.c.d, "zoop")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -263,64 +334,74 @@ end
 --]===]
 
 
-self:registerFunction("pTable.patch()", pTable.patch)
+self:registerFunction("pTable.hasAnyDuplicateTables()", pTable.hasAnyDuplicateTables)
 
 
 -- [===[
-self:registerJob("pTable.patch()", function(self)
-	-- [====[
-	do
-		self:expectLuaError("arg #1 bad type", pTable.patch, 123, {})
-		self:expectLuaError("arg #2 bad type", pTable.patch, {}, 123)
-		-- Don't type-check 'overwrite'.
-	end
-	--]====]
+self:registerJob("pTable.hasAnyDuplicateTables()", function(self)
 
 	-- [====[
 	do
-		local t1, t2 = {}, {}
-		local count = self:expectLuaReturn("empty tables", pTable.patch, t1, t2)
-		self:isNil(next(t1))
-		self:isEqual(count, 0)
+		self:expectLuaError("no arguments passed", pTable.hasAnyDuplicateTables)
+		self:expectLuaError("arg #1 bad type", pTable.hasAnyDuplicateTables, false)
+		self:expectLuaError("arg #2 bad type", pTable.hasAnyDuplicateTables, {}, false)
+		-- etc.
+
 	end
 	--]====]
 
-	-- [====[
-	do
-		local tk = {true}
-		local t1, t2 = {}, { [tk] = "foo"}
-		local count = self:expectLuaReturn("supports tables as keys (which are just copied by reference)", pTable.patch, t1, t2)
-		self:isEqual(next(t1), tk)
-		self:isEqual(count, 0)
-	end
-	--]====]
 
 	-- [====[
 	do
-		local t1, t2 = {a="z", b="x", c="c", d="v"}, {a="q", b="w", c="e", d="r"}
-		local count = self:expectLuaReturn("patch existing values", pTable.patch, t1, t2, true)
-		self:isEqual(t1.a, "q")
-		self:isEqual(t1.b, "w")
-		self:isEqual(t1.c, "e")
-		self:isEqual(t1.d, "r")
-		self:isEqual(count, 4)
+		local rv = self:expectLuaReturn("no duplicates", pTable.hasAnyDuplicateTables, {})
+		self:isNil(rv)
 	end
 	--]====]
 
+
 	-- [====[
 	do
-		local t1, t2 = {a="z", b="x", c="c", d="v"}, {a="q", b="w", c="e", d="r"}
-		local count = self:expectLuaReturn("do not overwrite existing fields", pTable.patch, t1, t2, false)
-		self:isEqual(t1.a, "z")
-		self:isEqual(t1.b, "x")
-		self:isEqual(t1.c, "c")
-		self:isEqual(t1.d, "v")
-		self:isEqual(count, 4)
+		local t = {}
+		local rv = self:expectLuaReturn("duplicates in passed arguments", pTable.hasAnyDuplicateTables, t, t)
+		self:isEqual(t, rv)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {}
+		local a1, a2 = {x=t}, {y=t}
+		local rv = self:expectLuaReturn("duplicates within tables", pTable.hasAnyDuplicateTables, a1, a2)
+		self:isEqual(t, rv)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local a1, a2 = {}, {}
+		a2.z = a1
+		local rv = self:expectLuaReturn("one arg appears as a value in another arg", pTable.hasAnyDuplicateTables, a1, a2)
+		self:isEqual(a1, rv)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {}
+		local a1, a2 = {{{{x=t}}}}, {{{{y=t}}}}
+		local rv = self:expectLuaReturn("duplicates within tables (more deeply nested)", pTable.hasAnyDuplicateTables, a1, a2)
+		self:isEqual(t, rv)
 	end
 	--]====]
 end
 )
 --]===]
+
+
+self:registerFunction("pTable.isArray()", pTable.isArray)
 
 
 -- [===[
@@ -334,12 +415,14 @@ self:registerJob("pTable.isArray()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local ret = self:expectLuaReturn("array", pTable.isArray, {"foo", "bar", "baz"})
 		self:isEvalTrue(ret)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -348,12 +431,14 @@ self:registerJob("pTable.isArray()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local ret = self:expectLuaReturn("array (plus index 0 is populated)", pTable.isArray, {[0]=0, 1, 2, 3})
 		self:isEvalTrue(ret)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -363,6 +448,9 @@ self:registerJob("pTable.isArray()", function(self)
 	--]====]
 end
 )
+
+
+self:registerFunction("pTable.isArrayOnly()", pTable.isArrayOnly)
 
 
 -- [===[
@@ -411,6 +499,9 @@ end
 )
 
 
+self:registerFunction("pTable.isArrayOnlyZero()", pTable.isArrayOnlyZero)
+
+
 -- [===[
 self:registerJob("pTable.isArrayOnlyZero()", function(self)
 	self:expectLuaError("arg #1 bad type", pTable.isArrayOnlyZero, 123)
@@ -451,6 +542,40 @@ self:registerJob("pTable.isArrayOnlyZero()", function(self)
 	do
 		local ret = self:expectLuaReturn("not an array (sparse)", pTable.isArrayOnlyZero, {[0]=0, 1, 2, nil, 4, 5})
 		self:isEvalFalse(ret)
+	end
+	--]====]
+end
+)
+
+
+self:registerFunction("pTable.arrayHasDuplicateValues()", pTable.arrayHasDuplicateValues)
+
+
+-- [===[
+self:registerJob("pTable.arrayHasDuplicateValues()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.arrayHasDuplicateValues, 123)
+
+	-- [====[
+	do
+		local ret = self:expectLuaReturn("empty table (do nothing)", pTable.arrayHasDuplicateValues, {})
+		self:isEqual(ret, nil)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local ret = self:expectLuaReturn("no duplicates", pTable.arrayHasDuplicateValues, {1, 2, 3, 4, 5})
+		self:isEqual(ret, nil)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local r1, r2 = self:expectLuaReturn("has duplicates", pTable.arrayHasDuplicateValues, {1, 2, 3, 4, 1})
+		self:isEqual(r1, 1)
+		self:isEqual(r2, 5)
 	end
 	--]====]
 end
@@ -530,6 +655,7 @@ self:registerJob("pTable.invertLUT()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local output = self:expectLuaReturn("make inverted lookup table", pTable.invertLUT, {a=1, b=2, c=3})
@@ -556,6 +682,7 @@ self:registerJob("pTable.arrayOfHashKeys()", function(self)
 		self:isEqual(next(output), nil)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -587,6 +714,7 @@ self:registerJob("pTable.moveElement()", function(self)
 	self:expectLuaError("first index is unpopulated", pTable.moveElement, {1, 2, 3}, 90, 1)
 	self:expectLuaError("second index is unpopulated", pTable.moveElement, {1, 2, 3}, 1, 240)
 
+
 	-- [====[
 	do
 		local t = {"a", "b", "c"}
@@ -594,6 +722,7 @@ self:registerJob("pTable.moveElement()", function(self)
 		self:isEqual(t[2], "b")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -620,6 +749,7 @@ self:registerJob("pTable.swapElements()", function(self)
 	self:expectLuaError("first index is unpopulated", pTable.swapElements, {1, 2, 3}, 90, 1)
 	self:expectLuaError("second index is unpopulated", pTable.swapElements, {1, 2, 3}, 1, 240)
 
+
 	-- [====[
 	do
 		local t = {"a", "b", "c"}
@@ -627,6 +757,7 @@ self:registerJob("pTable.swapElements()", function(self)
 		self:isEqual(t[2], "b")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -657,6 +788,7 @@ self:registerJob("pTable.reverseArray()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {"a", "b", "c"}
@@ -666,6 +798,7 @@ self:registerJob("pTable.reverseArray()", function(self)
 		self:isEqual(t[3], "a")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -695,6 +828,7 @@ self:registerJob("pTable.removeElement()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {"a", "b", "c", "d", "e"}
@@ -709,6 +843,7 @@ self:registerJob("pTable.removeElement()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {"a", "b", "c", "b", "e"}
@@ -721,6 +856,7 @@ self:registerJob("pTable.removeElement()", function(self)
 		self:lf(1)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -771,6 +907,7 @@ self:registerJob("pTable.valueInArray()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {"a", "b", "c", "d", "e", "f", "g"}
@@ -778,6 +915,7 @@ self:registerJob("pTable.valueInArray()", function(self)
 		self:isEqual(ret, nil)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -798,6 +936,7 @@ self:registerJob("pTable.valueInArray()", function(self)
 		self:isEqual(indices[3], nil)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -828,6 +967,7 @@ self:registerJob("pTable.assignIfNil()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {}
@@ -837,6 +977,7 @@ self:registerJob("pTable.assignIfNil()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {}
@@ -845,6 +986,7 @@ self:registerJob("pTable.assignIfNil()", function(self)
 		self:isEqual(t.foo, "baz")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -876,6 +1018,7 @@ self:registerJob("pTable.assignIfNilOrFalse()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {}
@@ -885,6 +1028,7 @@ self:registerJob("pTable.assignIfNilOrFalse()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {foo=false}
@@ -893,6 +1037,7 @@ self:registerJob("pTable.assignIfNilOrFalse()", function(self)
 		self:isEqual(t.foo, "baz")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -935,6 +1080,7 @@ self:registerJob("pTable.resolve()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {
@@ -949,6 +1095,7 @@ self:registerJob("pTable.resolve()", function(self)
 		self:lf(1)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -967,6 +1114,7 @@ self:registerJob("pTable.resolve()", function(self)
 		self:lf(1)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -1010,6 +1158,7 @@ self:registerJob("pTable.assertResolve()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {
@@ -1020,6 +1169,7 @@ self:registerJob("pTable.assertResolve()", function(self)
 		self:expectLuaError("Failed, fatal lookup", pTable.assertResolve, t, "foo/bar/zyp")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -1039,6 +1189,7 @@ self:registerJob("pTable.assertResolve()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local mt = {dip = "flip"}
@@ -1057,68 +1208,8 @@ end
 --]===]
 
 
-self:registerFunction("pTable.hasAnyDuplicateTables()", pTable.hasAnyDuplicateTables)
-
--- [===[
-self:registerJob("pTable.hasAnyDuplicateTables()", function(self)
-
-	-- [====[
-	do
-		self:expectLuaError("no arguments passed", pTable.hasAnyDuplicateTables)
-		self:expectLuaError("arg #1 bad type", pTable.hasAnyDuplicateTables, false)
-		self:expectLuaError("arg #2 bad type", pTable.hasAnyDuplicateTables, {}, false)
-		-- etc.
-
-	end
-	--]====]
-
-	-- [====[
-	do
-		local rv = self:expectLuaReturn("no duplicates", pTable.hasAnyDuplicateTables, {})
-		self:isNil(rv)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local t = {}
-		local rv = self:expectLuaReturn("duplicates in passed arguments", pTable.hasAnyDuplicateTables, t, t)
-		self:isEqual(t, rv)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local t = {}
-		local a1, a2 = {x=t}, {y=t}
-		local rv = self:expectLuaReturn("duplicates within tables", pTable.hasAnyDuplicateTables, a1, a2)
-		self:isEqual(t, rv)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local a1, a2 = {}, {}
-		a2.z = a1
-		local rv = self:expectLuaReturn("one arg appears as a value in another arg", pTable.hasAnyDuplicateTables, a1, a2)
-		self:isEqual(a1, rv)
-	end
-	--]====]
-
-	-- [====[
-	do
-		local t = {}
-		local a1, a2 = {{{{x=t}}}}, {{{{y=t}}}}
-		local rv = self:expectLuaReturn("duplicates within tables (more deeply nested)", pTable.hasAnyDuplicateTables, a1, a2)
-		self:isEqual(t, rv)
-	end
-	--]====]
-end
-)
---]===]
-
-
 self:registerFunction("pTable.wrap1Array()", pTable.wrap1Array)
+
 
 -- [===[
 self:registerJob("pTable.wrap1Array()", function(self)
@@ -1171,6 +1262,7 @@ self:registerJob("pTable.safeTableConcat()", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		self:expectLuaError("arg 1 bad type", pTable.safeTableConcat, true, "!", 1, 4)
@@ -1186,6 +1278,7 @@ end
 
 self:registerFunction("pTable.newNamedMap()", pTable.newNamedMap)
 
+
 -- [===[
 self:registerJob("pTable.newNamedMap()", function(self)
 
@@ -1197,6 +1290,7 @@ self:registerJob("pTable.newNamedMap()", function(self)
 		self:isEqual(pName.get(rv), "ObjectSide")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -1224,6 +1318,7 @@ self:registerJob("pTable.newNamedMapV()", function(self)
 		self:isEqual(pName.get(rv), "ObjectSide")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -1255,6 +1350,7 @@ self:registerJob("pTable.mt_restrict", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {foo="bar"}
@@ -1268,6 +1364,7 @@ self:registerJob("pTable.mt_restrict", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {}
@@ -1280,6 +1377,7 @@ self:registerJob("pTable.mt_restrict", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {}
@@ -1291,6 +1389,7 @@ self:registerJob("pTable.mt_restrict", function(self)
 		self:isEqual(t["somethin'"], true)
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -1319,6 +1418,7 @@ self:registerJob("pTable.mt_restrict", function(self)
 	end
 	--]====]
 
+
 	-- [====[
 	do
 		local t = {"fwoowf"}
@@ -1330,6 +1430,7 @@ self:registerJob("pTable.mt_restrict", function(self)
 		self:isEqual(rv, "fwoowf")
 	end
 	--]====]
+
 
 	-- [====[
 	do
@@ -1343,6 +1444,7 @@ self:registerJob("pTable.mt_restrict", function(self)
 		local rv = self:expectLuaError("field read blocked", testIt)
 	end
 	--]====]
+
 
 	-- [====[
 	do

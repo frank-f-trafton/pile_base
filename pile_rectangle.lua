@@ -1,7 +1,39 @@
--- PILE Rectangle v2.000
--- (C) 2024 - 2025 PILE Contributors
--- License: MIT
+-- PILE Rectangle v2.010
 -- https://github.com/frank-f-trafton/pile_base
+
+
+--[[
+MIT License
+
+Copyright (c) 2024 - 2025 PILE Contributors
+
+PILE Base uses code from these libraries:
+
+PILE Tree:
+  LUIGI
+  Copyright (c) 2015 airstruck
+  License: MIT
+  https://github.com/airstruck/luigi
+
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+--]]
 
 
 local M = {}
@@ -16,6 +48,7 @@ local pAssert = require(PATH .. "pile_assert")
 
 local _lerp, _roundInf = pMath.lerp, pMath.roundInf
 local _min, _max = math.min, math.max
+local select = select
 
 
 --[[ASSERT
@@ -29,6 +62,22 @@ local function _checkRectangle(r, name)
 	L[2] = "y"; pAssert.numberNotNaN(L, r.y)
 	L[2] = "w"; pAssert.numberNotNaN(L, r.w)
 	L[2] = "h"; pAssert.numberNotNaN(L, r.h)
+end
+
+
+local function _checkArrayOfRectangles(list, name)
+	pAssert.type(1, list, "table")
+	for i, v in ipairs(list) do
+		_checkRectangle(v, name .. "[" .. i .. "]")
+	end
+end
+
+
+local function _checkVarargOfRectangles(name, ...)
+	for i = 1, select("#", ...) do
+		local r = select(i, ...)
+		_checkRectangle(r, name .. "[" .. i .. "]")
+	end
 end
 
 
@@ -604,6 +653,32 @@ function M.centerVertical(a, b)
 end
 
 
+function M.flipHorizontal(a, b)
+	--[[ASSERT
+	_checkRectangle(a, "a")
+	_checkRectangle(b, "b")
+	--]]
+
+	local l = b.x - a.x
+	b.x = a.w - l - b.w + a.x
+
+	return a
+end
+
+
+function M.flipVertical(a, b)
+	--[[ASSERT
+	_checkRectangle(a, "a")
+	_checkRectangle(b, "b")
+	--]]
+
+	local l = b.y - a.y
+	b.y = a.h - b.h - l + a.y
+
+	return a
+end
+
+
 function M.pointOverlap(r, x, y)
 	--[[ASSERT
 	pAssert.type(1, r, "table")
@@ -612,6 +687,35 @@ function M.pointOverlap(r, x, y)
 	--]]
 
 	return x >= r.x and x < r.x + r.w and y >= r.y and y < r.y + r.h
+end
+
+
+function M.getBounds(...)
+	--[[ASSERT
+	_checkVarargOfRectangles("vararg", ...)
+	--]]
+
+	local x1, y1, x2, y2 = 0, 0, 0, 0
+	for i = 1, select("#", ...) do
+		local r = select(i, ...)
+		x1, y1, x2, y2 = _min(x1, r.x), _min(y1, r.y), _max(x2, r.x + r.w), _max(y2, r.y + r.h)
+	end
+
+	return x1, y1, x2, y2
+end
+
+
+function M.getBoundsT(list)
+	--[[ASSERT
+	_checkArrayOfRectangles(list, "list")
+	--]]
+
+	local x1, y1, x2, y2 = 0, 0, 0, 0
+	for i, r in ipairs(list) do
+		x1, y1, x2, y2 = _min(x1, r.x), _min(y1, r.y), _max(x2, r.x + r.w), _max(y2, r.y + r.h)
+	end
+
+	return x1, y1, x2, y2
 end
 
 

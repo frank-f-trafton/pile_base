@@ -1,4 +1,4 @@
-**Version:** 2.000
+**Version:** 2.010
 
 # PILE Interp
 
@@ -6,7 +6,7 @@
 
 
 ```lua
-local interp = require("path.to.pile_interp")
+local interp = require("pile_interp")
 
 print(interp("The $1 brown fox $3 over the lazy $2.", "quick", "dog", "jumps"))
 

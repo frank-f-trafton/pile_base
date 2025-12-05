@@ -1,4 +1,4 @@
-**Version:** 2.000
+**Version:** 2.010
 
 # PILE Rectangle
 
@@ -6,7 +6,7 @@ Functions for placing and mutating axis-aligned rectangles.
 
 
 ```lua
-local pRect = require("path.to.pile_rectangle")
+local pRect = require("pile_rectangle")
 
 local r1 = {x=0, y=0, w=16, h=16}
 local r2 = {x=0, y=0, w=8, h=8}
@@ -479,6 +479,32 @@ Like `pRect.center()`, but acts only on the vertical axis.
 **Returns:** `a`, for method chaining.
 
 
+## pRect.flipHorizontal
+
+Horizontally flips a Rectangle within another Rectangle.
+
+`pRect.flipHorizontal(a, b)`
+
+* `a`: The reference Rectangle.
+
+* `b`: The Rectangle to flip.
+
+**Returns:** `a`, for method chaining.
+
+
+## pRect.flipVertical
+
+Vertically flips a Rectangle within another Rectangle.
+
+`pRect.flipVertical(a, b)`
+
+* `a`: The reference Rectangle.
+
+* `b`: The Rectangle to flip.
+
+**Returns:** `a`, for method chaining.
+
+
 ## pRect.pointOverlap
 
 Checks if a point is within a Rectangle.
@@ -490,3 +516,33 @@ Checks if a point is within a Rectangle.
 * `x`, `y`: The point's position.
 
 **Returns:** true if the point overlaps the Rectangle, false if not.
+
+
+## pRect.getBounds
+
+Gets the horizontal and vertical ranges of a group of Rectangles.
+
+`local x1, y1, x2, y2 = pRect.getBounds(...)`
+
+* `...`: A vararg list of Rectangles.
+
+**Returns:** The furthest left, top, right and bottom positions.
+
+**Notes:**
+
+* If no Rectangles are provided, this function will return zero for all positions.
+
+
+## pRect.getBoundsT
+
+Like `pRect.getBounds()`, but takes an array of Rectangles rather than a vararg list.
+
+`local x1, y1, x2, y2 = pRect.getBoundsT(list)`
+
+* `list`: An array of Rectangles.
+
+**Returns:** The furthest left, top, right and bottom positions.
+
+**Notes:**
+
+* If there are no elements in the array, this function will return zero for all positions.

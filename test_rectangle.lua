@@ -1,5 +1,5 @@
 -- Test: pile_rectangle.lua
--- v2.000
+-- v2.010
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -482,8 +482,8 @@ self:registerJob("pRect.expandT()", function(self)
 
 	-- [====[
 	do
-		self:expectLuaError("arg 1 bad Rectangle", pRect.expandT, {x=0, y=0, w=0, h=0}, false)
-		self:expectLuaError("arg 2 bad SideDelta", pRect.expandT, false, {x1=0, y1=0, x2=0, y2=0})
+		self:expectLuaError("arg 1 bad Rectangle", pRect.expandT, false, {x=0, y=0, w=0, h=0})
+		self:expectLuaError("arg 2 bad SideDelta", pRect.expandT, {x1=0, y1=0, x2=0, y2=0}, false)
 
 		-- Test the '_checkSideDelta' assertion.
 		self:expectLuaError("SideDelta bad x1", pRect.expandT, {x=0, y=0, w=0, h=0}, {x1=false, y1=0, x2=0, y2=0})
@@ -594,8 +594,8 @@ self:registerJob("pRect.reduceT()", function(self)
 
 	-- [====[
 	do
-		self:expectLuaError("arg 1 bad Rectangle", pRect.reduceT, {x=0, y=0, w=0, h=0}, false)
-		self:expectLuaError("arg 2 bad SideDelta", pRect.reduceT, false, {x1=0, y1=0, x2=0, y2=0})
+		self:expectLuaError("arg 1 bad Rectangle", pRect.reduceT, false, {x=0, y=0, w=0, h=0})
+		self:expectLuaError("arg 2 bad SideDelta", pRect.reduceT, {x1=0, y1=0, x2=0, y2=0}, false)
 	end
 	--]====]
 end
@@ -2420,7 +2420,70 @@ end
 --]===]
 
 
---M.pointOverlap(r, x, y)
+self:registerFunction("pRect.flipHorizontal", pRect.flipHorizontal)
+
+
+-- [===[
+self:registerJob("pRect.flipHorizontal()", function(self)
+	-- [====[
+	do
+		-- [[
+		local a = {x=100, y=100, w=100, h=100}
+		local b = {x=120, y=100, w=50, h=50}
+		self:expectLuaReturn("flipHorizontal", pRect.flipHorizontal, a, b)
+
+		self:isEqual(b.x, 130)
+		self:isEqual(b.y, 100)
+		self:isEqual(b.w, 50)
+		self:isEqual(b.h, 50)
+		--]]
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("arg 1 bad Rectangle", pRect.flipHorizontal, false, {x=0, y=0, w=0, h=0})
+		self:expectLuaError("arg 2 bad Rectangle", pRect.flipHorizontal, {x=0, y=0, w=0, h=0}, false)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pRect.flipVertical", pRect.flipVertical)
+
+
+-- [===[
+self:registerJob("pRect.flipVertical()", function(self)
+	-- [====[
+	do
+		-- [[
+		local a = {x=0, y=120, w=100, h=1400}
+		local b = {x=20, y=150, w=50, h=500}
+		self:expectLuaReturn("flipVertical", pRect.flipVertical, a, b)
+
+		self:isEqual(b.x, 20)
+		self:isEqual(b.y, 990)
+		self:isEqual(b.w, 50)
+		self:isEqual(b.h, 500)
+		--]]
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("arg 1 bad Rectangle", pRect.flipVertical, false, {x=0, y=0, w=0, h=0})
+		self:expectLuaError("arg 2 bad Rectangle", pRect.flipVertical, {x=0, y=0, w=0, h=0}, false)
+	end
+	--]====]
+end
+)
+--]===]
+
+
 self:registerFunction("pRect.pointOverlap", pRect.pointOverlap)
 
 
@@ -2445,6 +2508,98 @@ self:registerJob("pRect.pointOverlap()", function(self)
 		self:expectLuaError("arg 1 bad Rectangle", pRect.pointOverlap, false, 1, 1)
 		self:expectLuaError("arg 2 bad type", pRect.pointOverlap, {x=0, y=0, w=5, h=5}, false, 1)
 		self:expectLuaError("arg 3 bad type", pRect.pointOverlap, {x=0, y=0, w=5, h=5}, 1, false)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pRect.getBounds", pRect.getBounds)
+
+
+-- [===[
+self:registerJob("pRect.getBounds()", function(self)
+	-- [====[
+	do
+		-- [[
+		local a = {x=33, y=50, w=100, h=85}
+		local b = {x=-100, y=0, w=50, h=50}
+		local c = {x=200, y=-1, w=5, h=1}
+		local x1, y1, x2, y2 = self:expectLuaReturn("getBounds", pRect.getBounds, a, b, c)
+
+		self:isEqual(x1, -100)
+		self:isEqual(y1, -1)
+		self:isEqual(x2, 205)
+		self:isEqual(y2, 135)
+		--]]
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local x1, y1, x2, y2 = self:expectLuaReturn("accept no arguments", pRect.getBounds)
+		self:isEqual(x1, 0)
+		self:isEqual(y1, 0)
+		self:isEqual(x2, 0)
+		self:isEqual(y2, 0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("arg 1 bad Rectangle", pRect.getBounds, false, {x=0, y=0, w=0, h=0})
+		self:expectLuaError("arg 2 bad Rectangle", pRect.getBounds, {x=0, y=0, w=0, h=0}, false)
+		self:expectLuaError("arg 3 (etc.)", pRect.getBounds, {x=0, y=0, w=0, h=0}, {x=0, y=0, w=0, h=0}, false)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pRect.getBoundsT", pRect.getBoundsT)
+
+
+-- [===[
+self:registerJob("pRect.getBoundsT()", function(self)
+	-- [====[
+	do
+		-- [[
+		local list = {
+			{x=33, y=50, w=100, h=85},
+			{x=-100, y=0, w=50, h=50},
+			{x=200, y=-1, w=5, h=1},
+		}
+		local x1, y1, x2, y2 = self:expectLuaReturn("getBoundsT", pRect.getBoundsT, list)
+
+		self:isEqual(x1, -100)
+		self:isEqual(y1, -1)
+		self:isEqual(x2, 205)
+		self:isEqual(y2, 135)
+		--]]
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local x1, y1, x2, y2 = self:expectLuaReturn("accept empty array", pRect.getBoundsT, {})
+		self:isEqual(x1, 0)
+		self:isEqual(y1, 0)
+		self:isEqual(x2, 0)
+		self:isEqual(y2, 0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("arg 1 bad type", pRect.getBoundsT, false)
+		self:expectLuaError("arg 1 index 1 bad Rectangle", pRect.getBoundsT, {false})
+		self:expectLuaError("arg 1 index 2 bad Rectangle (etc.)", pRect.getBoundsT, {{false}, {x=0, y=0, w=0, h=0}})
 	end
 	--]====]
 end

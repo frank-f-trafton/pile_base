@@ -1,4 +1,4 @@
-**Version:** 2.000
+**Version:** 2.010
 
 # PILE Math
 
@@ -8,7 +8,7 @@ There is nothing terribly impressive here, but Lua ships with a pretty meagre ma
 
 
 ```lua
-local pMath = require("path.to.pile_math")
+local pMath = require("pile_math")
 
 print(pMath.clamp(100, 1, 50)) --> 50
 ```

@@ -1,4 +1,4 @@
-**Version:** 2.000
+**Version:** 2.010
 
 # PILE Name
 
@@ -8,7 +8,7 @@ This module is intended to help identify objects when reporting errors. Names ar
 
 
 ```lua
-local pName = require("path.to.pile_name")
+local pName = require("pile_name")
 
 
 local function _assertMetatable(v, mt)

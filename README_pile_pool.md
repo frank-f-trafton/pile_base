@@ -1,4 +1,4 @@
-**Version:** 2.000
+**Version:** 2.010
 
 **This module is experimental. Please see the notes at the bottom of this README.**
 
@@ -8,7 +8,7 @@ Creates stacks of pooled resources (mainly tables or userdata).
 
 
 ```lua
-local pPool = require("path.to.pile_pool")
+local pPool = require("pile_pool")
 
 local function _popping(r)
 	if not r then r = {} end

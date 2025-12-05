@@ -1,4 +1,4 @@
-**Version:** 2.000
+**Version:** 2.010
 
 # PILE Path
 
@@ -8,7 +8,7 @@ This module is intended for [LÖVE](https://www.love2d.org/)'s virtual filesyste
 
 
 ```lua
-local pPath = require("path.to.pile_path")
+local pPath = require("pile_path")
 
 local my_path = pPath.join("foo", "bar") --> "foo/bar"
 ```

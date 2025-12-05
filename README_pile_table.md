@@ -1,12 +1,12 @@
-**Version:** 2.000
+**Version:** 2.010
 
 # PILE Table
 
-Provides helper functions for Lua tables.
+Helper functions for Lua tables.
 
 
 ```lua
-local pTable = require("path.to.pile_table")
+local pTable = require("pile_table")
 
 local lut_foo = pTable.newLUT({"foo", "bar", "baz"})
 --> {foo=true, bar=true, baz=true}
@@ -32,7 +32,7 @@ Erases all keys in a table.
 
 **Notes:**
 
-* When LuaJIT is detected, the LuaJIT function `table.clear()` is substituted for the function defined here.
+* When LuaJIT is detected, `table.clear()` is substituted for this function.
 
 
 ## pTable.clearArray
@@ -45,7 +45,7 @@ Erases a table's array indices.
 
 **Notes:**
 
-* Use this if you want to delete *only* array elements while leaving other fields intact.
+* Use this if you want to delete *only* array elements.
 
 
 ## pTable.copy
@@ -95,9 +95,10 @@ Given two tables, copies values from the second table to the first.
 `pTable.patch(a, b, overwrite)`
 
 * `a`: The table to be modified.
-* `b`: The table with patch values.
-* `overwrite`: When true, existing values in `a` are overwritten by those in `b` with matching keys. When false, existing values in `a` (including `false`) are preserved.
 
+* `b`: The table with patch values.
+
+* `overwrite`: When true, existing values in `a` are overwritten by those in `b` with matching keys. When false, existing values in `a` (including `false`) are preserved.
 
 **Returns:** A count of how many fields were overwritten (or if `overwrite` is false, then how many fields were *not* overwritten).
 
@@ -113,20 +114,22 @@ Given two tables, recursively copies values from the second table to the first. 
 `pTable.deepPatch(a, b, overwrite)`
 
 * `a`: The table to be modified.
+
 * `b`: The table with patch values.
+
 * `overwrite`: When true, existing values in `a` are overwritten by those in `b` with matching keys. When false, existing values in `a` (including `false`) are preserved.
 
 **Notes:**
 
 * Limitations:
   * All tables involved *must* be unique.
-  * It does not support tables as keys.
-  * It can modify, but not replace existing tables in the destination.
+  * Tables as keys are not supported.
+  * This function can modify, but not replace existing tables in the destination.
 
 
 ## pTable.hasAnyDuplicateTables
 
-Checks a list of tables for duplicate table references.
+Recursively checks a list of tables for duplicate table references.
 
 `local t = pTable.hasAnyDuplicateTables(...)`
 
@@ -178,6 +181,17 @@ Checks that a table, with the exception of index zero, *only* contains array ind
 **Returns:** True if the table contains only array indices (and optionally index 0), false otherwise.
 
 
+## pTable.arrayHasDuplicateValues
+
+Checks if an array contains duplicate elements.
+
+`local dupe_i = pTable.arrayHasDuplicateValues(t)`
+
+* `t`: The array to check.
+
+**Returns:** Two indices of the duplicated element, if found. Otherwise, nil.
+
+
 ## pTable.newLUT
 
 Makes a hash lookup table from an array.
@@ -192,6 +206,7 @@ Makes a hash lookup table from an array.
 
 * For example:
 
+
 ```lua
 local array = {"one", "two", "three"}
 local hash = pTable.newLUT(array)
@@ -204,13 +219,14 @@ Makes a hash lookup table from a vararg list.
 
 `local lookup = pTable.newLUTV(...)`
 
-* `...`: Varargs to use as keys.
+* `...`: The vararg list to use as keys.
 
 **Returns:** The converted hash table.
 
 **Notes:**
 
 * For example:
+
 
 ```lua
 local hash = pTable.newLUTV("four", "five", "six")
@@ -300,7 +316,9 @@ Removes elements from an array that are equal to a value, iterating backwards fr
 `local count = pTable.removeElement(t, v, [n])`
 
 * `t`: The table to scan.
+
 * `v`: The value to be removed.
+
 * `[n]`: (*math.huge*) How many elements to remove in this call.
 
 **Returns:** The number of elements removed.
@@ -313,7 +331,9 @@ Checks if a value is in an array.
 `local index = pTable.valueInArray(t, v, [i])`
 
 * `t`: The array to check.
+
 * `v`: The value.
+
 * `[i]`: (*1*) The starting index.
 
 **Returns:** The index of the value when found, or nil if it was not found.
@@ -326,18 +346,21 @@ If `table[key]` is nil, assigns the first non-nil value from a vararg list.
 `pTable.assignIfNil(t, k, ...)`
 
 * `t`: The target table.
+
 * `k`: The target key.
+
 * `...`: A list of values to consider. The first non-nil value is assigned.
 
 **Notes:**
 
 * For example:
 
+
 ```lua
 local t = {}
 pTable.assignIfNil(t, "foo", nil) -- (No change)
 pTable.assignIfNil(t, "foo", "bar", "zoop") --> t[foo] = "bar"
-pTable.assignIfNil(t, "foo", false) --> (No change)
+pTable.assignIfNil(t, "foo", false) --> (No change: t.foo is no longer nil.)
 ```
 
 
@@ -348,32 +371,37 @@ If *table[key]* is nil or false, assigns the first non-nil, non-false value from
 `pTable.assignIfNilOrFalse(t, k, ...)`
 
 * `t`: The target table.
+
 * `k`: The target key.
+
 * `...`: A list of values to consider. The first non-nil, non-false value is assigned.
 
 **Notes:**
 
 * For example:
 
+
 ```lua
 local t = {foo=false}
 pTable.assignIfNil(t, "foo", nil) -- (No change)
 pTable.assignIfNil(t, "foo", true, 100) --> t[foo] = true
-pTable.assignIfNil(t, "foo", false) -- (No change)
+pTable.assignIfNil(t, "foo", false) -- (No change: t.foo is no longer falsy)
 ```
 
 
 ## pTable.resolve
 
-Looks up a value in a nested table structure by following a string of fields delimited by slashes (`/`).
+Looks up a value in a nested table structure, by following a string of slash-delimited fields (`/`).
 
 `local value, count = pTable.resolve(t, str, [raw])`
 
 * `t`: The starting table.
+
 * `str`: The string of delimited fields to check.
+
 * `[raw]`: When true, uses `rawget()` to read table fields (thus ignoring the mechanisms of Lua metatables).
 
-**Returns:** 1) The resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.
+**Returns:** 1) Either the resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.
 
 **Notes:**
 
@@ -389,15 +417,17 @@ A wrapper for `pTable.resolve()` which raises a Lua error if no value was found.
 `local value, count = pTable.assertResolve(t, str, [raw])`
 
 * `t`: The starting table.
+
 * `str`: The string of delimited fields to check. Cannot be an empty string.
+
 * `[raw]`: When true, uses `rawget()` to read table fields (thus ignoring the mechanisms of Lua metatables).
 
-**Returns:** 1) The resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.
+**Returns:** The resolved value, followed by the count of delimited fields.
 
 
 ## pTable.wrap1Array
 
-Returns the element at the wrapped array index position.
+Returns an element from an array at position `n`, wrapped to the array's length.
 
 `local element = pTable.wrap1Array(t, n)`
 
@@ -414,17 +444,17 @@ Returns the element at the wrapped array index position.
 
 ## pTable.safeTableConcat
 
-A wrapper for `table.concat()` which duplicates the table and converts all values to strings. (`table.concat()` normally raises an error if an element cannot be implicitly converted to string.)
+A wrapper for [table.concat](https://www.lua.org/manual/5.1/manual.html#pdf-table.concat) which duplicates the table and converts its values to strings. (`table.concat()` normally raises an error if an element cannot be implicitly converted to string.)
 
-`local str = pTable.safeTableConcat(t, sep, i, j)`
+`local str = pTable.safeTableConcat(t, [sep], [i], [j])`
 
 * `t`: The input table.
 
-* `sep`: An optional separator string, like `", "`.
+* `[sep]`: An optional separator string, like `", "`.
 
-* `i`: *(1)* The first index.
+* `[i]`: *(1)* The first index.
 
-* `j`: *(#t)* The last index.
+* `[j]`: *(#t)* The last index.
 
 **Returns:** The concatenated string.
 
@@ -445,6 +475,7 @@ Creates a NamedMap, which is a Lua table that can be registered to the PILE Name
 
 * The NamedMap's name can be retrieved with `pName.safeGet(n_map, "NamedMap")`. For example:
 
+
 ```lua
 	local nm_obj_side = pTable.newNamedMap("ObjectSide", {left=0.0, center=0.5, right=1.0})
 
@@ -457,6 +488,7 @@ Creates a NamedMap, which is a Lua table that can be registered to the PILE Name
 	checkNamedMap(nm_obj_side, "sideways")
 	--> invalid ObjectSide: sideways
 ```
+
 
 * The names are stored in a [weak table](https://www.lua.org/manual/5.1/manual.html#2.10.2) in the PILE Name Registry. Different NamedMaps may share the same name.
 
@@ -491,6 +523,6 @@ my_table.zut = 4 -- Error
 
 * This metatable is similar in purpose to the ([strict.lua](https://www.lua.org/extras/)) snippet, but it has enough differences in behavior that it cannot be treated as a drop-in replacement.
 
-* `mt_restrict` cannot do anything about the usage of `rawget()` or `rawset()`.
+* `mt_restrict` cannot do anything about the usage of `rawset()` or `rawget()`.
 
 * The behavior of `table.insert()` changed in Lua 5.3, as the langauge designers updated the `table` library to respect metamethods.

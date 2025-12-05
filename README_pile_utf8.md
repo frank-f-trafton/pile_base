@@ -1,4 +1,4 @@
-**Version:** 2.000
+**Version:** 2.010
 
 # PILE UTF-8
 
@@ -10,7 +10,7 @@
 
 
 ```lua
-local pUTF8 = require("path.to.pile_utf8")
+local pUTF8 = require("pile_utf8")
 
 print(pUTF8.check("good string"))
 --> 11

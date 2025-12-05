@@ -2,6 +2,27 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.010 (2025-12-04)
+
+* Added the modules `pile_line.lua`, `pile_hook.lua`, `pile_list2.lua` and `pile_tree.lua`. The last three are based on work from [ProdUI](https://github.com/frank-f-trafton/prod_ui_wip). `pile_tree.lua` contains a node traversal function that was derived from [LUIGI](https://github.com/airstruck/luigi), so the copyright notice for that library is included as well.
+
+* PILE Rectangle:
+
+  * Added the functions `pRect.flipHorizontal()`, `pRect.flipVertical()`, `pRect.getBounds()` and `pRect.getBoundsT()`.
+
+* PILE Table:
+
+  * Added the function `pTable.arrayHasDuplicateValues()`.
+
+  * Removed an unused depth argument in the internal implementation of `pTable.hasAnyDuplicateTables()`.
+
+* Fixed some mistakes in `test_rectangle.lua`.
+
+* Minor documentation changes/fixes.
+
+* Added the license text to every `.lua` source file, excluding tests.
+
+
 # v2.000 (2025-11-13)
 
 * Changed license from dual MIT and MIT No Attribution (MIT-0) to just *MIT*.
