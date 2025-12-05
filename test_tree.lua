@@ -1,5 +1,5 @@
 -- Test: pile_tree.lua
--- v2.010
+-- v2.011
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
@@ -226,6 +226,75 @@ self:registerJob("pTree.nodeGetIndex", function(self)
 		local node = pTree.nodeAdd(root)
 		node.parent = root2
 		self:expectLuaError("incorrect parent reference", pTree.nodeGetIndex, node)
+		--]]
+	end
+	--]====]
+end
+)
+--]===]
+
+
+self:registerFunction("pTree.nodeAssertIndex", pTree.nodeAssertIndex)
+
+
+-- [===[
+self:registerJob("pTree.nodeAssertIndex", function(self)
+	-- [====[
+	do
+		-- [[
+		local root = pTree.nodeNew()
+		local c1 = pTree.nodeAdd(root)
+		c1.id = "one"
+		local c2 = pTree.nodeAdd(root)
+		c2.id = "two"
+
+		local siblings = root["nodes"]
+
+		local i1 = self:expectLuaReturn("getIndex(c1)", pTree.nodeAssertIndex, c1, siblings)
+		local i2 = self:expectLuaReturn("getIndex(c2)", pTree.nodeAssertIndex, c2, siblings)
+
+		self:isEqual(i1, 1)
+		self:isEqual(i2, 2)
+
+		pTree.nodeRemove(c1)
+		-- 'i1' and 'i2' are now stale info...
+
+		self:isEqual(pTree.nodeAssertIndex(c2, siblings), 1)
+		--]]
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		-- [[
+		local root = pTree.nodeNew()
+		local c1 = pTree.nodeAdd(root)
+		c1.id = "one"
+		local c2 = pTree.nodeAdd(root)
+		c2.id = "two"
+
+		local siblings = {}
+
+		self:expectLuaError("wrong 'siblings' table", pTree.nodeAssertIndex, c1, siblings)
+		--]]
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		-- [[
+		local root = pTree.nodeNew()
+		local c1 = pTree.nodeAdd(root)
+		c1.id = "one"
+		local c2 = pTree.nodeAdd(root)
+		c2.id = "two"
+
+		local siblings = root["nodes"]
+
+		self:expectLuaError("arg 1 bad type (leads to search failure)", pTree.nodeAssertIndex, true, siblings)
+		self:expectLuaError("arg 2 bad type (fails on length operator)", pTree.nodeAssertIndex, c1, true)
 		--]]
 	end
 	--]====]

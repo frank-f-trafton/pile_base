@@ -2,6 +2,17 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.011 (2025-12-05)
+
+* `pile_tree.lua`:
+
+  * In the source code, `pTree.nodeAssertIndex()` was incorrectly named `pTree._nodeAssertIndex()` (with a leading underscore).
+
+* `test_tree.lua`:
+
+  * Forgot to include a test job for `pTree.nodeAssertIndex()`.
+
+
 # v2.010 (2025-12-04)
 
 * Added the modules `pile_line.lua`, `pile_hook.lua`, `pile_list2.lua` and `pile_tree.lua`. The last three are based on work from [ProdUI](https://github.com/frank-f-trafton/prod_ui_wip). `pile_tree.lua` contains a node traversal function that was derived from [LUIGI](https://github.com/airstruck/luigi), so the copyright notice for that library is included as well.
