@@ -2,6 +2,19 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.012 (2025-12-08)
+
+Changed the version text in the source files, test files and documentation to be uniform, so that it's easier to change with search-and-replace tools.
+
+* `pile_list2.lua`:
+
+  * Fixed `pList2.nodeInList()` incorrectly returning success when beginning the search in the middle of the list (neither the first nor last node). Updated `test_list2.lua`.
+
+* `pile_tree.lua`:
+
+  * Removed an unused argument in `pTree.nodeGetIndex()`.
+
+
 # v2.011 (2025-12-05)
 
 * `pile_tree.lua`:

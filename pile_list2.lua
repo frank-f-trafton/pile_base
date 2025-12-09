@@ -1,4 +1,5 @@
--- PILE List2 v2.011
+-- PILE List2
+-- VERSION: 2.012
 -- https://github.com/frank-f-trafton/pile_base
 
 
@@ -225,7 +226,7 @@ M.nodeInListBackward = _nodeInListBackward
 
 function M.nodeInList(self, check)
 	local prev = self["prev"]
-	return _nodeInListForward(self, check) or (prev and _nodeInListBackward(self, prev))
+	return _nodeInListForward(self, check) or (prev and _nodeInListBackward(prev, check))
 end
 
 

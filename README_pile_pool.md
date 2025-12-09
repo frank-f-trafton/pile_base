@@ -1,4 +1,4 @@
-**Version:** 2.011
+VERSION: 2.012
 
 **This module is experimental. Please see the notes at the bottom of this README.**
 

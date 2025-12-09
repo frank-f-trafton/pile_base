@@ -1,4 +1,5 @@
--- PILE UTF-8 Conversion Functions v2.011
+-- PILE UTF-8 Conversion Functions
+-- VERSION: 2.012
 -- https://github.com/frank-f-trafton/pile_base
 
 

@@ -1,5 +1,5 @@
 -- Test: pile_list2.lua
--- v2.011
+-- VERSION: 2.012
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -630,7 +630,7 @@ self:registerJob("pList2.nodeInList()", function(self)
 		ret = self:expectLuaReturn("inList() - search is inclusive", pList2.nodeInList, a, a)
 		self:isEqual(ret, true)
 
-		ret = self:expectLuaReturn("inList() not in list", pList2.nodeInList, a, pList2.nodeNew())
+		ret = self:expectLuaReturn("inList() not in list", pList2.nodeInList, b, pList2.nodeNew())
 		self:isEqual(ret, false)
 
 		ret = self:expectLuaReturn("inList() in list, full back direction", pList2.nodeInList, c, a)
