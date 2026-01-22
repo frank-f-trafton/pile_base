@@ -1,4 +1,4 @@
-VERSION: 2.012
+VERSION: 2.022
 
 # PILE Base
 
@@ -6,7 +6,7 @@ A utility library for Lua.
 
 ## PILE Modules
 
-* `pile_assert.lua`: Assertions for function arguments (type checking, etc.).
+* `pile_assert.lua`: Assertions (type checking, etc.).
   * Requires: `pile_interp.lua`
 
 * `pile_hook.lua`: Callable arrays of functions.
@@ -54,12 +54,18 @@ A utility library for Lua.
 
 * [Frank F. Trafton](https://github.com/frank-f-trafton/)
 
+PILE Base includes code from:
+
+* [lume](https://github.com/rxi/lume) by rxi
+
+* [LUIGI](https://github.com/airstruck/luigi) by airstruck
+
 
 # License
 
-As of v2.000, PILE Base is provided under the terms of the MIT License. Please see `LICENSE_pile` for the text and copyright notice.
+As of v2.000, PILE Base is provided under the terms of the MIT License.
 
-Versions 1.0.1 through 1.316 had a dual license: **MIT** and **MIT No Attribution**. For v2.000, the latter was removed so that code from other MIT-licensed libraries could be included.
+Versions 1.0.1 through 1.316 had a dual license: **MIT** and **MIT No Attribution**.
 
 The libraries in the `test` subdirectory contain additional license details and copyright info.
 
@@ -67,16 +73,13 @@ The libraries in the `test` subdirectory contain additional license details and 
 ```
 MIT License
 
-Copyright (c) 2024 - 2025 PILE Contributors
+Copyright (c) 2024 - 2026 PILE Contributors
 
-PILE Base uses code from these libraries:
-
-PILE Tree:
-  LUIGI
-  Copyright (c) 2015 airstruck
-  License: MIT
+LUIGI code: Copyright (c) 2015 airstruck
   https://github.com/airstruck/luigi
 
+lume code: Copyright (c) 2020 rxi
+  https://github.com/rxi/lume
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

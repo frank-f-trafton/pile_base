@@ -1,4 +1,4 @@
-VERSION: 2.012
+VERSION: 2.022
 
 # PILE Scale
 
@@ -95,7 +95,7 @@ Scales and floors a number in a table.
 
 # Notes
 
-* All functions reject NaN for the scale, value, minimum and maximum.
+* All functions reject NaN for the scale, value, minimum, and maximum.
 
 * In the 'integer' functions:
 

@@ -1,10 +1,8 @@
-VERSION: 2.012
+VERSION: 2.022
 
 # PILE Math
 
 A small collection of math functions.
-
-There is nothing terribly impressive here, but Lua ships with a pretty meagre math library, so here we are.
 
 
 ```lua
@@ -41,6 +39,42 @@ Clamps a number within a range.
 * If the minimum is greater than the maximum, then this function will return the minimum.
 
 
+## pMath.dist
+
+Gets the distance between two points.
+
+`local dist = pMath.dist(x1, y1, x2, y2)`
+
+* `x1`, `y1`: The first point.
+
+* `x2`, `y2`: The second point.
+
+**Returns:** The distance.
+
+**Notes:**
+
+* Via [lume](https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumedistancex1-y1-x2-y2--squared).
+
+
+## pMath.distSq
+
+Gets the squared distance between two points.
+
+`local dist_sq = pMath.distSq(x1, y1, x2, y2)`
+
+* `x1`, `y1`: The first point.
+
+* `x2`, `y2`: The second point.
+
+**Returns:** The squared distance.
+
+**Notes**:
+
+* Via [lume](https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumedistancex1-y1-x2-y2--squared).
+
+* This function skips `pMath.dist()`'s call to `math.sqrt()`. It may be faster when comparing the distances of two sets of points.
+
+
 ## pMath.lerp
 
 Gets a value between two numbers, using [linear interpolation](https://en.wikipedia.org/wiki/Linear_interpolation).
@@ -62,7 +96,7 @@ Gets a value between two numbers, using [linear interpolation](https://en.wikipe
 
 ## pMath.roundInf
 
-Rounds a number towards infinity. `0.5` rounds to `1.0`; `-0.5` rounds to `-1.0`.
+Rounds a number toward infinity. `0.5` rounds to `1.0`; `-0.5` rounds to `-1.0`.
 
 `local rounded = pMath.roundInf(n)`
 
@@ -78,6 +112,29 @@ Rounds a number towards infinity. `0.5` rounds to `1.0`; `-0.5` rounds to `-1.0`
 print(pMath.roundInf(0.49999999999999994)) --> 1
 print(pMath.roundInf(-0.49999999999999994)) --> -1
 ```
+
+**Notes**:
+
+* Via [lume](https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumeroundx--increment).
+
+
+## pMath.roundInfIncrement
+
+Like `pMath.roundInf()`, but supports increments other than 1.
+
+`local rounded = roundInfIncrement(n, incr)`
+
+* `n`: The number to round.
+
+* `incr`: The increment.
+
+**Returns:** The rounded number.
+
+**Notes:**
+
+* Via [lume](https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumeroundx--increment).
+
+* The issues with floating point precision in `pmath.roundInf()` apply to this function as well.
 
 
 ## pMath.sign

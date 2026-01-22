@@ -2,6 +2,25 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.022 (2026-01-21)
+
+* Updated copyright year.
+
+* Added copyright notice for imported code (see `pile_math.lua` below).
+
+* Removed the "experimental" notice in the documentation for PILE Schema; other (very minor) changes to the documentation.
+
+* `pile_assert.lua`:
+
+  * Fixed error messages in `pAssert.namedMap()` and `pAssert.namedMapEval()`.
+
+* `pile_math.lua`:
+
+  * Added distance and rounding functions from [lume](https://github.com/rxi/lume/tree/master) by rxi.
+
+  * Changed how `pMath` functions are declared (written first as locals, then packed into a table for export).
+
+
 # v2.012 (2025-12-08)
 
 Changed the version text in the source files, test files and documentation to be uniform, so that it's easier to change with search-and-replace tools.
