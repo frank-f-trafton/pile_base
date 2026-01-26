@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE Tree
 
@@ -24,10 +24,12 @@ print(pTree.nodeGetDepth(b)) --> 3
 
 * `pile_interp.lua`
 
+* `pile_name.lua`
+
 
 # Nodes
 
-All pTree nodes have a table of children at `node["nodes"]`, and all nodes except for roots have a link to their parent at `node["parent"]`. (The square bracket notation is used so that the field names can be easily changed with a search-and-replace mechanism.) Every node in a tree must be unique table, or else you risk breaking the traversal code.
+All pTree nodes have a table of children at `node["nodes"]`, and all nodes except for roots have a link to their parent at `node["parent"]`. (The square bracket notation is used so that the field names can be easily changed with a search-and-replace mechanism.) Every node in a tree must be a unique table, or else you risk breaking the traversal code.
 
 PILE Tree's functions can be called as object methods (ie `obj:nodeGetDepth()`) if you attach them to nodes or otherwise make them callable through `__index`.
 

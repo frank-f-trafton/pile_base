@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE Hook
 
@@ -21,7 +21,9 @@ hooks("blue") --> nil
 
 ## Dependencies
 
-None.
+* `pile_assert.lua`
+
+* `pile_name.lua`
 
 
 # HookLists

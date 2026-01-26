@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE Base
 
@@ -7,15 +7,18 @@ A utility library for Lua.
 ## PILE Modules
 
 * `pile_assert.lua`: Assertions (type checking, etc.).
-  * Requires: `pile_interp.lua`
+  * Requires: `pile_interp.lua`, `pile_name.lua`
 
 * `pile_hook.lua`: Callable arrays of functions.
-  * Requires: `pile_assert.lua`
+  * Requires: `pile_assert.lua`, `pile_name.lua`
 
 * `pile_interp.lua`: String interpolation with position-independent arguments.
 
 * `pile_line.lua`: Manipulates axis-aligned line segments.
-  * Requires: `pile_assert.lua`, `pile_math.lua`
+  * Requires: `pile_assert.lua`, `pile_math.lua`, `pile_name.lua`
+
+* `pile_list2.lua`: Doubly linked lists.
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_name.lua`
 
 * `pile_math.lua`: Some basic math functions.
 
@@ -24,30 +27,30 @@ A utility library for Lua.
 * `pile_path.lua`: Functions for working with LÖVE virtual filesystem paths.
 
 * `pile_pool.lua`: Pooling of objects. **Experimental**
-  * Requires: `pile_assert.lua`
+  * Requires: `pile_assert.lua`, `pile_name.lua`
 
 * `pile_rectangle.lua`: Manipulates axis-aligned rectangles.
-  * Requires: `pile_assert.lua`, `pile_math.lua`
+  * Requires: `pile_assert.lua`, `pile_math.lua`, `pile_name.lua`
 
 * `pile_scale.lua`: Scales numbers, particularly integers.
-  * Requires: `pile_assert.lua`
+  * Requires: `pile_assert.lua`, `pile_name.lua`
 
 * `pile_schema.lua`: Validates Lua tables.
-  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_table.lua`
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_name.lua`
 
 * `pile_string.lua`: Some common string patterns.
 
 * `pile_table.lua`: Table, array functions.
-  * Requires: `pile_assert.lua`, `pile_interp.lua`
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_name.lua`
 
-* `pile_tree.lua`: An implementation of tree structures.
-  * Requires: `pile_assert.lua`, `pile_interp.lua`
+* `pile_tree.lua`: Tree structures.
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_name.lua`
 
 * `pile_utf8.lua`: UTF-8 helper functions.
-  * Requires: `pile_assert.lua`, `pile_interp.lua`
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_name.lua`
 
 * `pile_utf8_conv.lua`: Converts UTF-8 to UTF-16 and vice versa.
-  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_utf8.lua`
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_name.lua`, `pile_utf8.lua`
 
 
 # Contributors

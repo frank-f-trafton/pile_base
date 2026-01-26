@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE Scale
 
@@ -21,6 +21,8 @@ pScale.fieldInteger(2.0, t, "h") --> t.h == 32
 # Dependencies
 
 * `pile_assert.lua`
+
+* `pile_name.lua`
 
 
 # API: PILE Scale

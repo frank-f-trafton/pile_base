@@ -1,5 +1,5 @@
 -- Test: pile_utf8_conv.lua
--- VERSION: 2.022
+-- VERSION: 2.023
 
 
 local REQ_PATH = ... and (...):match("(.-)[^%.]+$") or ""

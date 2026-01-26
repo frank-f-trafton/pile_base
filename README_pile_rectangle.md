@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE Rectangle
 
@@ -21,6 +21,8 @@ print(r2.w, r2.h) --> 16 16
 * `pile_assert.lua`
 
 * `pile_math.lua`
+
+* `pile_name.lua`
 
 
 ## Structures

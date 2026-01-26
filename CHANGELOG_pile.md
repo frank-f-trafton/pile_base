@@ -2,6 +2,17 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.023 (2026-01-26)
+
+(This version is functionally identical to v2.022.)
+
+* Corrected a typo, and several errors pertaining to dependencies in the documentation.
+
+* `pile_math.lua`:
+
+  * Shuffled the order of calls to `require`.
+
+
 # v2.022 (2026-01-21)
 
 * Updated copyright year.

@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE UTF-8
 
@@ -27,12 +27,16 @@ print(pUTF8.check("bad" .. string.char(0xff) .. "string"))
 
 * `pile_interp.lua`
 
+* `pile_name.lua`
+
 
 ### pile_utf8_conv.lua
 
 * `pile_assert.lua`
 
 * `pile_interp.lua`
+
+* `pile_name.lua`
 
 * `pile_utf8.lua`
 

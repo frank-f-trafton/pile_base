@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 **This module is experimental. Please see the notes at the bottom of this README.**
 
@@ -38,6 +38,8 @@ color1 = stack:push(color1) -- 'color1' is now nil
 ## Dependencies
 
 * `pile_assert.lua`
+
+* `pile_name.lua`
 
 
 # PILE Pool API

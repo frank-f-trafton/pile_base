@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE Table
 
@@ -15,7 +15,11 @@ local lut_foo = pTable.newLUT({"foo", "bar", "baz"})
 
 ## Dependencies
 
+* `pile_assert.lua`
+
 * `pile_interp.lua`
+
+* `pile_name.lua`
 
 
 # API: PILE Table

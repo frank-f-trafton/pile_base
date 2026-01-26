@@ -1,5 +1,5 @@
 -- PILE Rectangle
--- VERSION: 2.022
+-- VERSION: 2.023
 -- https://github.com/frank-f-trafton/pile_base
 
 
@@ -40,8 +40,8 @@ local M = {}
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
-local pMath = require(PATH .. "pile_math")
 local pAssert = require(PATH .. "pile_assert")
+local pMath = require(PATH .. "pile_math")
 
 
 local _lerp, _roundInf = pMath.lerp, pMath.roundInf

@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE Schema
 
@@ -48,6 +48,8 @@ printErr(err)
 * `pile_assert.lua`
 
 * `pile_interp.lua`
+
+* `pile_name.lua`
 
 
 # Structures

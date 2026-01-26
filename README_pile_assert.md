@@ -1,4 +1,4 @@
-VERSION: 2.022
+VERSION: 2.023
 
 # PILE Assert
 
@@ -23,6 +23,8 @@ aStringCalledFoobar(1)
 ## Dependencies
 
 * `pile_interp.lua`
+
+* `pile_name.lua`
 
 
 # The PILE Assert Function Signature
