@@ -1,4 +1,4 @@
-VERSION: 2.023
+VERSION: 2.100
 
 # PILE UTF-8
 
@@ -258,7 +258,7 @@ Converts a UTF-8 string to UTF-16.
 **Surrogate**: Values in the range of U±D800 to U±DFFF are reserved for *surrogate pairs* in UTF-16, and are not valid code points.
 
 
-## References
+## Links
 
 * [UTF-8 RFC 3629](https://tools.ietf.org/html/rfc3629)
 

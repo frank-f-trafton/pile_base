@@ -2,6 +2,31 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.100 (2026-03-05)
+
+* Added [StringWalk and StringProc](https://github.com/frank-f-trafton/string_walk) to PILE Base.
+
+* `pile_string_walk.lua`:
+
+  * Added `W:setName()` and `W:getName()`.
+
+  * Renamed `W:newString()` to `W:setString()`.
+
+  * Added some missing getters: `W:getTerseMode()`, `W:getByteMode()`, and `W:getLineCharDisplay()`.
+
+  * To support method chaining, the following were altered to return `W` (ie `self`): `W:push()`, `W:pop()`, `W:popAll()`, `W:setString()`, `W:setName()`, `W:reset()`, `W:setTerseMode()`, `W:setByteMode()`, `W:setLineCharDisplay()`, `W:goEOS()`, `W:warn()`, and `W:_status()`.
+
+  * Removed the protection against whitespace classes being redefined by the locale. I think this library is the wrong place to check for such differences.
+
+* `pile_string_proc.lua`:
+
+  * Moved functions from `pile_string_proc_debug.lua` to this module: `checkSymbols()` and `checkWords()`.
+
+* `pile_table.lua`:
+
+  * Added `pTable.set()`, `pTable.setDouble()` and `pTable.updateDouble()`.
+
+
 # v2.023 (2026-01-26)
 
 (This version is functionally identical to v2.022.)

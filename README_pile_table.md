@@ -1,4 +1,4 @@
-VERSION: 2.023
+VERSION: 2.100
 
 # PILE Table
 
@@ -393,6 +393,39 @@ pTable.assignIfNil(t, "foo", false) -- (No change: t.foo is no longer falsy)
 ```
 
 
+## pTable.set
+
+Assigns a value to a table field.
+
+`local changed = pTable.set(t, field, value)`
+
+* `t`: The table.
+
+* `field`: The field value to update.
+
+* `value`: The value to assign.
+
+**Returns:** true if the value changed, false otherwise.
+
+**Notes:**
+
+* This function can be used to shorten some comparisons to previous values. It should be avoided in busy codepaths.
+
+```lua
+-- Without
+local old_x = self.x
+self.x = self.x % 2
+if self.x ~= old_x then
+	self.y = self.y + 1
+end
+
+-- With
+if pTable.set(self, "x", self.x % 2) then
+	self.y = self.y + 1
+end
+```
+
+
 ## pTable.resolve
 
 Looks up a value in a nested table structure, by following a string of slash-delimited fields (`/`).
@@ -514,7 +547,7 @@ Like `pTable.newNamedMap()`, but uses a vararg list to populate keys. All values
 
 A metatable that raises an error when accessing or assigning unpopulated fields in a table *(see notes)*.
 
-### Notes
+**Notes:**
 
 * For example:
 
@@ -530,3 +563,54 @@ my_table.zut = 4 -- Error
 * `mt_restrict` cannot do anything about the usage of `rawset()` or `rawget()`.
 
 * The behavior of `table.insert()` changed in Lua 5.3, as the langauge designers updated the `table` library to respect metamethods.
+
+
+# API: PILE Table: Double Variables
+
+These functions work on two copies of a setting in a table. The first, user-facing copy may be false/nil to indicate that a default value should be used. The second, internal copy mirrors the first, except that a default value is substituted for false/nil.
+
+This is useful when the default value can change, perhaps as a result of loading new theme data. For example, consider a text widget that can be aligned left, right, or center:
+```lua
+'self.S_align' can be "left", "center", "right", or false
+'self.align' *must* be "left", "center", or "right".
+```
+
+The widget's drawing code would read `self.align`, while the interface system would read `self.S_align`.
+
+
+## pTable.setDouble
+
+Assigns a double variable, falling back to a default value if false/nil was provided.
+
+`local changed = pTable.setDouble(t, setting, field, v, default)`
+
+* `t`: The table.
+
+* `setting`: The user-facing field, which will be assigned `v`.
+
+* `field`: The internal field, which will be assigned `v` or `default`.
+
+* `v`: The value to assign, when not false/nil.
+
+* `default:` The default value to use if `v` is false/nil. (This default value cannot itself be false/nil.)
+
+**Returns:** true if the field value was updated, false otherwise.
+
+
+## pTable.updateDouble
+
+Updates a double variable's internal value, if the user-facing value is false/nil.
+
+`pTable.updateDouble(t, setting, field, default)`
+
+* `t`: The table.
+
+* `setting`: The user-facing field, which might be false/nil.
+
+* `field`: The internal field, which may be assigned `default`.
+
+* `default`: The value to assign to `t[field]`, if `t[setting]` is false/nil.
+
+**Notes:**
+
+* To be used when the default value itself may have changed.

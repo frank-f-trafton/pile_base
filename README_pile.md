@@ -1,4 +1,4 @@
-VERSION: 2.023
+VERSION: 2.100
 
 # PILE Base
 
@@ -40,6 +40,12 @@ A utility library for Lua.
 
 * `pile_string.lua`: Some common string patterns.
 
+* `pile_string_walk.lua`: Parses strings by stepping through them.
+  * Requires: `pile_assert.lua`, `pile_interp.lua`
+
+* `pile_string_proc.lua`: Extends PILE StringWalk to support grammar productions.
+  * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_string_walk.lua`
+
 * `pile_table.lua`: Table, array functions.
   * Requires: `pile_assert.lua`, `pile_interp.lua`, `pile_name.lua`
 
@@ -63,12 +69,18 @@ PILE Base includes code from:
 
 * [LUIGI](https://github.com/airstruck/luigi) by airstruck
 
+## Code from FFT's previous libraries
+
+* [Utf8Tools](https://github.com/frank-f-trafton/utf8_tools) was included in 2024 (as the PILE UTF-8 modules).
+
+* [StringWalk](https://github.com/frank-f-trafton/string_walk) (formerly [StringReader](https://github.com/frank-f-trafton/string_reader)) was included in 2026.
+
 
 # License
 
 As of v2.000, PILE Base is provided under the terms of the MIT License.
 
-Versions 1.0.1 through 1.316 had a dual license: **MIT** and **MIT No Attribution**.
+Versions 1.0.1 through 1.316 were dual-licensed: **MIT** and **MIT No Attribution**. MIT-0 was dropped because it made it impossible for me to include other MIT-licensed code.
 
 The libraries in the `test` subdirectory contain additional license details and copyright info.
 

@@ -1,5 +1,5 @@
 -- Test: pile_table.lua
--- VERSION: 2.023
+-- VERSION: 2.100
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -1455,6 +1455,73 @@ self:registerJob("pTable.mt_restrict", function(self)
 			return true
 		end
 		self:expectLuaError("field write blocked", testIt)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerJob("pTable.setDouble", function(self)
+
+	-- [====[
+	do
+		local t = {front=false, back=false}
+		self:print(3, "set value")
+		pTable.setDouble(t, "front", "back", 123, 456)
+		self:isEqual(t.front, 123)
+		self:isEqual(t.back, 123)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {front=false, back=false}
+		self:print(3, "set default")
+		pTable.setDouble(t, "front", "back", false, 456)
+		self:isEqual(t.front, false)
+		self:isEqual(t.back, 456)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {front=false, back=false}
+		self:expectLuaError("t[field] cannot end up being false/nil", pTable.setDouble, t, "front", "back", false, false)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerJob("pTable.updateDouble", function(self)
+	-- [====[
+	do
+		local t = {front=false, back=false}
+		local my_default = 456
+		self:print(3, "default changed")
+		pTable.setDouble(t, "front", "back", false, my_default)
+		self:isEqual(t.front, false)
+		self:isEqual(t.back, my_default)
+
+		my_default = 789
+
+		pTable.updateDouble(t, "front", "back", my_default)
+		self:isEqual(t.front, false)
+		self:isEqual(t.back, my_default)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {front=false, back=false}
+		self:expectLuaError("default cannot be false/nil", pTable.updateDouble, t, "front", "back", false)
 	end
 	--]====]
 end
