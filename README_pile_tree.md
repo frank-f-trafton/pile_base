@@ -1,4 +1,4 @@
-VERSION: 2.100
+VERSION: 2.101
 
 # PILE Tree
 
@@ -33,7 +33,7 @@ All pTree nodes have a table of children at `node["nodes"]`, and all nodes excep
 
 PILE Tree's functions can be called as object methods (ie `obj:nodeGetDepth()`) if you attach them to nodes or otherwise make them callable through `__index`.
 
-For more complex use cases, you may need to write your own versions of the functions to create, add and remove nodes.
+For more complex use cases, you may need to write your own versions of some functions.
 
 
 # API: Node Management
@@ -432,6 +432,45 @@ Looks for a key and value pair in a node, searching upward through this node's d
 **Notes:**
 
 * Does not return multiple successful candidates.
+
+
+## pTree.nodeResolvePath
+
+Searches for a node in a tree by following a path string.
+
+`local node, err, p = pTree.nodeResolvePath(self, path, id_key, [simple])`
+
+* `self`: The node.
+
+* `path`: The path string.
+
+* `id_key`: The key in each node which holds the Node ID. Cannot be nil or NaN.
+
+* `[simple]`: *(false)* When true, disables special IDs (`.`, `..`) and anchoring the search from the root node (`/foo`).
+
+**Returns:** On success, the node. On failure, `nil`, an error string, and the index in the path where the search stopped.
+
+**Notes:**
+
+* Path strings are a series of slash-separated Node IDs, like `foo/bar/bop`. The Node IDs are stored in `node[id_key]`.
+
+* Trailing slashes are ignored: `foo/bar/` and `foo/bar` are functionally identical.
+
+* Empty IDs (like `foo//bar`) cannot be addressed.
+
+* If multiple sibling nodes have the same Node ID, then only the first such node in the array shall be selected.
+
+* When `simple` is false/nil, then:
+
+  * A path beginning with `/`, like `/foo/bar`, will anchor the search to the root node.
+
+  * The special ID `..` will select the current node's parent, and `.` will do nothing.
+
+* When `simple` is true, `.` and `..` are treated as plain Node IDs, and anchoring a path with `/` always fails.
+
+* Use backslashes (`\`) to escape special characters in IDs. For example, with strings enclosed by double quotes, the path `"foo/do\\/op"` is treated as the two IDs `foo` and `do/op`. It is an error to have an incomplete escape sequence at the end of a path string.
+
+* Escapes are always processed, even in `simple` mode.
 
 
 # Module Notes

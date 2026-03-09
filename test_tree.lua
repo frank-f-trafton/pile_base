@@ -1,5 +1,5 @@
 -- Test: pile_tree.lua
--- VERSION: 2.100
+-- VERSION: 2.101
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
@@ -1089,7 +1089,7 @@ end
 )
 --]===]
 
-print("pTree.nodeFindKeyInChildren", pTree.nodeFindKeyInChildren)
+
 self:registerFunction("pTree.nodeFindKeyInChildren", pTree.nodeFindKeyInChildren)
 
 
@@ -1279,7 +1279,6 @@ self:registerJob("pTree.nodeFindKeyAscending", function(self)
 		self:isNil(r2)
 
 		r1, r2 = self:expectLuaReturn("findKeyAscending(): success (exclusive, non-specific)", pTree.nodeFindKeyAscending, c111, false, "wee")
-		print("r1", r1, "r2", r2)
 		self:isEqual(r1, c11)
 		self:isEqual(r2, "woo")
 
@@ -1320,6 +1319,147 @@ self:registerJob("pTree.nodeFindKeyAscending", function(self)
 		self:expectLuaError("arg #1 bad type", pTree.nodeFindKeyAscending, true, pTree.nodeNew(), true, "foo")
 		-- don't check arg #2
 		self:expectLuaError("arg #3 cannot be nil", pTree.nodeFindKeyAscending, pTree.nodeNew(), true, nil)
+	end
+	--]]
+end
+)
+--]===]
+
+
+self:registerFunction("pTree.nodeResolvePath", pTree.nodeResolvePath)
+
+
+-- [===[
+self:registerJob("pTree.nodeResolvePath", function(self)
+	-- [====[
+	do
+		-- [[
+		local root = pTree.nodeNew()
+		local c1 = pTree.nodeAdd(root)
+		c1.id = "foo"
+
+		local c11 = pTree.nodeAdd(c1)
+		c11.id = "bar"
+
+		local c12 = pTree.nodeAdd(c1)
+		c12.id = "baz"
+
+		local c2 = pTree.nodeAdd(root)
+		c2.id = "doop"
+
+		local c21 = pTree.nodeAdd(c2)
+		c21.id = "."
+
+		local c21x = pTree.nodeAdd(c2)
+		c21x.id = ".."
+
+		local c22 = pTree.nodeAdd(c2)
+		c22.id = "go/op"
+
+		local c23 = pTree.nodeAdd(c2)
+		c23.id = "///...///"
+
+		local rv, err, p, path
+
+		path = "foo"
+		self:print(3, "Down one level: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isEqual(rv, c1)
+
+		path = "foo/baz"
+		self:print(3, "Down two levels: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isEqual(rv, c12)
+
+		path = "foo/"
+		self:print(3, "Ignore trailing slash: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isEqual(rv, c1)
+
+		path = "."
+		self:print(3, "Stay put: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isEqual(rv, root)
+
+		path = "/foo"
+		self:print(3, "Start search at root node: " .. path)
+		rv, err, p = pTree.nodeResolvePath(c22, path, "id")
+		self:isEqual(rv, c1)
+
+		path = ".."
+		self:print(3, "Get parent: " .. path)
+		rv, err, p = pTree.nodeResolvePath(c22, path, "id")
+		self:isEqual(rv, c2)
+
+		path = "doop/go\\/op"
+		self:print(3, "Escape slash: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isEqual(rv, c22)
+
+		path = "doop/\\."
+		self:print(3, "Escape one dot: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isEqual(rv, c21)
+
+		path = "doop/\\.."
+		self:print(3, "Escape two dots: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isEqual(rv, c21x)
+
+		path = "doop/\\/\\/\\/\\.\\.\\.\\/\\/\\/"
+		self:print(3, "Test all escapes: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isEqual(rv, c23)
+
+		path = "/.."
+		self:print(3, "Can't get parent from root: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isNil(rv, c2)
+		self:print(4, "Error message: " .. err)
+
+		path = "//"
+		self:print(3, "Can't address empty ID: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id")
+		self:isNil(rv, c2)
+		self:print(4, "Error message: " .. err)
+
+		path = "doop/."
+		self:print(3, "Test simple search (1/2): " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id", true)
+		self:isEqual(rv, c21)
+
+		path = "doop/.."
+		self:print(3, "Test simple search (2/2): " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id", true)
+		self:isEqual(rv, c21x)
+
+		path = "doop/go\\/op"
+		self:print(3, "Escapes are processed, even in simple search mode: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id", true)
+		self:isEqual(rv, c22)
+
+		path = "/doop"
+		self:print(3, "Cannot anchor to root in simple search mode: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id", true)
+		self:isNil(rv)
+		self:print(4, "Error message: " .. err)
+
+		path = "doop\\"
+		self:print(3, "Unfinished char escapes at the end are always a parsing failure: " .. path)
+		rv, err, p = pTree.nodeResolvePath(root, path, "id", true)
+		self:isNil(rv)
+		self:print(4, "Error message: " .. err)
+		--]]
+	end
+	--]====]
+
+
+	-- [[
+	do
+		self:expectLuaError("arg #1 bad type", pTree.nodeResolvePath, true, pTree.nodeNew(), "foo/bar", "id")
+		self:expectLuaError("arg #2 bad type", pTree.nodeResolvePath, pTree.nodeNew(), true, "id")
+		-- don't test arg #3 ('id_key')
+		-- don't test arg #4 ('simple')
 	end
 	--]]
 end

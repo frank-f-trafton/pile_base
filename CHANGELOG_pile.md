@@ -2,6 +2,15 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.101 (2026-03-09)
+
+* `pile_tree.lua`:
+
+  * Added `pTree.nodeResolvePath()`.
+
+* Some minor cleanup of documentation.
+
+
 # v2.100 (2026-03-05)
 
 * Added [StringWalk and StringProc](https://github.com/frank-f-trafton/string_walk) to PILE Base.
