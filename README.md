@@ -4,6 +4,10 @@ VERSION: 2.105
 
 A utility library for Lua.
 
+[Online documentation](https://frank-f-trafton.github.io/pile_base/index.html)
+
+The docs may be read offline by downloading the repo and pointing your web browser to the files in `docs/html5`.
+
 
 # License
 
