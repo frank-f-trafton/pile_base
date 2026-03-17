@@ -1,0 +1,672 @@
+= PILE Base: pAssert
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pAssert__ provides Lua assertions with (mostly) apropos error messages.
+
+Dependencies: xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+
+[source,lua]
+----
+local pAssert = require("p_assert")
+
+local function aStringCalledFoobar(a)
+	pAssert.type(1, a, "string")
+
+	return a == "foobar"
+end
+
+aStringCalledFoobar(1)
+--> argument #1: bad type (expected string, got number)
+----
+
+
+toc::[]
+
+
+== API
+
+
+=== pAssert.assert
+
+Raises an error with a custom message if the value is `false` or `nil`.
+
+[source,lua]
+----
+pAssert.assert(n, v, [err])
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `[err]`: An optional error message to display.
+
+
+[discrete]
+==== Notes
+
+Like <<#_passert_notnilnotfalse>>, but with different error messages.
+
+'''
+
+
+=== pAssert.fail
+
+Always raises an error.
+
+[source,lua]
+----
+pAssert.fail(n, v, [err])
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check. (Unused.)
+
+* `[err]`: An optional error message to display.
+
+'''
+
+
+=== pAssert.integer
+
+The value is an integer.
+
+[source,lua]
+----
+pAssert.integer(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.integerEval
+
+The value is `false`/`nil`, or an integer.
+
+[source,lua]
+----
+pAssert.integerEval(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.integerGe
+
+The value is an integer, greater or equal to a minimum value.
+
+[source,lua]
+----
+pAssert.integerGe(n, v, min)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+'''
+
+
+=== pAssert.integerGeEval
+
+The value is `false`/`nil`, or an integer that is greater or equal to a minimum value.
+
+[source,lua]
+----
+pAssert.integerGeEval(n, v, min)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+'''
+
+
+=== pAssert.integerRange
+
+The value is an integer within a specified range.
+
+[source,lua]
+----
+pAssert.integerRange(n, v, min, max)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+* `max`: The maximum permitted value.
+
+'''
+
+
+=== pAssert.integerRangeEval
+
+The value is `false`/`nil`, or an integer within a specified range.
+
+[source,lua]
+----
+pAssert.integerRangeEval(n, v, min, max)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+* `max`: The maximum permitted value.
+
+'''
+
+
+=== pAssert.namedMap
+
+The value is in a xref:p_table.adoc#_namedmaps[NamedMap] (or any other Lua table) as a key.
+
+[source,lua]
+----
+pAssert.namedMap(n, v, map)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `map`: The NamedMap table.
+
+'''
+
+
+=== pAssert.namedMapEval
+
+The value is `false`/`nil`, or it appears in a xref:p_table.adoc#_namedmaps[NamedMap] (or any other Lua table) as a key.
+
+[source,lua]
+----
+pAssert.namedMapEval(n, v, map)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `map`: The NamedMap table.
+
+'''
+
+
+=== pAssert.notNan
+
+The value is not NaN.
+
+[source,lua]
+----
+pAssert.notNan(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.notNil
+
+The value is not `nil`.
+
+[source,lua]
+----
+pAssert.notNil(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.notNilNotFalse
+
+The value is not `nil` and not `false`.
+
+[source,lua]
+----
+pAssert.notNilNotFalse(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.notNilNotFalseNotNan
+
+The value is not `nil`, not `false`, and not NaN.
+
+[source,lua]
+----
+pAssert.notNilNotFalseNotNan(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.notNilNotNan
+
+The value is not `nil` and not NaN.
+
+[source,lua]
+----
+pAssert.notNilNotNan(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.numberGe
+
+The value is a number that is greater or equal to a minimum value.
+
+[source,lua]
+----
+pAssert.numberGe(n, v, min)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+'''
+
+
+=== pAssert.numberGeEval
+
+The value is `false`/`nil`, or a number that is greater or equal to a minimum value.
+
+[source,lua]
+----
+pAssert.numberGeEval(n, v, min)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+'''
+
+
+=== pAssert.numberNotNan
+
+The value is a number that isn't NaN.
+
+[source,lua]
+----
+pAssert.numberNotNan(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.numberNotNanEval
+
+The value is `false`/`nil`, or a number that isn't NaN.
+
+[source,lua]
+----
+pAssert.numberNotNanEval(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.numberRange
+
+The value is a number within a specified range.
+
+[source,lua]
+----
+pAssert.numberRange(n, v, min, max)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+* `max`: The maximum permitted value.
+
+'''
+
+
+=== pAssert.numberRangeEval
+
+The value is `false`/`nil`, or a number within a specified range.
+
+[source,lua]
+----
+pAssert.numberRangeEval(n, v, min, max)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `min`: The minimum permitted value.
+
+* `max`: The maximum permitted value.
+
+'''
+
+
+=== pAssert.oneOf
+
+The value matches one of any values in a vararg list.
+
+[source,lua]
+----
+pAssert.oneOf(n, v, id, ...)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `id`: What to the call the list in error messages.
+
+* `...`: A vararg list of values to check against.
+
+'''
+
+
+=== pAssert.oneOfEval
+
+The value is `false`/`nil`, or it matches one of any values in a vararg list.
+
+[source,lua]
+----
+pAssert.oneOfEval(n, v, id, ...)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `id`: What to the call the list in error messages.
+
+* `...`: A vararg list of values to check against.
+
+'''
+
+
+=== pAssert.pass
+
+Does nothing (always passes).
+
+[source,lua]
+----
+pAssert.pass(n, v)
+----
+
+* `n`: The name tag. __(Unused.)__
+
+* `v`: The value to check. __(Unused.)__
+
+'''
+
+
+=== pAssert.tableWithMetatable
+
+The value is a table which has a specific metatable assigned.
+
+[source,lua]
+----
+pAssert.tableWithMetatable(n, v, mt)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `mt`: The metatable to check.
+
+'''
+
+
+=== pAssert.tableWithMetatableEval
+
+The value is `false`/`nil`, or a table which has a specific metatable assigned.
+
+[source,lua]
+----
+pAssert.tableWithMetatableEval(n, v, mt)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `mt`: The metatable to check.
+
+'''
+
+
+=== pAssert.tableWithoutMetatable
+
+The value is a table with no metatable assigned.
+
+[source,lua]
+----
+pAssert.tableWithoutMetatable(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.tableWithoutMetatableEval
+
+The value is `false`/`nil`, or a table with no metatable assigned.
+
+[source,lua]
+----
+pAssert.tableWithoutMetatableEval(n, v)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+'''
+
+
+=== pAssert.type
+
+The value is one Lua type.
+
+[source,lua]
+----
+pAssert.type(n, v, e)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `e`: The expected type string (`"boolean"`, etc.)
+
+'''
+
+
+=== pAssert.typeEval
+
+The value is `false`/`nil`, or one Lua type.
+
+[source,lua]
+----
+pAssert.typeEval(n, v, e)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `e`: The expected type string (`"boolean"`, etc.)
+
+'''
+
+
+=== pAssert.types
+
+The value is one of multiple Lua types.
+
+[source,lua]
+----
+pAssert.types(n, v, ...)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `...`: A vararg list of accepted type strings (`"boolean"`, etc.)
+
+'''
+
+
+=== pAssert.typesEval
+
+The value is `false`/`nil`, or one of multiple Lua types.
+
+[source,lua]
+----
+pAssert.typesEval(n, v, ...)
+----
+
+* `n`: The name tag.
+
+* `v`: The value to check.
+
+* `...`: A vararg list of accepted type strings (`"boolean"`, etc.)
+
+
+== Module Notes
+
+
+=== The pAssert Function Signature
+
+All __pAssert__ functions share these first two arguments…
+
+[source,lua]
+----
+pAssert.someFunction(n, v)
+----
+
+…where `n` is the name tag (usually an argument count), and `v` is the value to check. If the value passes, nothing happens. If a problem is determined, then the assertion will __(surprise!)__ raise an error.
+
+The name tag can be used in a few different ways (see xref:p_assert.adoc#_uses_of_name_tags[Uses of Name Tags]).
+
+
+=== What's NaN?
+
+NaN ("Not a Number") is an error state for floating point values. You can generate a NaN at run time by dividing zero by zero, and you can detect NaN by comparing a value against itself (which, for NaN, always produces `false`).
+
+In __pAssert__, all integer checks, and all number checks with a minimum or maximum bound also reject NaN.
+
+
+=== Uses of Name Tags
+
+The name tag `n` can be used in the following ways:
+
+* `false`/`nil`, for nothing:
+
+`pAssert.integer(nil, 1.1)` -> expected integer
+
+
+* A number, for an argument count:
+
+`pAssert.integer(1, 1.1)` -> **argument #1:** expected integer
+
+
+* A string, for any arbitrary tag:
+
+`pAssert.integer("Something Important", 1.1)` -> **Something Important:** expected integer
+
+
+* A table with its first two indices set, for table and field names:
+
+`pAssert.integer({"hash", "foo"}, 1.1)` -> **table 'hash', field 'foo':** expected integer
+
+(To reduce the creation of throwaway tables, a shared table may be used for many calls. The table `pAssert.L` is allocated for this purpose.)
+
+
+* A function that returns a string, for any arbitrary tag:
+
+[source,lua]
+----
+local function F()
+	return "Nuh-uh"
+end
+----
+
+`pAssert.integer(F, 1.1)` -> **Nuh-uh:** expected integer
+
+
+=== Other Remarks
+
+These functions are run time checks, so they will add processing overhead anywhere they are called.
+
+The assertions don't check their own arguments. Incorrect arguments can lead to misleading error messages, or incidental errors being raised from within assertions.
+
+
+include::snippets/footer.adoc[]

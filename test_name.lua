@@ -1,5 +1,5 @@
--- Test: pile_name.lua
--- VERSION: 2.101
+-- Test: p_name.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,7 +10,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pName = require(PATH .. "pile_name")
+local pName = require(PATH .. "p_name")
 
 
 local cli_verbosity

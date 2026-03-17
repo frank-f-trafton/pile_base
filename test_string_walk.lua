@@ -1,5 +1,5 @@
--- Test: PILE StringWalk
--- VERSION: 2.101
+-- Test: pStringWalk
+-- VERSION: 2.105
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
@@ -9,7 +9,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pStringWalk = require(PATH .. "pile_string_walk")
+local pStringWalk = require(PATH .. "p_string_walk")
 
 
 local _mt_walk = getmetatable(pStringWalk.new())
@@ -26,7 +26,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE StringWalk", cli_verbosity)
+local self = errTest.new("pStringWalk", cli_verbosity)
 
 
 -- [===[
@@ -45,7 +45,7 @@ self:registerJob("pStringWalk.new()", function(self)
 		self:isNil(W._name)
 		self:lf(4)
 	end
-	
+
 	do
 		self:print(3, "[+] with 'name' label")
 		local W = pStringWalk.new("foobar", "my_walker")
@@ -101,18 +101,18 @@ self:registerJob("W:setName()", function(self)
 
 		self:isEqual(W._name, "mojo")
 		self:lf(4)
-		
+
 		self:print(3, "[+] clear name")
 		W:setName()
 		self:isNil(W._name)
 		self:lf(4)
 	end
-	
+
 	do
 		self:print(3, "check method chaining")
 		local W = pStringWalk.new("foobar")
 		local W2 = W:setName("A"):setName("B")
-			
+
 		self:isEqual(W, W2)
 	end
 end
@@ -132,7 +132,7 @@ self:registerJob("W:getName()", function(self)
 		local name = W:getName()
 		self:isEqual(name, "bozo")
 		self:lf(4)
-		
+
 		self:print(3, "get (no) name")
 		W:setName()
 		local name2 = W:getName()
@@ -157,12 +157,12 @@ self:registerJob("W:reset()", function(self)
 		self:isEqual(W.I, 1)
 		self:lf(4)
 	end
-	
+
 	do
 		self:print(3, "check method chaining")
 		local W = pStringWalk.new("foobar")
 		local W2 = W:reset():reset()
-			
+
 		self:isEqual(W, W2)
 	end
 end
@@ -178,7 +178,7 @@ self:registerFunction("W:setTerseMode()", _mt_walk.setTerseMode)
 
 self:registerJob("W:setTerseMode()", function(self)
 	-- Don't type-check arg #1.
-	
+
 	do
 		self:print(3, "[+] expected behavior")
 		local W = pStringWalk.new("foobar")
@@ -191,12 +191,12 @@ self:registerJob("W:setTerseMode()", function(self)
 		self:isEvalFalse(W._terse)
 		self:lf(4)
 	end
-	
+
 	do
 		self:print(3, "check method chaining")
 		local W = pStringWalk.new("foobar")
 		local W2 = W:setTerseMode(true):setTerseMode(true)
-			
+
 		self:isEqual(W, W2)
 	end
 end
@@ -213,7 +213,7 @@ self:registerJob("W:getTerseMode()", function(self)
 		local W = pStringWalk.new("foobar")
 		W:setTerseMode(true)
 		self:isEvalTrue(W:getTerseMode())
-		
+
 		W:setTerseMode(false)
 		self:isEvalFalse(W:getTerseMode())
 		self:lf(4)
@@ -237,12 +237,12 @@ self:registerJob("W:setByteMode()", function(self)
 		self:isEvalFalse(W._bmode)
 		self:lf(4)
 	end
-	
+
 	do
 		self:print(3, "check method chaining")
 		local W = pStringWalk.new("foobar")
 		local W2 = W:setByteMode(true):setByteMode(true)
-			
+
 		self:isEqual(W, W2)
 	end
 end
@@ -259,7 +259,7 @@ self:registerJob("W:getByteMode()", function(self)
 		local W = pStringWalk.new("foobar")
 		W:setByteMode(true)
 		self:isEvalTrue(W:getByteMode())
-		
+
 		W:setByteMode(false)
 		self:isEvalFalse(W:getByteMode())
 		self:lf(4)
@@ -286,12 +286,12 @@ self:registerJob("W:setLineCharDisplay()", function(self)
 		self:isEvalTrue(W._cn)
 		self:lf(4)
 	end
-	
+
 	do
 		self:print(3, "check method chaining")
 		local W = pStringWalk.new("foobar")
 		local W2 = W:setLineCharDisplay(false, false):setLineCharDisplay(false, false)
-			
+
 		self:isEqual(W, W2)
 	end
 end
@@ -310,7 +310,7 @@ self:registerJob("W:getLineCharDisplay()", function(self)
 		local ln, cn = W:getLineCharDisplay()
 		self:isEvalTrue(ln)
 		self:isEvalTrue(cn)
-		
+
 		W:setLineCharDisplay(false, false)
 		local ln2, cn2 = W:getLineCharDisplay()
 		self:isEvalFalse(ln2)
@@ -789,12 +789,12 @@ self:registerJob("W:goEOS()", function(self)
 		self:isEqual(W.I, 5)
 		self:lf(4)
 	end
-	
+
 	do
 		self:print(3, "check method chaining")
 		local W = pStringWalk.new("foobar")
 		local W2 = W:goEOS():goEOS()
-			
+
 		self:isEqual(W, W2)
 	end
 end
@@ -1057,7 +1057,7 @@ self:registerJob("W:error()", function(self)
 		self:isEvalTrue(err:find("^This error"))
 		self:lf(4)
 	end
-	
+
 	do
 		local W = pStringWalk.new("foobar")
 		self:print(3, "[+] Name label")
@@ -1111,13 +1111,13 @@ self:registerJob("W:warn()", function(self)
 		W:warn("This warning should have no line number, no character number and no byte index.")
 		self:lf(4)
 	end
-	
+
 	do
 		self:print(3, "check method chaining")
 		local W = pStringWalk.new("foobar")
 		local ignore = "Ignore this warning."
 		local W2 = W:warn(ignore):warn(ignore)
-			
+
 		self:isEqual(W, W2)
 	end
 end
@@ -1154,12 +1154,12 @@ self:registerJob("W:push(), W:pop(), W:popAll()", function(self)
 		self:isEqual(#W._st, 0)
 		self:isEqual(W.S, "foobar")
 	end
-	
+
 	do
 		self:print(3, "check method chaining")
 		local W = pStringWalk.new("foobar")
 		local W2 = W:push("one"):pop():popAll()
-			
+
 		self:isEqual(W, W2)
 	end
 end

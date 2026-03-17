@@ -1,5 +1,5 @@
--- Test: pile_line.lua
--- VERSION: 2.101
+-- Test: p_line.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -19,13 +19,13 @@ commented out.
 --]]
 local pLine
 do
-	local f, err = io.open("pile_line.lua", "r")
+	local f, err = io.open("p_line.lua", "r")
 	if not f then
 		error(err)
 	end
 	local source_str = f:read("*a")
 	if not source_str then
-		error("couldn't read source file 'pile_line.lua'.")
+		error("couldn't read source file 'p_line.lua'.")
 	end
 	f:close()
 
@@ -48,7 +48,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE Line", cli_verbosity)
+local self = errTest.new("pLine", cli_verbosity)
 
 
 self:registerFunction("pLine.set", pLine.set)
@@ -379,11 +379,11 @@ self:registerJob("pLine.expandT()", function(self)
 	-- [====[
 	do
 		self:expectLuaError("arg 1 bad LineSegment", pLine.expandT, false, {x1=0, x2=0})
-		self:expectLuaError("arg 2 bad SideDelta", pLine.expandT, {x=0, w=0}, false)
+		self:expectLuaError("arg 2 bad LineDelta", pLine.expandT, {x=0, w=0}, false)
 
-		-- Test the '_checkSideDelta' assertion.
-		self:expectLuaError("SideDelta bad x1", pLine.expandT, {x=0, w=0}, {x1=false, x2=0})
-		self:expectLuaError("SideDelta bad x2", pLine.expandT, {x=0, w=0}, {x1=0, x2=false})
+		-- Test the '_checkLineDelta' assertion.
+		self:expectLuaError("LineDelta bad x1", pLine.expandT, {x=0, w=0}, {x1=false, x2=0})
+		self:expectLuaError("LineDelta bad x2", pLine.expandT, {x=0, w=0}, {x1=0, x2=false})
 	end
 	--]====]
 end
@@ -477,7 +477,7 @@ self:registerJob("pLine.reduceT()", function(self)
 	-- [====[
 	do
 		self:expectLuaError("arg 1 bad LineSegment", pLine.reduceT, false, {x=0, w=0})
-		self:expectLuaError("arg 2 bad SideDelta", pLine.reduceT, {x1=0, x2=0}, false)
+		self:expectLuaError("arg 2 bad LineDelta", pLine.reduceT, {x1=0, x2=0}, false)
 	end
 	--]====]
 end

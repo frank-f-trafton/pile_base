@@ -1,0 +1,505 @@
+= PILE Base: pLine
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pLine__ provides functions for placing and mutating axis-aligned line segments.
+
+This is a one-dimensional version of xref:p_rect.adoc[pRect].
+
+Dependencies: xref:p_assert.adoc[pAssert], xref:p_math.adoc[pMath], xref:p_name.adoc[pName]
+
+[source,lua]
+----
+local pLine = require("p_line")
+
+local l1 = {x=0, w=16}
+local l2 = {x=0, w=8}
+pLine.copy(l1, l2)
+
+print(l2.x, l2.w) --> 0 16
+----
+
+
+toc::[]
+
+
+== API
+
+
+=== pLine.center
+
+Centers LineSegment `b` within LineSegment `a`.
+
+[source,lua]
+----
+pLine.center(a, b)
+----
+
+* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+
+* `b`: The LineSegment to center.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.copy
+
+Copies a LineSegment's position and length.
+
+[source,lua]
+----
+pLine.copy(a, b)
+----
+
+* `a`: The source xref:p_line.adoc#_linesegment[LineSegment].
+
+* `b`: The LineSegment to overwrite.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.expand
+
+Expands a LineSegment by shifting its sides.
+
+[source,lua]
+----
+pLine.expand(a, x1, x2)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `x1`: How much to expand the left side.
+
+* `x2`: How much to expand the right side.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.expandLeft
+
+Expands a LineSegment's left side.
+
+[source,lua]
+----
+pLine.expandLeft(a, x1)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `x1`: How much to expand the left side.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.expandRight
+
+Expands a LineSegment's right side.
+
+[source,lua]
+----
+pLine.expandRight(a, x2)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `x2`: How much to expand the right side.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.expandT
+
+Expands a LineSegment by shifting its sides.  Like xref:p_line.adoc#_pline_expand[pLine.expand], but takes a LineDelta table.
+
+[source,lua]
+----
+pLine.expandT(a, ld)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `ld`: The xref:p_line.adoc#_linedelta[LineDelta] to use.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.flip
+
+Flips the LineSegment in relation to another LineSegment.
+
+[source,lua]
+----
+pLine.flip(a, b)
+----
+
+* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+
+* `b`: The LineSegment to flip.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.getBounds
+
+Gets the range of a group of LineSegments.
+
+[source,lua]
+----
+local x1, x2 = pLine.getBounds(...)
+----
+
+* `...`: A vararg list of xref:p_line.adoc#_linesegment[LineSegments].
+
+**Returns:** The furthest left and right positions.
+
+[discrete]
+==== Notes
+
+If no arguments are provided, then both returned positions will be zero.
+
+'''
+
+
+=== pLine.getBoundsT
+
+Gets the range of a group of LineSegments. Like xref:p_line.adoc#_pline_getbounds[pLine.getBounds], but takes an array of LineSegments rather than a vararg list.
+
+[source,lua]
+----
+local x1, x2 = pLine.getBoundsT(list)
+----
+
+* `list`: An array of xref:p_line.adoc#_linesegment[LineSegments].
+
+**Returns:** The furthest left and right positions.
+
+
+[discrete]
+==== Notes
+
+If there are no elements in the array, then both returned positions will be zero.
+
+'''
+
+
+=== pLine.placeInner
+
+Places LineSegment `b` within the boundaries of LineSegment `a` at an interpolated position.
+
+[source,lua]
+----
+pLine.placeInner(a, b, unit)
+----
+
+* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+
+* `b`: The LineSegment to place.
+
+* `unit`: A number from 0.0 to 1.0.
+
+**Returns:** `a`, for method chaining.
+
+[discrete]
+==== Notes
+
+`a` is assumed to be at least as big as `b`.
+
+The final coordinates of `b` are rounded to integers.
+
+'''
+
+
+=== pLine.placeMidpoint
+
+Places LineSegment ``b``'s center point within the boundaries of LineSegment ``a``, at an interpolated position.
+
+[source,lua]
+----
+pLine.placeMidpoint(a, b, unit)
+----
+
+* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+
+* `b`: The LineSegment to place.
+
+* `unit`: A number from 0.0 to 1.0.
+
+**Returns:** `a`, for method chaining.
+
+[discrete]
+==== Notes
+
+The final coordinates of `b` are rounded to integers.
+
+'''
+
+
+=== pLine.placeOuter
+
+Places LineSegment `b` within or just outside the boundaries of LineSegment `a` at an interpolated position.
+
+[source,lua]
+----
+pLine.placeOuter(a, b, unit)
+----
+
+* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+
+* `b`: The LineSegment to place.
+
+* `unit`: A number from 0.0 to 1.0.
+
+**Returns:** `a`, for method chaining.
+
+[discrete]
+==== Notes
+
+The final coordinates of `b` are rounded to integers.
+
+'''
+
+
+=== pLine.positionOverlap
+
+Checks if a position is within a LineSegment.
+
+[source,lua]
+----
+local overlap = pLine.positionOverlap(a, x)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to check.
+
+* `x`: The position.
+
+**Returns:** `true` if the point overlaps the LineSegment, `false` if not.
+
+'''
+
+
+=== pLine.reduce
+
+Shortens a LineSegment by shifting its sides.
+
+[source,lua]
+----
+pLine.reduce(a, x1, x2)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `x1`: How much to shorten the left side.
+
+* `x2`: How much to shorten the right side.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.reduceLeft
+
+Shortenes a LineSegment's left side.
+
+[source,lua]
+----
+pLine.reduceLeft(a, x1)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `x1`: How much to shorten the left side.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.reduceRight
+
+Shortens a LineSegment's right side.
+
+[source,lua]
+----
+pLine.reduceRight(a, x2)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `x2`: How much to shorten the right side.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.reduceT
+
+Shortens a LineSegment by shifting its sides. Like xref:p_line.adoc#_pline_reduce[pLine.reduce], but takes a LineDelta table.
+
+[source,lua]
+----
+pLine.reduceT(a, ld)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `ld`: The xref:p_line.adoc#_linedelta[LineDelta] to use.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.set
+
+Sets a LineSegment's position and length.
+
+[source,lua]
+----
+pLine.set(a, x, w)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+
+* `x`: The new position.
+
+* `w`: The new width.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.split
+
+Splits a LineSegment.
+
+[source,lua]
+----
+pLine.split(a, b, side, len)
+----
+
+* `a`: The input xref:p_line.adoc#_linesegment[LineSegment].
+
+* `b`: The output LineSegment.
+
+* `side`: The side to split: `left` or `right`.
+
+* `len`: The length of the split.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.splitLeft
+
+Shortens LineSegment `a` by cutting a chunk from its left side, and overwrites LineSegment `b` to match the chunk.
+
+[source,lua]
+----
+pLine.splitLeft(a, b, len)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to shorten.
+
+* `b`: The LineSegment to be assigned the removed part.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.splitOrOverlay
+
+Splits or copies a LineSegment, based on the arguments provided.
+
+[source,lua]
+----
+pLine.splitOrOverlay(a, b, placement, len)
+----
+
+* `a`: The input xref:p_line.adoc#_linesegment[LineSegment].
+
+* `b`: The output LineSegment.
+
+* `placement`: How to place LineSegment `b`: by splitting LineSegment `a` (`left` or `right`), or by copying it (`overlay`).
+
+* `len`: The length of the split. Not used when the placement mode is `overlay`.
+
+**Returns:** `a`, for method chaining.
+
+'''
+
+
+=== pLine.splitRight
+
+Shortens LineSegment `a` by cutting a chunk from its right side, and overwrites LineSegment `b` to match the chunk.
+
+[source,lua]
+----
+pLine.splitRight(a, b, len)
+----
+
+* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to shorten.
+
+* `b`: The LineSegment to be assigned the removed part.
+
+**Returns:** `a`, for method chaining.
+
+
+== Module Notes
+
+
+=== Omissions
+
+Functions that would change only one variable in a trivial way, like `setPosition()` or `setLength()`, are omitted from the API.
+
+
+=== Structures
+
+__pLine__ does not come with functions to create the structures described here. Any table that contains the expected fields may be used. Out of concern for overhead, function arguments are not validated by default.
+
+
+==== LineSegment
+
+A table with `x` and `w` fields, both numbers. The length (`w`) is assumed to be greater than or equal to zero.
+
+[source,lua]
+----
+local LineSegment = {x=0, w=0}
+----
+
+
+==== LineDelta
+
+A table with measurements for each side of a LineSegment. These are typically used to apply margins, padding, etc.
+
+[source,lua]
+----
+local ld = {x1=0, x2=0} -- left, right
+----
+
+
+include::snippets/footer.adoc[]

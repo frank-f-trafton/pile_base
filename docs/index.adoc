@@ -1,0 +1,77 @@
+= PILE Base: Home
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+
+include::snippets/header.adoc[]
+
+__PILE Base__ is a utility library for https://lua.org/[**Lua**], versions 5.1 - 5.4.
+
+
+//toc::[]
+
+
+== Contributors
+
+* https://github.com/frank-f-trafton/[**Frank F. Trafton**]
+
+PILE Base includes code from:
+
+* https://github.com/rxi/lume[**lume**] by rxi
+
+* https://github.com/airstruck/luigi[**LUIGI**] by airstruck
+
+=== Code from FFT's previous libraries
+
+* https://github.com/frank-f-trafton/utf8_tools[**Utf8Tools**] was included in 2024 (as the UTF-8 modules).
+
+* https://github.com/frank-f-trafton/string_walk[**StringWalk**] (formerly https://github.com/frank-f-trafton/string_reader[**StringReader**]) was included in 2026.
+
+
+== Links
+
+* http://www.github.com/frank-f-trafton/pile_base[**Online Git repository**]
+
+
+== License
+
+As of v2.000, PILE Base is provided under the terms of the MIT License.
+
+Versions 1.0.1 through 1.316 were dual-licensed: **MIT** and **MIT No Attribution**. The latter was dropped because it made including other MIT-licensed code impossible.
+
+The libraries in the `test` subdirectory contain additional license details and copyright info.
+
+....
+MIT License
+
+Copyright (c) 2024 - 2026 PILE Contributors
+
+LUIGI code: Copyright (c) 2015 airstruck
+  https://github.com/airstruck/luigi
+
+lume code: Copyright (c) 2020 rxi
+  https://github.com/rxi/lume
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+....
+
+
+include::snippets/footer.adoc[]

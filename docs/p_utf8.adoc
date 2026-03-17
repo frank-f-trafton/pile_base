@@ -1,0 +1,263 @@
+= PILE Base: pUtf8
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pUtf8__ provides functions for working with UTF-8 strings.
+
+Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+
+See also: xref:p_utf8_conv.adoc[pUtf8Conv], for converting between UTF-8 and UTF-16.
+
+[source,lua]
+----
+local pUtf8 = require("p_utf8")
+
+print(pUtf8.check("good string"))
+--> 11
+
+print(pUtf8.check("bad" .. string.char(0xff) .. "string"))
+--> nil; unknown UTF-8 byte length marker; 4
+----
+
+
+toc::[]
+
+
+== API
+
+=== pUtf8.check
+
+Checks a UTF-8 string for encoding problems.
+
+[source,lua]
+----
+local ok, err, byte = pUtf8.check(s, [i], [j])
+----
+
+* `s`: The string to check.
+
+* `[i]`: __(empty string: 0; non-empty string: 1)__ The first byte index.
+
+* `[j]`: __(#str)__ The last byte index. Cannot be lower than `i`.
+
+**Returns:** If no problems were found, the total number of code points scanned. Otherwise, `nil`, error string, and byte index.
+
+
+[discrete]
+==== Notes
+
+As a special case, this function will return 0 when given an empty string and values of zero for `i` and `j`. (In other words, `pUtf8.check("")` will always return 0.)
+
+For non-empty strings, if the range arguments are specified, then `i` needs to point to a UTF-8 Start Byte, and `j` needs to point to the last byte of a UTF-8-encoded character.
+
+'''
+
+
+=== pUtf8.codes
+
+A loop iterator for code points in a UTF-8 string, where `i` is the byte position, `c` is the code point number, and `u` is the code point's UTF-8 substring.
+
+This function **raises an error** if it encounters a problem with the UTF-8 encoding.
+
+[source,lua]
+----
+for i, c, u in utf8.codes(s) do --[[...]] end
+----
+
+* `s`: The string to iterate.
+
+**Returns:** The byte position `i`, the code point number `c`, and the code point's UTF-8 string representation `u`.
+
+'''
+
+
+=== pUtf8.codeFromString
+
+Gets a Unicode Code Point and its isolated UTF-8 Sequence from a string.
+
+[source,lua]
+----
+local code, u8_seq = pUtf8.codeFromString(s, [i])
+----
+
+* `s`: The UTF-8 string to read. Cannot be empty.
+
+* `[i]`: __(1)__ The byte position to read from. Must point to a valid UTF-8 Start Byte.
+
+**Returns:** The code point number and its equivalent UTF-8 Sequence as a string, or `nil` plus an error string if unsuccessful.
+
+'''
+
+
+=== pUtf8.concatCodes
+
+Creates a UTF-8 string from one or more code point numbers.
+
+This function **raises an error** if it encounters a problem with the code point numbers.
+
+[source,lua]
+----
+local str = pUtf8.concatCodes(...)
+----
+
+* `...`: Code point numbers.
+
+**Returns:** A concatenated UTF-8 string.
+
+
+[discrete]
+==== Notes
+
+This function allocates a temporary table. To convert single code points, xref:p_utf8.adoc#_putf8_stringfromcode[pUtf8.stringFromCode] may be used instead.
+
+'''
+
+
+=== pUtf8.getCheckSurrogates
+
+Gets the library's setting for checking surrogate values.
+
+[source,lua]
+----
+local enabled = pUtf8.getCheckSurrogates()
+----
+
+**Returns:** `true` if surrogates are rejected as invalid, `false` if they are ignored.
+
+'''
+
+
+=== pUtf8.scrub
+
+Replaces bad UTF-8 Sequences in a string.
+
+[source,lua]
+----
+local str = pUtf8.scrub(s, repl)
+----
+
+* `s`: The string to scrub.
+
+* `repl`: A replacement string to use in place of the bad UTF-8 Sequences. Use an empty string to remove the invalid bytes.
+
+**Returns:** The scrubbed UTF-8 string.
+
+'''
+
+
+=== pUtf8.setCheckSurrogates
+
+__Default: true__
+
+Sets the library to check or ignore surrogate values.
+
+[source,lua]
+----
+pUtf8.setCheckSurrogates(enabled)
+----
+
+* `enabled`: `true` to reject surrogates as invalid, `false`/`nil` to ignore them.
+
+'''
+
+
+=== pUtf8.step
+
+Looks for a Start Byte from a byte position through to the end of the string.
+
+This function **does not validate** the encoding.
+
+[source,lua]
+----
+local index = pUtf8.step(s, i)
+----
+
+
+* `s`: The string to search.
+
+* `i`: Starting position; bytes __after__ this index are checked. Can be from 0 to `#str`.
+
+**Returns:** Index of the next Start Byte, or `nil` if the end of the string is reached.
+
+
+[discrete]
+==== Notes
+
+With empty strings, the only accepted position for `i` is 0.
+
+'''
+
+
+=== pUtf8.stepBack
+
+Looks for a Start Byte from a byte position, traveling backwards, to the start of the string.
+
+This function **does not validate** the encoding.
+
+[source,lua]
+----
+local index = pUtf8.stepBack(s, i)
+----
+
+* `s`: The string to search.
+
+* `i`: Starting position; bytes __before__ this index are checked. Can be from 1 to `#str + 1`.
+
+**Returns:** Index of the previous Start Byte, or `nil` if the start of the string is reached.
+
+
+[discrete]
+==== Notes
+
+With empty strings, the only accepted position for `i` is 1.
+
+'''
+
+
+=== pUtf8.stringFromCode
+
+Converts a code point in numeric form to a UTF-8 Sequence (string).
+
+[source,lua]
+----
+local u8_seq, err = pUtf8.stringFromCode(c)
+----
+
+* `c`: The code point number.
+
+**Returns:** the UTF-8 Sequence (string), or `nil` plus an error string if unsuccessful.
+
+
+== Module Notes
+
+
+=== Terminology
+
+**Code Point**: a Unicode Code Point, stored as a Lua number. E.g. `65` (for `A`)
+
+**UTF-8 Sequence**: A single Unicode Code Point, encoded in UTF-8 and stored as a Lua string. E.g. `"A"`
+
+**Start Byte**: The first byte in a UTF-8 Sequence. The length of the sequence is encoded in the start byte.
+
+**Continuation Byte**: The second, third or fourth byte in a UTF-8 Sequence. A UTF-8 Sequence may not be longer than 4 bytes.
+
+**Surrogate**: Values in the range of U+D800 to U+DFFF are reserved for __surrogate pairs__ in UTF-16, and are not valid code points.
+
+
+=== Links
+
+* https://tools.ietf.org/html/rfc3629[**UTF-8 RFC 3629**]
+
+* https://www.rfc-editor.org/rfc/rfc2781[**UTF-16 RFC 2781**]
+
+* https://en.wikipedia.org/wiki/Unicode[**Wikipedia: Unicode**]
+
+* https://en.wikipedia.org/wiki/UTF-8[**Wikipedia: UTF-8**]
+
+
+include::snippets/footer.adoc[]

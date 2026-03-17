@@ -1,0 +1,96 @@
+= PILE Base: pPath
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pPath__ provides functions for working with paths.
+
+This module is intended for https://www.love2d.org/[LÖVE]'s virtual filesystem paths. As such, its functions assume that all paths use `/` as directory separators, and they are not aware of `.` and `..`.
+
+Dependencies: None.
+
+[source,lua]
+----
+local pPath = require("p_path")
+
+local my_path = pPath.join("foo", "bar") --> "foo/bar"
+----
+
+
+toc::[]
+
+
+== API
+
+
+=== pPath.getExtension
+
+Gets the extension at the end of a file path.
+
+[source,lua]
+----
+local ext = pPath.getExtension(path)
+----
+
+* `path`: The file path.
+
+**Returns:** The extension (including the dot), or an empty string if the path did not end with an extension.
+
+
+[discrete]
+==== Notes
+
+When the file path ends with multiple extensions, like `my_file.txt.zip`, only the last part (`.zip`) is returned.
+
+'''
+
+
+=== pPath.join
+
+Joins two path fragments.
+
+[source,lua]
+----
+local joined = pPath.join(a, b)
+----
+
+* `a`: The first path fragment.
+
+* `b`: The second path fragment.
+
+**Returns:** The joined path.
+
+
+[discrete]
+==== Notes
+
+This function:
+
+* Adds a slash between ``a`` and ``b``, when ``a`` is not an empty string.
+
+* Removes leading and trailing slashes.
+
+* Does __not__ remove multiple consecutive slashes within fragments, like `foo//bar`.
+
+'''
+
+
+=== pPath.splitPathAndExtension
+
+Splits the extension from a file path.
+
+[source,lua]
+----
+local main, ext = pPath.splitPathAndExtension(path)
+----
+
+* `path`: The file path.
+
+**Returns:** The main path component and the extension (or an empty string if there was no extension).
+
+
+include::snippets/footer.adoc[]

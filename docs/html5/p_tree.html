@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pTree</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pTree</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pTree</em> provides functions for working with Lua tables as nodes in a tree.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pTree</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_tree"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeNew</span><span class="p">()</span>
+<span class="kd">local</span> <span class="n">a</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeAdd</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">b</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeAdd</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">parent</span> <span class="o">==</span> <span class="n">root</span><span class="p">)</span> <span class="c1">--&gt; true</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">parent</span> <span class="o">==</span> <span class="n">a</span><span class="p">)</span> <span class="c1">--&gt; true</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetDepth</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="c1">--&gt; 3</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_ptree_nodeadd">pTree.nodeAdd</a></li>
+<li><a href="#_ptree_nodeassertindex">pTree.nodeAssertIndex</a></li>
+<li><a href="#_ptree_nodeassertnocycles">pTree.nodeAssertNoCycles</a></li>
+<li><a href="#_ptree_nodeassertparent">pTree.nodeAssertParent</a></li>
+<li><a href="#_ptree_nodeattach">pTree.nodeAttach</a></li>
+<li><a href="#_ptree_nodefindkeyascending">pTree.nodeFindKeyAscending</a></li>
+<li><a href="#_ptree_nodefindkeydescending">pTree.nodeFindKeyDescending</a></li>
+<li><a href="#_ptree_nodefindkeyinchildren">pTree.nodeFindKeyInChildren</a></li>
+<li><a href="#_ptree_nodeforeach">pTree.nodeForEach</a></li>
+<li><a href="#_ptree_nodeforeachback">pTree.nodeForEachBack</a></li>
+<li><a href="#_ptree_nodegetchild">pTree.nodeGetChild</a></li>
+<li><a href="#_ptree_nodegetchildren">pTree.nodeGetChildren</a></li>
+<li><a href="#_ptree_nodegetdepth">pTree.nodeGetDepth</a></li>
+<li><a href="#_ptree_nodegetindex">pTree.nodeGetIndex</a></li>
+<li><a href="#_ptree_nodegetnext">pTree.nodeGetNext</a></li>
+<li><a href="#_ptree_nodegetnextsibling">pTree.nodeGetNextSibling</a></li>
+<li><a href="#_ptree_nodegetparent">pTree.nodeGetParent</a></li>
+<li><a href="#_ptree_nodegetprevious">pTree.nodeGetPrevious</a></li>
+<li><a href="#_ptree_nodegetprevioussibling">pTree.nodeGetPreviousSibling</a></li>
+<li><a href="#_ptree_nodegetroot">pTree.nodeGetRoot</a></li>
+<li><a href="#_ptree_nodegetsiblings">pTree.nodeGetSiblings</a></li>
+<li><a href="#_ptree_nodegetverylast">pTree.nodeGetVeryLast</a></li>
+<li><a href="#_ptree_nodehasthisancestor">pTree.nodeHasThisAncestor</a></li>
+<li><a href="#_ptree_nodeisinlineage">pTree.nodeIsInLineage</a></li>
+<li><a href="#_ptree_nodeiterate">pTree.nodeIterate</a></li>
+<li><a href="#_ptree_nodeiterateback">pTree.nodeIterateBack</a></li>
+<li><a href="#_ptree_nodenew">pTree.nodeNew</a></li>
+<li><a href="#_ptree_noderemove">pTree.nodeRemove</a></li>
+<li><a href="#_ptree_noderesolvepath">pTree.nodeResolvePath</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_nodes">Nodes</a></li>
+<li><a href="#_traversal_order">Traversal Order</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_ptree_nodeadd">pTree.nodeAdd</h3>
+<div class="paragraph">
+<p>Creates a new child node, attaches it to <code>self</code>, and returns the child.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">child</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeAdd</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="p">[</span><span class="n">pos</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>pos</code>: <em>(#nodes + 1)</em> Where to place the child among <code>self</code>'s other children (if any).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new child node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeassertindex">pTree.nodeAssertIndex</h3>
+<div class="paragraph">
+<p>Like <a href="#_ptree_nodegetindex">pTree.nodeGetIndex</a>, but assumes the caller has already checked the parent and obtained a reference to the table of siblings. <strong>Cannot be used with root nodes.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTree</span><span class="p">.</span><span class="n">nodeAssertIndex</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">siblings</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>siblings</code>: The table of siblings to check.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The index.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeassertnocycles">pTree.nodeAssertNoCycles</h3>
+<div class="paragraph">
+<p>Checks a tree for duplicate nodes, raising an error if any are found.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTree</span><span class="p">.</span><span class="n">nodeAssertNoCycles</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node, which should be the tree root.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This function incurs some overhead, because it makes a list of visited nodes every time it gets called.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeassertparent">pTree.nodeAssertParent</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s parent. Like <a href="#_ptree_nodegetparent">pTree.nodeGetParent</a>, but raises an error if the parent value is not a table. <strong>Cannot be used with root nodes.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTree</span><span class="p">.</span><span class="n">nodeAssertParent</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The parent node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeattach">pTree.nodeAttach</h3>
+<div class="paragraph">
+<p>Attaches an existing node as a child to <code>self</code>. The node to attach must not currently have a parent.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">child</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeAttach</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">pos</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>node</code>: The node to attach.</p>
+</li>
+<li>
+<p><code>pos</code>: <em>(#nodes + 1)</em> Where to place the child among <code>self</code>'s other children (if any).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The newly attached node.</p>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Never attach a root node to its own descendants.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodefindkeyascending">pTree.nodeFindKeyAscending</h3>
+<div class="paragraph">
+<p>Looks for a key-value pair in a node, searching upward through this node&#8217;s direct ancestors.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeFindKeyAscending</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">inclusive</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">[</span><span class="n">v</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>inclusive</code>: When true, include the calling node in the search.</p>
+</li>
+<li>
+<p><code>k</code>: The key to look for.</p>
+</li>
+<li>
+<p><code>v</code>: <em>(nil)</em> The value to look for. When <code>nil</code>, any non-<code>false</code> value will be accepted.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> On success, the node and the value. On failure, <code>nil</code>.</p>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Does not return multiple successful candidates.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodefindkeydescending">pTree.nodeFindKeyDescending</h3>
+<div class="paragraph">
+<p>Looks for a key-value pair in a node, searching downward through this node&#8217;s descendants.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeFindKeyDescending</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">inclusive</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">[</span><span class="n">v</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>inclusive</code>: When true, include the calling node in the search.</p>
+</li>
+<li>
+<p><code>k</code>: The key to look for.</p>
+</li>
+<li>
+<p><code>v</code>: <em>(nil)</em> The value to look for. When <code>nil</code>, any non-<code>false</code> value will be accepted.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> On success, the node and the value. On failure, <code>nil</code>.</p>
+</div>
+<h4 id="_notes_4" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Does not return multiple successful candidates.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodefindkeyinchildren">pTree.nodeFindKeyInChildren</h3>
+<div class="paragraph">
+<p>Looks for a key-value pair in a node&#8217;s children, starting from index <code>i</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeFindKeyInChildren</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">[</span><span class="n">v</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>i</code>: <em>(1)</em> Which child index to start searching from.</p>
+</li>
+<li>
+<p><code>k</code>: The key to look for.</p>
+</li>
+<li>
+<p><code>v</code>: <em>(nil)</em> The value to look for. When <code>nil</code>, any non-<code>false</code> value will be accepted.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> On success, the node, the value, and the node&#8217;s child index. On failure, <code>nil</code>.</p>
+</div>
+<h4 id="_notes_5" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Returns the first successful match.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeforeach">pTree.nodeForEach</h3>
+<div class="paragraph">
+<p>Runs a callback function on the calling node (optionally), and its descendants, in pre-order fashion, stopping if any callback returns a truthy value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeForEach</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">inclusive</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>inclusive</code>: When true, runs the callback on <code>self</code> before the descendants.</p>
+</li>
+<li>
+<p><code>callback</code>: The callback function to run, as <code>callback(node, &#8230;&#8203;)</code>.</p>
+</li>
+<li>
+<p><code>[&#8230;&#8203;]</code>: Additional arguments to pass to the callback.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Up to four arguments that were provided by a successful callback, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeforeachback">pTree.nodeForEachBack</h3>
+<div class="paragraph">
+<p>Runs a callback function on the calling node (optionally), and its descendants, in reverse post-order fashion, stopping if any callback returns a truthy value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeForEachBack</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">inclusive</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>inclusive</code>: When true, runs the callback on <code>self</code> after the descendants.</p>
+</li>
+<li>
+<p><code>callback</code>: The callback function to run, as <code>callback(node, &#8230;&#8203;)</code></p>
+</li>
+<li>
+<p><code>[&#8230;&#8203;]</code>: Additional arguments to pass to the callback.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Up to four arguments that were provided by a successful callback, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetchild">pTree.nodeGetChild</h3>
+<div class="paragraph">
+<p>Gets one of the node&#8217;s children, or <code>nil</code> if there is no child with this sibling index.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">child</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetChild</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>n</code>: The sibling array index.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The child with this index, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetchildren">pTree.nodeGetChildren</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s table of children.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">children</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetChildren</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node&#8217;s table of children.</p>
+</div>
+<h4 id="_notes_6" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The returned table is a direct reference to the array of children, <em>not</em> a copy.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetdepth">pTree.nodeGetDepth</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s depth in the tree (a count of its ancestors).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetDepth</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node&#8217;s depth in the tree.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetindex">pTree.nodeGetIndex</h3>
+<div class="paragraph">
+<p>Gets a node&#8217;s sibling array index. <strong>Cannot be used with root nodes.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetIndex</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The index.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetnext">pTree.nodeGetNext</h3>
+<div class="paragraph">
+<p>Gets the next node, in pre-order fashion.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetNext</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The next node, or <code>nil</code> if this is the very last node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetnextsibling">pTree.nodeGetNextSibling</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s next sibling, if any. <strong>Cannot be used with root nodes.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetNextSibling</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The next sibling, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetparent">pTree.nodeGetParent</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s parent, or <code>nil</code> if it&#8217;s a root node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetParent</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: any node in the tree.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The parent node, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetprevious">pTree.nodeGetPrevious</h3>
+<div class="paragraph">
+<p>Gets the previous node, in reverse post-order fashion.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetPrevious</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The previous node, or <code>nil</code> if this is the first (root) node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetprevioussibling">pTree.nodeGetPreviousSibling</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s previous sibling, if any. <strong>Cannot be used with root nodes.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetPreviousSibling</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The previous sibling, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetroot">pTree.nodeGetRoot</h3>
+<div class="paragraph">
+<p>Gets the root node. If this <em>is</em> the root node, then returns <code>self</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetRoot</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: any node in the tree.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The root node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetsiblings">pTree.nodeGetSiblings</h3>
+<div class="paragraph">
+<p>Gets the table of siblings which this node belongs to. <strong>Cannot be run on root nodes.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">siblings</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetSiblings</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The table of siblings.</p>
+</div>
+<h4 id="_notes_7" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The returned table is a direct reference to the parent&#8217;s array of children, <em>not</em> a copy.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodegetverylast">pTree.nodeGetVeryLast</h3>
+<div class="paragraph">
+<p>Gets the very last descendant in the tree, from the perspective of this node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeGetVeryLast</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node to begin searching from.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The deepest and last node, or <code>self</code> if the calling node has no descendants.</p>
+</div>
+<h4 id="_notes_8" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Taken from <a href="https://github.com/airstruck/luigi/blob/gh-pages/luigi/widget.lua#L375"><strong>LUIGI</strong></a>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodehasthisancestor">pTree.nodeHasThisAncestor</h3>
+<div class="paragraph">
+<p>Checks if a node is an ancestor of another node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">check</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeHasThisAncestor</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node to begin searching from.</p>
+</li>
+<li>
+<p><code>node</code>: The potential ancestor.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the node is an ancestor, <code>false</code> if not.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeisinlineage">pTree.nodeIsInLineage</h3>
+<div class="paragraph">
+<p>Like <code>pTree.nodeHasThisAncestor()</code>, but also checks <code>self</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">check</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeIsInLineage</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>node</code>: The potential ancestor or <code>self</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the node is an ancestor or <code>self == node</code>, <code>false</code> otherwise.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeiterate">pTree.nodeIterate</h3>
+<div class="paragraph">
+<p>A pre-order iterator.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">for</span> <span class="n">node</span> <span class="k">in</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeIterate</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[etc.]]</span> <span class="k">end</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node, first to be visited.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Each node in the tree, in pre-order fashion, starting with the calling node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodeiterateback">pTree.nodeIterateBack</h3>
+<div class="paragraph">
+<p>A reverse post-order iterator.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">for</span> <span class="n">node</span> <span class="k">in</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeIterateBack</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[etc.]]</span> <span class="k">end</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node, last to be visited.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Each node in the tree, depth-first, starting with the last, deepest node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_nodenew">pTree.nodeNew</h3>
+<div class="paragraph">
+<p>Creates a new root node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeNew</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new root node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_noderemove">pTree.nodeRemove</h3>
+<div class="paragraph">
+<p>Removes a node from its parent. <strong>Cannot be used with root nodes.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTree</span><span class="p">.</span><span class="n">nodeRemove</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node to remove.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_9" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Do not call this function on nodes while looping forward through siblings or walking a tree in pre-order fashion.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptree_noderesolvepath">pTree.nodeResolvePath</h3>
+<div class="paragraph">
+<p>Searches for a node in a tree by following a path string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">pTree</span><span class="p">.</span><span class="n">nodeResolvePath</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">id_key</span><span class="p">,</span> <span class="p">[</span><span class="n">simple</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+<li>
+<p><code>path</code>: The path string.</p>
+</li>
+<li>
+<p><code>id_key</code>: The key in each node which holds the Node ID. Cannot be <code>nil</code> or NaN.</p>
+</li>
+<li>
+<p><code>[simple]</code>: <em>(false)</em> When true, disables special IDs (<code>.</code>, <code>..</code>) and anchoring the search from the root node (<code>/foo</code>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> On success, the node. On failure, <code>nil</code>, an error string, and the index in the path where the search stopped.</p>
+</div>
+<h4 id="_notes_10" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Path strings are a series of slash-separated Node IDs, like <code>foo/bar/bop</code>. The Node IDs are stored in <code>node[id_key]</code>.</p>
+</div>
+<div class="paragraph">
+<p>Trailing slashes are ignored: <code>foo/bar/</code> and <code>foo/bar</code> are functionally identical.</p>
+</div>
+<div class="paragraph">
+<p>Empty IDs (like <code>foo//bar</code>) cannot be addressed.</p>
+</div>
+<div class="paragraph">
+<p>If multiple sibling nodes have the same Node ID, then only the first such node in the array shall be selected.</p>
+</div>
+<div class="paragraph">
+<p>When <code>simple</code> is <code>false</code>/<code>nil</code>, then:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A path beginning with <code>/</code>, like <code>/foo/bar</code>, will anchor the search to the root node.</p>
+</li>
+<li>
+<p>The special ID <code>..</code> will select the current node&#8217;s parent, and <code>.</code> will do nothing.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When <code>simple</code> is true, <code>.</code> and <code>..</code> are treated as plain Node IDs, and anchoring a path with <code>/</code> always fails.</p>
+</div>
+<div class="paragraph">
+<p>Use backslashes (<code>\</code>) to escape special characters in IDs. For example, with strings enclosed by double quotes, the path <code>"foo/do\\/op"</code> is treated as the two IDs <code>foo</code> and <code>do/op</code>. It is an error to have an incomplete escape sequence at the end of a path string.</p>
+</div>
+<div class="paragraph">
+<p>Escapes are always processed, even in <code>simple</code> mode.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_nodes">Nodes</h3>
+<div class="paragraph">
+<p>All <em>pTree</em> nodes have a table of children at <code>node["nodes"]</code>, and all nodes except for roots have a link to their parent at <code>node["parent"]</code>. (In <em>pTree&#8217;s</em> source code, the square bracket notation is used so that the field names can be easily changed with a search-and-replace mechanism.) Every node in a tree must be a unique table, or else you risk breaking the traversal code.</p>
+</div>
+<div class="paragraph">
+<p><em>pTree&#8217;s</em> functions can be called as object methods (ie <code>obj:nodeGetDepth()</code>) if you attach them to nodes or otherwise make them callable through <code>__index</code>.</p>
+</div>
+<div class="paragraph">
+<p>For more complex use cases, you may need to write your own versions of some functions.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_traversal_order">Traversal Order</h3>
+<div class="paragraph">
+<p>Given a tree with one root (<code>R</code>), two children (<code>A</code>, <code>B</code>), and four grandchildren (two per child; <code>A1</code>, <code>A2</code>, <code>B1</code>, <code>B2</code>)…</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>           ╭───╮
+           │ R │
+           ╰─┬─╯
+     ┌───────┴───────┐
+   ╭─┴─╮           ╭─┴─╮
+   │ A │           │ B │
+   ╰─┬─╯           ╰─┬─╯
+  ┌──┴──┐         ┌──┴──┐
+╭─┴─╮ ╭─┴─╮     ╭─┴─╮ ╭─┴─╮
+│A1 │ │ A2│     │B1 │ │ B2│
+╰───╯ ╰───╯     ╰───╯ ╰───╯</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>…the tree traversals look like this:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pre-order: <code>R</code>, <code>A</code>, <code>A1</code>, <code>A2</code>, <code>B</code>, <code>B1</code>, <code>B2</code></p>
+</li>
+<li>
+<p>Reverse post-order: <code>B2</code>, <code>B1</code>, <code>B</code>, <code>A2</code>, <code>A1</code>, <code>A</code>, <code>R</code></p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-16 20:30:00 -0300
+</div>
+</div>
+</body>
+</html>

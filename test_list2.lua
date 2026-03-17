@@ -1,5 +1,5 @@
--- Test: pile_list2.lua
--- VERSION: 2.101
+-- Test: p_list2.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,7 +10,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pList2 = require(PATH .. "pile_list2")
+local pList2 = require(PATH .. "p_list2")
 
 
 local cli_verbosity
@@ -24,7 +24,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE List2", cli_verbosity)
+local self = errTest.new("pList2", cli_verbosity)
 
 
 self:registerFunction("pList2.nodeNew", pList2.nodeNew)

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pStringProc</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pStringProc</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pStringProc</em> is an auxiliary module for <a href="p_string_walk.html">pStringWalk</a> which parses strings according to grammar productions. The format is similar to, <strong>but not fully compatible with</strong> the version of eBNF that <a href="https://www.w3.org/TR/REC-xml/#sec-notation"><strong>appears in the XML specification</strong></a>.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a>, <a href="p_string_walk.html">pStringWalk</a></p>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_pstringproc_checksymbols">pStringProc.checkSymbols</a></li>
+<li><a href="#_pstringproc_checkwords">pStringProc.checkWords</a></li>
+<li><a href="#_pstringproc_totable">pStringProc.toTable</a></li>
+<li><a href="#_pstringproc_traverse">pStringProc.traverse</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_notation">Notation</a>
+<ul class="sectlevel3">
+<li><a href="#_string_literal">string literal</a></li>
+<li><a href="#_word">word</a></li>
+<li><a href="#_match_zero_or_one">match zero or one</a></li>
+<li><a href="#_match_zero_one_or_many">match zero, one, or many</a></li>
+<li><a href="#_match_one_or_many">match one or many</a></li>
+<li><a href="#_group">group</a></li>
+<li><a href="#_alternate">alternate</a></li>
+</ul>
+</li>
+<li><a href="#_precedence">Precedence</a></li>
+<li><a href="#_traverse_return_tables">Traverse Return Tables</a></li>
+<li><a href="#_symbols">Symbols</a></li>
+<li><a href="#_infinite_loops">Infinite Loops</a></li>
+<li><a href="#_no_sets_or_ranges">No Sets Or Ranges</a></li>
+<li><a href="#_no_except_token">No 'Except' Token</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_pstringproc_checksymbols">pStringProc.checkSymbols</h3>
+<div class="paragraph">
+<p>Checks the types of keys and values in a symbol lookup table, raising an error upon encountering a problem.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pStringProc</span><span class="p">.</span><span class="n">checkSymbols</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>symbols</code>: The <a href="#_symbols">symbol</a> lookup table. All keys must be strings, and all values must be one of: <code>string</code>, <code>number</code>, <code>function</code>, or boolean <code>true</code>.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The iteration order is undefined.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pstringproc_checkwords">pStringProc.checkWords</h3>
+<div class="paragraph">
+<p>Checks <a href="#_word">words</a> in a production table against the keys in a symbol lookup table. Raises an error if the symbol table does not have entries for all words in the production table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pStringProc</span><span class="p">.</span><span class="n">checkWords</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>symbols</code>: The <a href="#_symbols">symbol</a> lookup table.</p>
+</li>
+<li>
+<p><code>t</code>: The production table to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pstringproc_totable">pStringProc.toTable</h3>
+<div class="paragraph">
+<p>Converts a grammar production string to a table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">t</span> <span class="o">=</span> <span class="n">pStringProc</span><span class="p">.</span><span class="n">toTable</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The production string to convert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The converted table, to be used with <a href="#_pstringproc_traverse">pStringProc.traverse</a>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pstringproc_traverse">pStringProc.traverse</h3>
+<div class="paragraph">
+<p>Processes a string, following a grammar production table and a table of symbols.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">res</span> <span class="o">=</span> <span class="n">pStringProc</span><span class="p">.</span><span class="n">traverse</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">symbols</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>W</code>: The <a href="p_string_walk.html#_walkers">walker</a> object, configured with the string to be processed and its start position.</p>
+</li>
+<li>
+<p><code>t</code>: A production table for the string, having been created by <a href="#_pstringproc_totable">pStringProc.toTable</a>.</p>
+</li>
+<li>
+<p><code>symbols</code>: A lookup table of <a href="#_symbols">symbols</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A table of return values, or <code>false</code> if the walker&#8217;s string failed to match the grammar.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_notation">Notation</h3>
+<div class="sect3">
+<h4 id="_string_literal">string literal</h4>
+<div class="paragraph">
+<p><code>"</code> / <code>'</code>: A string literal, enclosed in single or double quotes.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>"foo" 'bar'</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>"Empty" string literals are permitted: <code>''</code>, <code>""</code></p>
+</li>
+<li>
+<p>You can enclose one type of quote within another, like <code>"foo 'bar' baz"</code>.</p>
+</li>
+<li>
+<p>There is no character escape mechanism.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_word">word</h4>
+<div class="paragraph">
+<p><code>[a-zA-Z0-9_]+</code>: Any non-empty string of latin letters, digits and underscores.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>foo</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The word must be populated in the symbol lookup table. Unhandled words will raise an error.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_match_zero_or_one">match zero or one</h4>
+<div class="literalblock">
+<div class="content">
+<pre>foo?</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_match_zero_one_or_many">match zero, one, or many</h4>
+<div class="literalblock">
+<div class="content">
+<pre>foo*</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_match_one_or_many">match one or many</h4>
+<div class="literalblock">
+<div class="content">
+<pre>foo+</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_group">group</h4>
+<div class="paragraph">
+<p><code>()</code>: A subgroup of tokens that are handled like one word.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>foo (bar baz) bop</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Empty groups are permitted: <code>()</code></p>
+</li>
+<li>
+<p>It&#8217;s an error to have an unbalanced number of brackets: <code>a((b)</code>, <code>ab)c</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_alternate">alternate</h4>
+<div class="paragraph">
+<p><code>|</code>: Alternate choice.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>foo | bar</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If <strong>this</strong> expression failed, try the next token in the group.</p>
+</li>
+<li>
+<p>If <strong>this</strong> expression succeeded, exit the group.</p>
+</li>
+<li>
+<p>It&#8217;s an error when an alternate token is not followed by an expression: <code>foo |</code>, <code>foo | | bar</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_precedence">Precedence</h3>
+<div class="paragraph">
+<p>From highest to lowest: <code>()</code>, <code>A[?*+]</code>, <code>A B</code>, <code>A | B</code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_traverse_return_tables">Traverse Return Tables</h3>
+<div class="paragraph">
+<p>On success, <a href="#_pstringproc_traverse">pStringProc.traverse</a> returns a table of values that were fetched while processing the string:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Quoted string literals: appended with the quotes stripped.</p>
+</li>
+<li>
+<p>Group (Parentheses): If successful, group results are appended to this level&#8217;s results table.</p>
+</li>
+<li>
+<p>Words: results are based on the symbol lookup table.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>On failure, it returns <code>false</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_symbols">Symbols</h3>
+<div class="paragraph">
+<p>The symbols lookup table controls how words are processed. The keys in this table match words in the production table, while the values determine the evaluation status of words. The values control what is included in the return table.</p>
+</div>
+<div class="paragraph">
+<p>Values can be any of the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>false</code>/<code>nil</code>: failed to process the word.</p>
+</li>
+<li>
+<p><code>true</code>: success; add nothing to the results table.</p>
+</li>
+<li>
+<p>String, Number: success; add the value to the results table.</p>
+</li>
+<li>
+<p>Table: success; the table&#8217;s array contents are pasted into the results table.</p>
+</li>
+<li>
+<p>Function:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Takes <code>W</code> (the <a href="p_string_walk.html#_walkers">walker</a>) as its only argument.</p>
+</li>
+<li>
+<p>Returns <code>false</code>/<code>nil</code>, <code>true</code>, a string, a number, or a table.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When a function returns a table, the second return value being <code>true</code> will cause the table itself to be added rather than its array contents. The second return value has no significance in other cases.</p>
+</div>
+<div class="paragraph">
+<p>The function is expected to advance the walker&#8217;s position.</p>
+</div>
+<div class="paragraph">
+<p>Be careful about function side effects, as the return table&#8217;s contents may be erased or go unused if an expression fails. Also, it&#8217;s an error for the traversal function to encounter a word that is not populated in the symbols table.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_infinite_loops">Infinite Loops</h3>
+<div class="paragraph">
+<p>The parser can be tricked into reading the same chunks over and over. For example, the following production will loop endlessly (assume that 'never' returns <code>nil</code> every time):</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>(never*)*</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Zero matches of 'never' is OK, so the outer group is continuously successful.</p>
+</div>
+<div class="paragraph">
+<p>Empty string literals (<code>''</code>, <code>""</code>) will not advance the walker position, so they will match endlessly when paired with <code>*</code> or <code>+</code>.</p>
+</div>
+<div class="paragraph">
+<p>To halt infinite loops, assign a large (but not too large) number to <code>pStringProc._iter</code> before every top-level call to the parser. If the loop count exceeds this number, the parser will raise an error.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_no_sets_or_ranges">No Sets Or Ranges</h3>
+<div class="paragraph">
+<p><em>pStringProc</em> does not support matching characters by ranges, like <code>[#x20-#xd7ff]</code>. Lua&#8217;s built-in string engine works on characters as bytes, so it&#8217;s not easy to match ranges of Unicode code points greater than U+007F, which can be two, three or four bytes in size when encoded as UTF-8.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_no_except_token">No 'Except' Token</h3>
+<div class="paragraph">
+<p>There is no <strong>except</strong> token (<code>-</code>). The XML spec&#8217;s <em>except</em> is mostly used to describe forbidden substrings within larger runs of text.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 19:10:25 -0300
+</div>
+</div>
+</body>
+</html>

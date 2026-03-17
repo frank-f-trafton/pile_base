@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pString</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pString</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pString</em> is a dumping ground for string functions and patterns.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: None.</p>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_pstring_ptn_dollar">pString.ptn_dollar</a></li>
+<li><a href="#_pstring_ptn_percent">pString.ptn_percent</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_pstring_ptn_dollar">pString.ptn_dollar</h3>
+<div class="paragraph">
+<p>A pattern for <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.gsub"><strong>string.gsub</strong></a>, matching a dollar sign followed by any combination of ASCII letters, numbers and underscores.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>$FOO_bar123</code></p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pstring_ptn_percent">pString.ptn_percent</h3>
+<div class="paragraph">
+<p>A pattern for <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.gsub"><strong>string.gsub</strong></a>, matching a two percent signs surrounding any combination of ASCII letters, numbers and underscores.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>%FOO_bar123%</code></p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 18:29:35 -0300
+</div>
+</div>
+</body>
+</html>

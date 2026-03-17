@@ -1,5 +1,5 @@
--- Test: pile_table.lua
--- VERSION: 2.101
+-- Test: p_table.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,8 +10,8 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pName = require(PATH .. "pile_name")
-local pTable = require(PATH .. "pile_table")
+local pName = require(PATH .. "p_name")
+local pTable = require(PATH .. "p_table")
 
 
 local cli_verbosity
@@ -582,16 +582,16 @@ end
 )
 
 
-self:registerFunction("pTable.newLUT()", pTable.newLUT)
+self:registerFunction("pTable.newLut()", pTable.newLut)
 
 
 -- [===[
-self:registerJob("pTable.newLUT()", function(self)
-	self:expectLuaError("arg #1 bad type", pTable.newLUT, 123)
+self:registerJob("pTable.newLut()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.newLut, 123)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("empty table", pTable.newLUT, {})
+		local output = self:expectLuaReturn("empty table", pTable.newLut, {})
 		self:isEqual(next(output), nil)
 	end
 	--]====]
@@ -599,7 +599,7 @@ self:registerJob("pTable.newLUT()", function(self)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("create lookup table", pTable.newLUT, {1, 2, "a", "Z"})
+		local output = self:expectLuaReturn("create lookup table", pTable.newLut, {1, 2, "a", "Z"})
 		self:isEqual(output[1], true)
 		self:isEqual(output[2], true)
 		self:isEqual(output.a, true)
@@ -611,16 +611,16 @@ end
 --]===]
 
 
-self:registerFunction("pTable.newLUTV()", pTable.newLUTV)
+self:registerFunction("pTable.newLutV()", pTable.newLutV)
 
 
 -- [===[
-self:registerJob("pTable.newLUTV()", function(self)
-	self:expectLuaError("arg #1 bad type", pTable.newLUTV, nil)
+self:registerJob("pTable.newLutV()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.newLutV, nil)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("empty vararg", pTable.newLUTV)
+		local output = self:expectLuaReturn("empty vararg", pTable.newLutV)
 		self:isEqual(next(output), nil)
 	end
 	--]====]
@@ -628,7 +628,7 @@ self:registerJob("pTable.newLUTV()", function(self)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("create lookup table", pTable.newLUTV, 1, 2, "a", "Z")
+		local output = self:expectLuaReturn("create lookup table", pTable.newLutV, 1, 2, "a", "Z")
 		self:isEqual(output[1], true)
 		self:isEqual(output[2], true)
 		self:isEqual(output.a, true)
@@ -640,17 +640,17 @@ end
 --]===]
 
 
-self:registerFunction("pTable.invertLUT()", pTable.invertLUT)
+self:registerFunction("pTable.invertKeysAndValues()", pTable.invertKeysAndValues)
 
 
 -- [===[
-self:registerJob("pTable.invertLUT()", function(self)
-	self:expectLuaError("arg #1 bad type", pTable.invertLUT, 123)
-	self:expectLuaError("duplicate values", pTable.invertLUT, {a=1, b=1})
+self:registerJob("pTable.invertKeysAndValues()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.invertKeysAndValues, 123)
+	self:expectLuaError("duplicate values", pTable.invertKeysAndValues, {a=1, b=1})
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("empty table", pTable.invertLUT, {})
+		local output = self:expectLuaReturn("empty table", pTable.invertKeysAndValues, {})
 		self:isEqual(next(output), nil)
 	end
 	--]====]
@@ -658,7 +658,7 @@ self:registerJob("pTable.invertLUT()", function(self)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("make inverted lookup table", pTable.invertLUT, {a=1, b=2, c=3})
+		local output = self:expectLuaReturn("make inverted lookup table", pTable.invertKeysAndValues, {a=1, b=2, c=3})
 		self:isEqual(output[1], "a")
 		self:isEqual(output[2], "b")
 		self:isEqual(output[3], "c")
@@ -669,16 +669,16 @@ end
 --]===]
 
 
-self:registerFunction("pTable.arrayOfHashKeys()", pTable.arrayOfHashKeys)
+self:registerFunction("pTable.makeArrayFromKeys()", pTable.makeArrayFromKeys)
 
 
 -- [===[
-self:registerJob("pTable.arrayOfHashKeys()", function(self)
-	self:expectLuaError("arg #1 bad type", pTable.arrayOfHashKeys, 123)
+self:registerJob("pTable.makeArrayFromKeys()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.makeArrayFromKeys, 123)
 
 	-- [====[
 	do
-		local output = self:expectLuaReturn("empty table", pTable.arrayOfHashKeys, {})
+		local output = self:expectLuaReturn("empty table", pTable.makeArrayFromKeys, {})
 		self:isEqual(next(output), nil)
 	end
 	--]====]
@@ -687,7 +687,7 @@ self:registerJob("pTable.arrayOfHashKeys()", function(self)
 	-- [====[
 	do
 		local hash = {a=1, b=2, c=3}
-		local output = self:expectLuaReturn("make array of hash table", pTable.arrayOfHashKeys, hash)
+		local output = self:expectLuaReturn("make array of hash table", pTable.makeArrayFromKeys, hash)
 
 		self:print(4, "NOTE: The results are unordered. We will delete from the source hash table as values are confirmed.")
 		for i, v in ipairs(output) do
@@ -815,16 +815,16 @@ end
 --]===]
 
 
-self:registerFunction("pTable.removeElement()", pTable.removeElement)
+self:registerFunction("pTable.removeValueFromArray()", pTable.removeValueFromArray)
 
 
 -- [===[
-self:registerJob("pTable.removeElement()", function(self)
+self:registerJob("pTable.removeValueFromArray()", function(self)
 	-- [====[
 	do
-		self:expectLuaError("Argument #1 bad type", pTable.removeElement, false, true, 5)
+		self:expectLuaError("Argument #1 bad type", pTable.removeValueFromArray, false, true, 5)
 		-- Don't bother type checking arg #2
-		self:expectLuaError("Argument #3 bad type", pTable.removeElement, false, true, {})
+		self:expectLuaError("Argument #3 bad type", pTable.removeValueFromArray, false, true, {})
 	end
 	--]====]
 
@@ -833,7 +833,7 @@ self:registerJob("pTable.removeElement()", function(self)
 	do
 		local t = {"a", "b", "c", "d", "e"}
 		self:print(4, "Remove one element")
-		local c = pTable.removeElement(t, "c")
+		local c = pTable.removeValueFromArray(t, "c")
 		self:isEqual(t[1], "a")
 		self:isEqual(t[2], "b")
 		self:isEqual(t[3], "d")
@@ -848,7 +848,7 @@ self:registerJob("pTable.removeElement()", function(self)
 	do
 		local t = {"a", "b", "c", "b", "e"}
 		self:print(4, "Remove multiple elements")
-		local c = pTable.removeElement(t, "b")
+		local c = pTable.removeValueFromArray(t, "b")
 		self:isEqual(t[1], "a")
 		self:isEqual(t[2], "c")
 		self:isEqual(t[3], "e")
@@ -862,7 +862,7 @@ self:registerJob("pTable.removeElement()", function(self)
 	do
 		local t = {"b", "a", "b", "c", "b", "e", "b"}
 		self:print(4, "Remove multiple elements across multiple calls")
-		local c = pTable.removeElement(t, "b", 2)
+		local c = pTable.removeValueFromArray(t, "b", 2)
 		self:isEqual(t[1], "b")
 		self:isEqual(t[2], "a")
 		self:isEqual(t[3], "b")
@@ -871,14 +871,14 @@ self:registerJob("pTable.removeElement()", function(self)
 		self:isEqual(c, 2)
 		self:lf(1)
 
-		c = pTable.removeElement(t, "b", 2)
+		c = pTable.removeValueFromArray(t, "b", 2)
 		self:isEqual(t[1], "a")
 		self:isEqual(t[2], "c")
 		self:isEqual(t[3], "e")
 		self:isEqual(c, 2)
 		self:lf(1)
 
-		c = pTable.removeElement(t, "b", 2)
+		c = pTable.removeValueFromArray(t, "b", 2)
 		self:isEqual(t[1], "a")
 		self:isEqual(t[2], "c")
 		self:isEqual(t[3], "e")
@@ -891,18 +891,18 @@ end
 --]===]
 
 
-self:registerFunction("pTable.valueInArray()", pTable.valueInArray)
+self:registerFunction("pTable.isValueInArray()", pTable.isValueInArray)
 
 
 -- [===[
-self:registerJob("pTable.valueInArray()", function(self)
-	self:expectLuaError("arg #1 bad type", pTable.valueInArray, 123)
+self:registerJob("pTable.isValueInArray()", function(self)
+	self:expectLuaError("arg #1 bad type", pTable.isValueInArray, 123)
 	-- Don't check arg 2
 
 	-- [====[
 	do
 		local t = {"a", "b", "c", "d", "e", "f", "g"}
-		local ret = self:expectLuaReturn("find the index for 'c'", pTable.valueInArray, t, "c")
+		local ret = self:expectLuaReturn("find the index for 'c'", pTable.isValueInArray, t, "c")
 		self:isEqual(ret, 3)
 	end
 	--]====]
@@ -911,7 +911,7 @@ self:registerJob("pTable.valueInArray()", function(self)
 	-- [====[
 	do
 		local t = {"a", "b", "c", "d", "e", "f", "g"}
-		local ret = self:expectLuaReturn("look unsuccessfully for 'x'", pTable.valueInArray, t, "x")
+		local ret = self:expectLuaReturn("look unsuccessfully for 'x'", pTable.isValueInArray, t, "x")
 		self:isEqual(ret, nil)
 	end
 	--]====]
@@ -924,7 +924,7 @@ self:registerJob("pTable.valueInArray()", function(self)
 		local indices = {}
 		local i = 1
 		while i do
-			i = pTable.valueInArray(t, "b", i)
+			i = pTable.isValueInArray(t, "b", i)
 			if i then
 				table.insert(indices, i)
 				i = i + 1
@@ -941,7 +941,7 @@ self:registerJob("pTable.valueInArray()", function(self)
 	-- [====[
 	do
 		local t = {"a", "b", "c", nil}
-		local ret = self:expectLuaReturn("looking for nil always returns nil", pTable.valueInArray, t, nil)
+		local ret = self:expectLuaReturn("looking for nil always returns nil", pTable.isValueInArray, t, nil)
 		self:isEqual(ret, nil)
 	end
 	--]====]
@@ -1522,6 +1522,79 @@ self:registerJob("pTable.updateDouble", function(self)
 	do
 		local t = {front=false, back=false}
 		self:expectLuaError("default cannot be false/nil", pTable.updateDouble, t, "front", "back", false)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerJob("pTable.setDouble", function(self)
+
+	-- [====[
+	do
+		local t = {front=false, back=false}
+		self:print(3, "set value")
+		pTable.setDouble(t, "front", "back", 123, 456)
+		self:isEqual(t.front, 123)
+		self:isEqual(t.back, 123)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {front=false, back=false}
+		self:print(3, "set default")
+		pTable.setDouble(t, "front", "back", false, 456)
+		self:isEqual(t.front, false)
+		self:isEqual(t.back, 456)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {front=false, back=false}
+		self:expectLuaError("t[field] cannot end up being false/nil", pTable.setDouble, t, "front", "back", false, false)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerJob("pTable.set", function(self)
+	-- [====[
+	do
+		local t = {foo="bar"}
+
+		self:print(3, "set, value changed")
+		local changed = pTable.set(t, "foo", "baz")
+		self:isEqual(changed, true)
+		self:isEqual(t.foo, "baz")
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = {foo="bar"}
+
+		self:print(3, "set, value unchanged")
+		local changed = pTable.set(t, "foo", "bar")
+		self:isEqual(changed, false)
+		self:isEqual(t.foo, "bar")
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		local t = false
+		self:expectLuaError("arg #1 bad type", pTable.set, t, "foo", "bar")
 	end
 	--]====]
 end

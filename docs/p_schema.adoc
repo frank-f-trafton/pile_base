@@ -1,0 +1,367 @@
+= PILE Base: pSchema
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pSchema__ validates the contents of tables.
+
+Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+
+[source,lua]
+----
+local pSchema = require("p_schema")
+
+local rect = {x=0, y=0, w=32, h=64}
+
+local model = pSchema.newModel {
+	reject_unhandled = true,
+
+	keys = {
+		x = {pAssert.type, "number"},
+		y = {pAssert.type, "number"},
+		w = {pAssert.numberGe, 0},
+		h = {pAssert.numberGe, 0}
+	}
+}
+
+local function printErr(err)
+	if err then
+		print(table.concat(err, "\n"))
+	end
+end
+
+local ok, err
+
+ok, err = pSchema.validate(model, rect, "Rectangle")
+printErr(err) -- OK
+
+local rect_outta_spec = {x="foo", y=nil, w=-100, h=true}
+
+ok, err = pSchema.validate(rect_outta_spec, model, "Rectangle")
+printErr(err)
+--> Rectangle > x: expected number
+--> Rectangle > y: unhandled key
+--> Rectangle > w: number is out of range
+--> Rectangle > h: expected number
+----
+
+
+toc::[]
+
+
+== API
+
+
+=== pSchema.checkModel
+
+Checks a model table, raising an error if a problem is found.
+
+[source,lua]
+----
+pSchema.checkModel(md)
+----
+
+* `md`: The xref:p_schema.adoc#_model[model] to check.
+
+'''
+
+
+=== pSchema.getMaxMessages
+
+Gets the current maximum number of failure messages per validation call.
+
+[source.lua]
+----
+local n = pSchema.getMaxMessages()
+----
+
+**Returns:** The current max message count for validation failures.
+
+'''
+
+
+=== pSchema.newKeysX
+
+Creates a new xref:p_schema.adoc#_model[model] with a xref:p_schema.adoc#_keys['keys'] filter and the xref:p_schema.adoc#_model_options[model option] `reject_unhandled` enabled. (This is a common configuration in the workloads that __pSchema__ was designed for.)
+
+[source,lua]
+----
+local md = pSchema.newKeysX(keys)
+----
+
+* `keys`: The 'keys' filter table. Should be a freshly created table with no metatable.
+
+**Returns:** A new model table with `keys` attached.
+
+'''
+
+
+=== pSchema.newModel
+
+Creates a new model table.
+
+[source,lua]
+----
+local md = pSchema.newModel(t)
+----
+
+* `t`: The table to use as the xref:p_schema.adoc#_model[model]. Should be a freshly created table with no metatable.
+
+**Returns:** The table.
+
+'''
+
+
+=== pSchema.setMaxMessages
+
+Sets the maximum number of failure messages per validation call.
+
+[source,lua]
+----
+pSchema.setMaxMessages([n])
+----
+
+* `[n]`: __(500)__ The maximum number of messages. Must be at least 1.
+
+
+[discrete]
+==== Notes
+
+When the maximum number of messages is reached, an additional message is appended to the final error output which states that this is the case.
+
+'''
+
+
+=== pSchema.validate
+
+Tests a table against a model.
+
+[source,lua]
+----
+local ok, err = pSchema.validate(model, tbl, [name], [fatal])
+----
+
+* `model`: The xref:p_schema.adoc#_model[model] table.
+
+* `tbl`: The table to validate.
+
+* `[name]`: __(nil)__ An optional name to display as the first label in error messages.
+
+* `[fatal]`: __(false)__ When true, raises an error upon the first validation failure. This may be desired when the validation action is time-sensitive.
+
+**Returns:** `true`, or `false` plus an error string if there was a problem.
+
+
+== Module Notes
+
+
+=== Structures
+
+
+==== Model
+
+A table that describes how one kind of table should be validated. Has xref:p_schema.adoc#_filter[filters] which associate keys with xref:p_schema.adoc#_handler[handler] functions and other models.
+
+
+==== Handler
+
+A function that validates one value in a table. handlers are based on the function signature used in xref:p_assert.adoc#_the_passert_function_signature[pAssert]. On failure, handlers should raise an error; on success, they should do nothing.
+
+[source,lua]
+----
+local function myHandler(n, v, ...)
+----
+
+* `n`: An argument number or generic label. (Unused here, but needed to maintain compatibility with __pAssert__ functions.)
+
+* `v`: The value to check.
+
+* `...`: Additional function arguments.
+
+[source,lua]
+----
+local function myFoobar(n, v)
+	if v ~= "foobar" then
+		error("expected the string 'foobar'")
+	end
+end
+}
+----
+
+
+==== Reference
+
+An instance of a xref:p_schema.adoc#_handler[handler] or a xref:p_schema.adoc#_model[model].
+
+
+==== Filter
+
+Selects keys during validation. All filters are optional, and they run in the same hard-coded sequence.
+
+
+===== 'metatable'
+
+Selects the table's metatable.
+
+[source,lua]
+----
+local model = pSchema.newModel {
+	metatable = <reference>
+}
+----
+
+
+===== 'keys'
+
+Selects specific keys.
+
+[source,lua]
+----
+local model = pSchema.newModel {
+	keys = {
+		foo = <reference>,
+		bar = <reference>
+	}
+}
+----
+
+
+===== 'array'
+
+Selects the table's array keys, from 1 to `#tbl`. Any keys that were already selected by the 'keys' filter are skipped.
+
+[source,lua]
+----
+local model = pSchema.newModel {
+	array = <reference>
+}
+----
+
+
+===== 'remaining'
+
+Selects any keys which have not been selected by the 'keys' and 'array' filters.
+
+[source,lua]
+----
+local model = pSchema.newModel {
+	remaining = <reference>
+}
+----
+
+
+=== Model Options
+
+* `reject_unhandled`: (Boolean/`nil`) When `true`, treat any keys that were not selected by a model's filter as failures. This is effectively the same as assigning a handler to the 'remaining' filter that always fails.
+
+These options apply when an 'array' filter is present:
+
+* `array_len`: (Number) `#tbl` must match this exactly.
+
+* `array_min`: (Number) `#tbl` must be greater or equal to this.
+
+* `array_max`: (Number) `#tbl` must be less or equal to this.
+
+
+=== Reference Notation
+
+
+==== Handler References
+
+Handler references can be written in __long form__ or __short form__. (The short form is applicable only to handlers which do not take additional arguments.)
+
+
+===== Long Form
+
+The handler reference is a table with its function stored in key `[1]`. Array elements starting at `[2]` are passed as arguments to the function.
+
+[source,lua]
+----
+foo = {someHandlerFunction, "foobar", 12345}
+----
+
+The above example would call `someHandlerFunction(nil, v, "foobar", 12345)`.
+
+WARNING: Arrays of arguments do not support `nil` "gaps" because they will break the table length operator (`#`).
+
+
+===== Short Form
+
+The handler reference is just a function.
+
+[source,lua]
+----
+foo = someHandlerFunction
+----
+
+The above example would call `someHandlerFunction(nil, v)`.
+
+
+==== Sub-Models
+
+Model references look like this:
+
+[source,lua]
+----
+foo = {"sub", model_table},
+bar = model_table -- short version of the above
+baz = {"sub-eval", model_table}, -- only runs if the value is neither false nor nil
+----
+
+Here is an example of validating a table within a table:
+
+[source,lua]
+----
+local pAssert = require("p_assert")
+local pSchema = require("p_schema")
+
+local md_bar = pSchema.newModel {
+	keys = {
+		zoot = {pAssert.type, "string"}
+	}
+}
+
+local md_foo = pSchema.newModel {
+	keys = {
+		doop = {pAssert.type, "number"},
+		foos = {"sub", md_bar}
+	}
+}
+
+local tbl = {
+	doop = 3,
+	foos = {
+		zoot = "woo"
+	}
+}
+
+pSchema.validate(md_foo, tbl, "TestSubModel") -- should return with no failures
+----
+
+
+=== Behavior in relation to Lua
+
+The order in which __pSchema__ checks values is not deterministic, because https://www.lua.org/manual/5.1/manual.html#pdf-pairs[**pairs**] is used to iterate hash keys. As a result, the order of failure messages may vary.
+
+When you write duplicate keys in a Lua table constructor, the previous values are silently discarded:
+
+
+[source,lua]
+----
+local models = pSchema.models
+local validator = pSchema.newValidator("Test", {
+	main = models.keys {
+		foo = {pAssert.type, "number"},
+		foo = {pAssert.type, "string"},
+		foo = {pAssert.type, "boolean"}
+	}
+}
+-- main.foo points to `{pAssert.type, "boolean"}`.
+----
+
+
+include::snippets/footer.adoc[]

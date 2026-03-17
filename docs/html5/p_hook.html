@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pHook</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pHook</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pHook</em> creates callable arrays of functions.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pHook</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_hook"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">hooks</span> <span class="o">=</span> <span class="n">pHook</span><span class="p">.</span><span class="n">newHookList</span><span class="p">()</span>
+
+<span class="nb">table.insert</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">"violet"</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span> <span class="k">end</span> <span class="k">end</span><span class="p">)</span>
+<span class="nb">table.insert</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">"viridian"</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">2</span> <span class="k">end</span> <span class="k">end</span><span class="p">)</span>
+<span class="nb">table.insert</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">"vermillian"</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">3</span> <span class="k">end</span> <span class="k">end</span><span class="p">)</span>
+
+<span class="n">hooks</span><span class="p">(</span><span class="s2">"viridian"</span><span class="p">)</span> <span class="c1">--&gt; 2</span>
+<span class="n">hooks</span><span class="p">(</span><span class="s2">"blue"</span><span class="p">)</span> <span class="c1">--&gt; nil</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_phook_callhooks">pHook.callHooks</a></li>
+<li><a href="#_phook_callhooksback">pHook.callHooksBack</a></li>
+<li><a href="#_phook_newhooklist">pHook.newHookList</a></li>
+<li><a href="#_phook_wrap">pHook.wrap</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_hooklists">HookLists</a></li>
+<li><a href="#_overriding_the_order_of_evaluation">Overriding the order of evaluation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_phook_callhooks">pHook.callHooks</h3>
+<div class="paragraph">
+<p>The <code>__call</code> metamethod for calling hooks in forward order.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span> <span class="o">=</span> <span class="n">pHook</span><span class="p">.</span><span class="n">callHooks</span><span class="p">(</span><span class="n">hl</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hl</code>: The calling <a href="#_hooklists">HookList</a>.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: Arguments for the hooks.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Up to four return values provided by a successful hook, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_phook_callhooksback">pHook.callHooksBack</h3>
+<div class="paragraph">
+<p>The <code>__call</code> metamethod for calling hooks in backward order.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span> <span class="o">=</span> <span class="n">pHook</span><span class="p">.</span><span class="n">callHooks</span><span class="p">(</span><span class="n">hl</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hl</code>: The calling <a href="#_hooklists">HookList</a>.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: Arguments for the hooks.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Up to four return values provided by a successful hook, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_phook_newhooklist">pHook.newHookList</h3>
+<div class="paragraph">
+<p>Creates a new <a href="#_hooklists">HookList</a> array.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">hooks</span> <span class="o">=</span> <span class="n">pHook</span><span class="p">.</span><span class="n">newHookList</span><span class="p">([</span><span class="n">back</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[back]</code>: When true, the HookList will iterate backwards by default when called as <code>hooks(&#8230;&#8203;)</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new HookList.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_phook_wrap">pHook.wrap</h3>
+<div class="paragraph">
+<p>Returns a function that calls a <a href="#_hooklists">HookList</a>. May be useful in cases where a function expects a function (and not a table) as an argument.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">fn</span> <span class="o">=</span> <span class="n">pHook</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">hl</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hl</code>: The HookList.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A function that calls the HookList.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_hooklists">HookLists</h3>
+<div class="paragraph">
+<p>A HookList is an array with an attached <code>__call</code> metamethod. The array contains <em>hooks</em> (functions). When a list is called like a function, the hooks are executed in order, stopping when any hook returns a non-<code>nil</code> value.</p>
+</div>
+<div class="paragraph">
+<p>An optional <em>filter</em> function may be assigned to index 0. When present, the hooks will only be processed if the filter returns a truthy value.</p>
+</div>
+<div class="paragraph">
+<p>The filter&#8217;s return value is not propagated anywhere: its only purpose is to tell the hook caller whether or not it&#8217;s OK to proceed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_overriding_the_order_of_evaluation">Overriding the order of evaluation</h3>
+<div class="paragraph">
+<p>To run a HookList in a specific order (regardless of how it was created with <code>pHook.newHookList()</code>), just call <code>pHook.callHooks(hl, &#8230;&#8203;)</code> or <code>pHook.callHooksBack(hl, &#8230;&#8203;)</code>. This unfortunately does not work with HookLists that are wrapped into functions.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-12 22:23:09 -0300
+</div>
+</div>
+</body>
+</html>

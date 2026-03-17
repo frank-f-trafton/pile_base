@@ -1,5 +1,5 @@
--- Test: pile_scale.lua
--- VERSION: 2.101
+-- Test: p_scale.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -12,7 +12,7 @@ local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
 
 
-local pScale = require(PATH .. "pile_scale")
+local pScale = require(PATH .. "p_scale")
 
 
 local cli_verbosity
@@ -26,7 +26,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE Scale", cli_verbosity)
+local self = errTest.new("pScale", cli_verbosity)
 
 
 -- [===[

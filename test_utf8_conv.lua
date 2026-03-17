@@ -1,5 +1,5 @@
--- Test: pile_utf8_conv.lua
--- VERSION: 2.101
+-- Test: p_utf8_conv.lua
+-- VERSION: 2.105
 
 
 local REQ_PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -9,8 +9,8 @@ local strict = require(REQ_PATH .. "test.strict")
 
 
 local errTest = require(REQ_PATH .. "test.err_test")
-local pUTF8 = require(REQ_PATH .. "pile_utf8")
-local pUTF8Conv = require(REQ_PATH .. "pile_utf8_conv")
+local pUtf8 = require(REQ_PATH .. "p_utf8")
+local pUtf8Conv = require(REQ_PATH .. "p_utf8_conv")
 
 
 local cli_verbosity
@@ -24,7 +24,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("pUTF8Conv", cli_verbosity)
+local self = errTest.new("pUtf8Conv", cli_verbosity)
 
 
 -- Latin 1 test string
@@ -52,14 +52,14 @@ local test_str_utf16be = string.char(
 
 
 -- [===[
-self:registerFunction("pUTF8Conv.utf8_latin1", pUTF8Conv.utf8_latin1)
+self:registerFunction("pUtf8Conv.fromUtf8ToLatin1", pUtf8Conv.fromUtf8ToLatin1)
 
-self:registerJob("pUTF8Conv.utf8_latin1", function(self)
-	self:expectLuaError("arg #1 bad type", pUTF8Conv.utf8_latin1, nil)
+self:registerJob("pUtf8Conv.fromUtf8ToLatin1", function(self)
+	self:expectLuaError("arg #1 bad type", pUtf8Conv.fromUtf8ToLatin1, nil)
 
 	do
 		self:print(3, "[+] arg #1 empty string")
-		local ok, err, err_i = pUTF8Conv.utf8_latin1("")
+		local ok, err, err_i = pUtf8Conv.fromUtf8ToLatin1("")
 		self:print(4, ok, err, err_i)
 		self:isEqual(ok, "")
 		self:lf(4)
@@ -67,7 +67,7 @@ self:registerJob("pUTF8Conv.utf8_latin1", function(self)
 
 	do
 		self:print(3, "[-] arg #1 has code points that are unsupported in Latin 1, and we didn't provide a stand-in string.")
-		local ok, err, err_i = pUTF8Conv.utf8_latin1("a灷b灷c灷")
+		local ok, err, err_i = pUtf8Conv.fromUtf8ToLatin1("a灷b灷c灷")
 		self:print(4, ok, err, err_i)
 		self:isEvalFalse(ok)
 		self:lf(4)
@@ -75,7 +75,7 @@ self:registerJob("pUTF8Conv.utf8_latin1", function(self)
 
 	do
 		self:print(3, "\n[+] arg #1 with a stand-in string (\"?\"):")
-		local ok, err, err_i = pUTF8Conv.utf8_latin1("a灷b灷c灷", "?")
+		local ok, err, err_i = pUtf8Conv.fromUtf8ToLatin1("a灷b灷c灷", "?")
 		self:print(4, ok, err, err_i)
 		self:isType(ok, "string")
 		self:lf(4)
@@ -83,7 +83,7 @@ self:registerJob("pUTF8Conv.utf8_latin1", function(self)
 
 	do
 		self:print(3, "[+] general UTF-8 to Latin 1 test.")
-		local ok, err, err_i = pUTF8Conv.utf8_latin1(sample1_utf8)
+		local ok, err, err_i = pUtf8Conv.fromUtf8ToLatin1(sample1_utf8)
 		self:print(4, ok, err, err_i)
 		self:isEqual(ok, sample1_latin1)
 		self:lf(4)
@@ -94,19 +94,19 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8Conv.latin1_utf8", pUTF8Conv.latin1_utf8)
+self:registerFunction("pUtf8Conv.fromLatin1ToUtf8", pUtf8Conv.fromLatin1ToUtf8)
 
-self:registerJob("pUTF8Conv.latin1_utf8", function(self)
-	self:expectLuaError("arg #1 bad type", pUTF8Conv.latin1_utf8, nil)
+self:registerJob("pUtf8Conv.fromLatin1ToUtf8", function(self)
+	self:expectLuaError("arg #1 bad type", pUtf8Conv.fromLatin1ToUtf8, nil)
 
 	do
 		self:print(3, "[+] convert Latin 1 to UTF-8")
-		local ok, err, err_i = pUTF8Conv.latin1_utf8(sample1_latin1)
+		local ok, err, err_i = pUtf8Conv.fromLatin1ToUtf8(sample1_latin1)
 		self:print(4, ok, err, err_i)
 		self:isEqual(ok, sample1_utf8)
 		self:lf(4)
 
-		-- NOTE: latin1_utf8 won't fail on any Lua string, even if the input is garbage, because bytes 0-255 all correspond to valid code points.
+		-- NOTE: fromLatin1ToUtf8 won't fail on any Lua string, even if the input is garbage, because bytes 0-255 all correspond to valid code points.
 	end
 end
 )
@@ -114,17 +114,17 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8Conv.utf16_utf8", pUTF8Conv.utf16_utf8)
+self:registerFunction("pUtf8Conv.fromUtf16ToUtf8", pUtf8Conv.fromUtf16ToUtf8)
 
-self:registerJob("pUTF8Conv.utf16_utf8", function(self)
-	self:expectLuaError("arg #1 bad type", pUTF8Conv.utf16_utf8, nil)
+self:registerJob("pUtf8Conv.fromUtf16ToUtf8", function(self)
+	self:expectLuaError("arg #1 bad type", pUtf8Conv.fromUtf16ToUtf8, nil)
 	-- (Don't bother type-checking arg #2 (big_endian)
 
 	-- Using variations of: 0xff 0xdb 0xff 0xdf (UTF-16LE for U+10FFFF, the highest valid code point)
 
 	do
 		self:print(3, "[-] String is too short to hold any valid UTF-16 data.")
-		local ok, err, err_i = pUTF8Conv.utf16_utf8(string.char(0x00))
+		local ok, err, err_i = pUtf8Conv.fromUtf16ToUtf8(string.char(0x00))
 		self:print(4, ok, err, err_i)
 		self:isEvalFalse(ok)
 		self:lf(4)
@@ -132,7 +132,7 @@ self:registerJob("pUTF8Conv.utf16_utf8", function(self)
 
 	do
 		self:print(3, "[+] Empty string in -> empty string out.")
-		local ok, err, err_i = pUTF8Conv.utf16_utf8("")
+		local ok, err, err_i = pUtf8Conv.fromUtf16ToUtf8("")
 		self:print(4, ok, err, err_i)
 		self:isEqual(ok, "")
 		self:lf(4)
@@ -140,7 +140,7 @@ self:registerJob("pUTF8Conv.utf16_utf8", function(self)
 
 	do
 		self:print(3, "[-] first integer of a surrogate pair is out of range (greater than 0xdbff)")
-		local ok, err, err_i = pUTF8Conv.utf16_utf8(string.char(0xff, 0xff, 0x00, 0xdc))
+		local ok, err, err_i = pUtf8Conv.fromUtf16ToUtf8(string.char(0xff, 0xff, 0x00, 0xdc))
 		self:print(4, ok, err, err_i)
 		self:isEvalFalse(ok)
 		self:lf(4)
@@ -148,7 +148,7 @@ self:registerJob("pUTF8Conv.utf16_utf8", function(self)
 
 	do
 		self:print(3, "[-] input string is too short for a surrogate pair.")
-		local ok, err, err_i = pUTF8Conv.utf16_utf8(string.char(0xff, 0xdb), false)
+		local ok, err, err_i = pUtf8Conv.fromUtf16ToUtf8(string.char(0xff, 0xdb), false)
 		self:print(4, ok, err, err_i)
 		self:isEvalFalse(ok)
 		self:lf(4)
@@ -156,7 +156,7 @@ self:registerJob("pUTF8Conv.utf16_utf8", function(self)
 
 	do
 		self:print(3, "[-] second integer of a surrogate pair is out of range (0xdc00 - 0xdfff).")
-		local ok, err, err_i = pUTF8Conv.utf16_utf8(string.char(0xff, 0xdb, 0xff, 0xff))
+		local ok, err, err_i = pUtf8Conv.fromUtf16ToUtf8(string.char(0xff, 0xdb, 0xff, 0xff))
 		self:print(4, ok, err, err_i)
 		self:isEvalFalse(ok)
 		self:lf(4)
@@ -164,7 +164,7 @@ self:registerJob("pUTF8Conv.utf16_utf8", function(self)
 
 	do
 		self:print(3, "[+] Convert test string from UTF-16LE to UTF-8.")
-		local ok, err, err_i = pUTF8Conv.utf16_utf8(test_str_utf16le, false)
+		local ok, err, err_i = pUtf8Conv.fromUtf16ToUtf8(test_str_utf16le, false)
 		self:print(4, ok, err, err_i)
 		self:isEqual(ok, test_str_utf8)
 		self:lf(4)
@@ -172,7 +172,7 @@ self:registerJob("pUTF8Conv.utf16_utf8", function(self)
 
 	do
 		self:print(3, "[+] Convert test string from UTF-16BE to UTF-8.")
-		local ok, err, err_i = pUTF8Conv.utf16_utf8(test_str_utf16be, true)
+		local ok, err, err_i = pUtf8Conv.fromUtf16ToUtf8(test_str_utf16be, true)
 		self:print(4, ok, err, err_i)
 		self:isEqual(ok, test_str_utf8)
 		self:lf(4)
@@ -180,7 +180,7 @@ self:registerJob("pUTF8Conv.utf16_utf8", function(self)
 
 	do
 		self:print(3, "[-] Convert test string, but mix up the UTF-16 endianness.")
-		local ok, err, err_i = pUTF8Conv.utf16_utf8(test_str_utf16le, true)
+		local ok, err, err_i = pUtf8Conv.fromUtf16ToUtf8(test_str_utf16le, true)
 		self:print(4, ok, err, err_i)
 		self:isNotEqual(ok, test_str_utf8)
 		self:lf(4)
@@ -191,15 +191,15 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8Conv.utf8_utf16", pUTF8Conv.utf8_utf16)
+self:registerFunction("pUtf8Conv.fromUtf8ToUtf16", pUtf8Conv.fromUtf8ToUtf16)
 
-self:registerJob("pUTF8Conv.utf8_utf16", function(self)
-	self:expectLuaError("arg #1 bad type", pUTF8Conv.utf8_utf16, nil)
+self:registerJob("pUtf8Conv.fromUtf8ToUtf16", function(self)
+	self:expectLuaError("arg #1 bad type", pUtf8Conv.fromUtf8ToUtf16, nil)
 	-- Don't bother type-checking arg #2 (big_endian).
 
 	do
 		self:print(3, "[-] Bad input UTF-8.")
-		local ok, err, err_i = pUTF8Conv.utf8_utf16(string.char(0xff))
+		local ok, err, err_i = pUtf8Conv.fromUtf8ToUtf16(string.char(0xff))
 		self:print(4, ok, err, err_i)
 		self:isEvalFalse(ok)
 		self:lf(4)
@@ -210,7 +210,7 @@ self:registerJob("pUTF8Conv.utf8_utf16", function(self)
 	-- The equality checks against still pass, though, and the string lengths are the expected numbers...
 	do
 		self:print(3, "[+] Convert from UTF-8 to UTF-16LE.")
-		local ok, err, err_i = pUTF8Conv.utf8_utf16(test_str_utf8, false)
+		local ok, err, err_i = pUtf8Conv.fromUtf8ToUtf16(test_str_utf8, false)
 		self:print(4, ok, err, err_i)
 		self:isEqual(ok, test_str_utf16le)
 		self:isEqual(#ok, #test_str_utf16le)
@@ -219,7 +219,7 @@ self:registerJob("pUTF8Conv.utf8_utf16", function(self)
 
 	do
 		self:print(3, "[+] Convert from UTF-8 to UTF-16BE.")
-		local ok, err, err_i = pUTF8Conv.utf8_utf16(test_str_utf8, true)
+		local ok, err, err_i = pUtf8Conv.fromUtf8ToUtf16(test_str_utf8, true)
 		self:print(4, ok, err, err_i)
 		self:isEqual(ok, test_str_utf16be)
 		self:isEqual(#ok, #test_str_utf16be)

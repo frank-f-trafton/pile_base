@@ -1,0 +1,117 @@
+= PILE Base: pHook
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pHook__ creates callable arrays of functions.
+
+Dependencies: xref:p_assert.adoc[pAssert], xref:p_name.adoc[pName]
+
+[source,lua]
+----
+local pHook = require("p_hook")
+
+local hooks = pHook.newHookList()
+
+table.insert(hooks, function(color) if color == "violet" then return 1 end end)
+table.insert(hooks, function(color) if color == "viridian" then return 2 end end)
+table.insert(hooks, function(color) if color == "vermillian" then return 3 end end)
+
+hooks("viridian") --> 2
+hooks("blue") --> nil
+----
+
+
+toc::[]
+
+
+== API
+
+
+=== pHook.callHooks
+
+The `__call` metamethod for calling hooks in forward order.
+
+[source,lua]
+----
+local a,b,c,d = pHook.callHooks(hl, ...)
+----
+
+* `hl`: The calling xref:p_hook.adoc#_hooklists[HookList].
+
+* `...`: Arguments for the hooks.
+
+**Returns:** Up to four return values provided by a successful hook, or `nil`.
+
+'''
+
+
+=== pHook.callHooksBack
+
+The `__call` metamethod for calling hooks in backward order.
+
+[source,lua]
+----
+local a,b,c,d = pHook.callHooks(hl, ...)
+----
+
+* `hl`: The calling xref:p_hook.adoc#_hooklists[HookList].
+
+* `...`: Arguments for the hooks.
+
+**Returns:** Up to four return values provided by a successful hook, or `nil`.
+
+'''
+
+
+=== pHook.newHookList
+
+Creates a new xref:p_hook.adoc#_hooklists[HookList] array.
+
+[source,lua]
+----
+local hooks = pHook.newHookList([back])
+----
+
+* `[back]`: When true, the HookList will iterate backwards by default when called as `hooks(...)`.
+
+**Returns:** The new HookList.
+
+'''
+
+
+=== pHook.wrap
+
+Returns a function that calls a xref:p_hook.adoc#_hooklists[HookList]. May be useful in cases where a function expects a function (and not a table) as an argument.
+
+[source,lua]
+----
+local fn = pHook.wrap(hl)
+----
+
+* `hl`: The HookList.
+
+**Returns:** A function that calls the HookList.
+
+
+== Module Notes
+
+=== HookLists
+
+A HookList is an array with an attached `+__call+` metamethod. The array contains __hooks__ (functions). When a list is called like a function, the hooks are executed in order, stopping when any hook returns a non-`nil` value.
+
+An optional __filter__ function may be assigned to index 0. When present, the hooks will only be processed if the filter returns a truthy value.
+
+The filter's return value is not propagated anywhere: its only purpose is to tell the hook caller whether or not it's OK to proceed.
+
+
+=== Overriding the order of evaluation
+
+To run a HookList in a specific order (regardless of how it was created with `pHook.newHookList()`), just call `pHook.callHooks(hl, ...)` or `pHook.callHooksBack(hl, ...)`. This unfortunately does not work with HookLists that are wrapped into functions.
+
+
+include::snippets/footer.adoc[]

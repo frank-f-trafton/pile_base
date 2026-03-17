@@ -1,0 +1,74 @@
+= PILE Base: Index of Modules
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+[%autowidth.stretch]
+|===
+|Name |Description
+
+|xref:p_assert.adoc[pAssert]
+|Assertions (i.e. type checking).
+
+|xref:p_hook.adoc[pHook]
+|Callable arrays of functions.
+
+|xref:p_interp.adoc[pInterp]
+|String interpolation.
+
+|xref:p_line.adoc[pLine]
+|Manipulates axis-aligned line segments
+
+|xref:p_list2.adoc[pList2]
+|Doubly linked lists.
+
+|xref:p_math.adoc[pMath]
+|Some basic math functions.
+
+|xref:p_name.adoc[pName]
+|Name registry, for associating Lua objects (e.g. metatables) with string IDs.
+
+|xref:p_path.adoc[pPath]
+|Functions for working with LÖVE virtual filesystem paths.
+
+|xref:p_pool.adoc[pPool]
+|Pooling of objects. Experimental
+
+|xref:p_rect.adoc[pRect]
+|Manipulates axis-aligned rectangles.
+
+|xref:p_scale.adoc[pScale]
+|Scales numbers, particularly integers.
+
+|xref:p_schema.adoc[pSchema]
+|Validates Lua tables.
+
+|xref:p_string.adoc[pString]
+|Some common string patterns.
+
+|xref:p_string_proc.adoc[pStringProc]
+|Extends __pStringWalk__ to support grammar productions.
+
+|xref:p_string_walk.adoc[pStringWalk]
+|A string parsing system.
+
+|xref:p_table.adoc[pTable]
+|Table, array functions.
+
+|xref:p_tree.adoc[pTree]
+|Tree structures.
+
+|xref:p_utf8.adoc[pUtf8]
+|UTF-8 helper functions.
+
+|xref:p_utf8_conv.adoc[pUtf8Conv]
+|Converts UTF-8 to UTF-16 and vice versa.
+
+|===
+
+
+include::snippets/footer.adoc[]

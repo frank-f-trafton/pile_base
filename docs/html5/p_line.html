@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pLine</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pLine</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pLine</em> provides functions for placing and mutating axis-aligned line segments.</p>
+</div>
+<div class="paragraph">
+<p>This is a one-dimensional version of <a href="p_rect.html">pRect</a>.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_math.html">pMath</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pLine</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_line"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">l1</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">16</span><span class="p">}</span>
+<span class="kd">local</span> <span class="n">l2</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">8</span><span class="p">}</span>
+<span class="n">pLine</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">l2</span><span class="p">.</span><span class="n">w</span><span class="p">)</span> <span class="c1">--&gt; 0 16</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_pline_center">pLine.center</a></li>
+<li><a href="#_pline_copy">pLine.copy</a></li>
+<li><a href="#_pline_expand">pLine.expand</a></li>
+<li><a href="#_pline_expandleft">pLine.expandLeft</a></li>
+<li><a href="#_pline_expandright">pLine.expandRight</a></li>
+<li><a href="#_pline_expandt">pLine.expandT</a></li>
+<li><a href="#_pline_flip">pLine.flip</a></li>
+<li><a href="#_pline_getbounds">pLine.getBounds</a></li>
+<li><a href="#_pline_getboundst">pLine.getBoundsT</a></li>
+<li><a href="#_pline_placeinner">pLine.placeInner</a></li>
+<li><a href="#_pline_placemidpoint">pLine.placeMidpoint</a></li>
+<li><a href="#_pline_placeouter">pLine.placeOuter</a></li>
+<li><a href="#_pline_positionoverlap">pLine.positionOverlap</a></li>
+<li><a href="#_pline_reduce">pLine.reduce</a></li>
+<li><a href="#_pline_reduceleft">pLine.reduceLeft</a></li>
+<li><a href="#_pline_reduceright">pLine.reduceRight</a></li>
+<li><a href="#_pline_reducet">pLine.reduceT</a></li>
+<li><a href="#_pline_set">pLine.set</a></li>
+<li><a href="#_pline_split">pLine.split</a></li>
+<li><a href="#_pline_splitleft">pLine.splitLeft</a></li>
+<li><a href="#_pline_splitoroverlay">pLine.splitOrOverlay</a></li>
+<li><a href="#_pline_splitright">pLine.splitRight</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_omissions">Omissions</a></li>
+<li><a href="#_structures">Structures</a>
+<ul class="sectlevel3">
+<li><a href="#_linesegment">LineSegment</a></li>
+<li><a href="#_linedelta">LineDelta</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_pline_center">pLine.center</h3>
+<div class="paragraph">
+<p>Centers LineSegment <code>b</code> within LineSegment <code>a</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">center</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_linesegment">LineSegment</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The LineSegment to center.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_copy">pLine.copy</h3>
+<div class="paragraph">
+<p>Copies a LineSegment&#8217;s position and length.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The source <a href="#_linesegment">LineSegment</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The LineSegment to overwrite.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_expand">pLine.expand</h3>
+<div class="paragraph">
+<p>Expands a LineSegment by shifting its sides.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">expand</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>x1</code>: How much to expand the left side.</p>
+</li>
+<li>
+<p><code>x2</code>: How much to expand the right side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_expandleft">pLine.expandLeft</h3>
+<div class="paragraph">
+<p>Expands a LineSegment&#8217;s left side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">expandLeft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>x1</code>: How much to expand the left side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_expandright">pLine.expandRight</h3>
+<div class="paragraph">
+<p>Expands a LineSegment&#8217;s right side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">expandRight</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>x2</code>: How much to expand the right side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_expandt">pLine.expandT</h3>
+<div class="paragraph">
+<p>Expands a LineSegment by shifting its sides.  Like <a href="#_pline_expand">pLine.expand</a>, but takes a LineDelta table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">expandT</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ld</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>ld</code>: The <a href="#_linedelta">LineDelta</a> to use.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_flip">pLine.flip</h3>
+<div class="paragraph">
+<p>Flips the LineSegment in relation to another LineSegment.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">flip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_linesegment">LineSegment</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The LineSegment to flip.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_getbounds">pLine.getBounds</h3>
+<div class="paragraph">
+<p>Gets the range of a group of LineSegments.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">pLine</span><span class="p">.</span><span class="n">getBounds</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&#8230;&#8203;</code>: A vararg list of <a href="#_linesegment">LineSegments</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The furthest left and right positions.</p>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>If no arguments are provided, then both returned positions will be zero.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_getboundst">pLine.getBoundsT</h3>
+<div class="paragraph">
+<p>Gets the range of a group of LineSegments. Like <a href="#_pline_getbounds">pLine.getBounds</a>, but takes an array of LineSegments rather than a vararg list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">pLine</span><span class="p">.</span><span class="n">getBoundsT</span><span class="p">(</span><span class="n">list</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>list</code>: An array of <a href="#_linesegment">LineSegments</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The furthest left and right positions.</p>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>If there are no elements in the array, then both returned positions will be zero.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_placeinner">pLine.placeInner</h3>
+<div class="paragraph">
+<p>Places LineSegment <code>b</code> within the boundaries of LineSegment <code>a</code> at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">placeInner</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_linesegment">LineSegment</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The LineSegment to place.</p>
+</li>
+<li>
+<p><code>unit</code>: A number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><code>a</code> is assumed to be at least as big as <code>b</code>.</p>
+</div>
+<div class="paragraph">
+<p>The final coordinates of <code>b</code> are rounded to integers.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_placemidpoint">pLine.placeMidpoint</h3>
+<div class="paragraph">
+<p>Places LineSegment <code>b</code>'s center point within the boundaries of LineSegment <code>a</code>, at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">placeMidpoint</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_linesegment">LineSegment</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The LineSegment to place.</p>
+</li>
+<li>
+<p><code>unit</code>: A number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_4" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The final coordinates of <code>b</code> are rounded to integers.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_placeouter">pLine.placeOuter</h3>
+<div class="paragraph">
+<p>Places LineSegment <code>b</code> within or just outside the boundaries of LineSegment <code>a</code> at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">placeOuter</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_linesegment">LineSegment</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The LineSegment to place.</p>
+</li>
+<li>
+<p><code>unit</code>: A number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_5" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The final coordinates of <code>b</code> are rounded to integers.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_positionoverlap">pLine.positionOverlap</h3>
+<div class="paragraph">
+<p>Checks if a position is within a LineSegment.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">pLine</span><span class="p">.</span><span class="n">positionOverlap</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to check.</p>
+</li>
+<li>
+<p><code>x</code>: The position.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the point overlaps the LineSegment, <code>false</code> if not.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_reduce">pLine.reduce</h3>
+<div class="paragraph">
+<p>Shortens a LineSegment by shifting its sides.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>x1</code>: How much to shorten the left side.</p>
+</li>
+<li>
+<p><code>x2</code>: How much to shorten the right side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_reduceleft">pLine.reduceLeft</h3>
+<div class="paragraph">
+<p>Shortenes a LineSegment&#8217;s left side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">reduceLeft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>x1</code>: How much to shorten the left side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_reduceright">pLine.reduceRight</h3>
+<div class="paragraph">
+<p>Shortens a LineSegment&#8217;s right side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">reduceRight</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>x2</code>: How much to shorten the right side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_reducet">pLine.reduceT</h3>
+<div class="paragraph">
+<p>Shortens a LineSegment by shifting its sides. Like <a href="#_pline_reduce">pLine.reduce</a>, but takes a LineDelta table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">reduceT</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ld</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>ld</code>: The <a href="#_linedelta">LineDelta</a> to use.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_set">pLine.set</h3>
+<div class="paragraph">
+<p>Sets a LineSegment&#8217;s position and length.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to modify.</p>
+</li>
+<li>
+<p><code>x</code>: The new position.</p>
+</li>
+<li>
+<p><code>w</code>: The new width.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_split">pLine.split</h3>
+<div class="paragraph">
+<p>Splits a LineSegment.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The input <a href="#_linesegment">LineSegment</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The output LineSegment.</p>
+</li>
+<li>
+<p><code>side</code>: The side to split: <code>left</code> or <code>right</code>.</p>
+</li>
+<li>
+<p><code>len</code>: The length of the split.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_splitleft">pLine.splitLeft</h3>
+<div class="paragraph">
+<p>Shortens LineSegment <code>a</code> by cutting a chunk from its left side, and overwrites LineSegment <code>b</code> to match the chunk.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">splitLeft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to shorten.</p>
+</li>
+<li>
+<p><code>b</code>: The LineSegment to be assigned the removed part.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_splitoroverlay">pLine.splitOrOverlay</h3>
+<div class="paragraph">
+<p>Splits or copies a LineSegment, based on the arguments provided.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">splitOrOverlay</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">placement</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The input <a href="#_linesegment">LineSegment</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The output LineSegment.</p>
+</li>
+<li>
+<p><code>placement</code>: How to place LineSegment <code>b</code>: by splitting LineSegment <code>a</code> (<code>left</code> or <code>right</code>), or by copying it (<code>overlay</code>).</p>
+</li>
+<li>
+<p><code>len</code>: The length of the split. Not used when the placement mode is <code>overlay</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pline_splitright">pLine.splitRight</h3>
+<div class="paragraph">
+<p>Shortens LineSegment <code>a</code> by cutting a chunk from its right side, and overwrites LineSegment <code>b</code> to match the chunk.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pLine</span><span class="p">.</span><span class="n">splitRight</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_linesegment">LineSegment</a> to shorten.</p>
+</li>
+<li>
+<p><code>b</code>: The LineSegment to be assigned the removed part.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_omissions">Omissions</h3>
+<div class="paragraph">
+<p>Functions that would change only one variable in a trivial way, like <code>setPosition()</code> or <code>setLength()</code>, are omitted from the API.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_structures">Structures</h3>
+<div class="paragraph">
+<p><em>pLine</em> does not come with functions to create the structures described here. Any table that contains the expected fields may be used. Out of concern for overhead, function arguments are not validated by default.</p>
+</div>
+<div class="sect3">
+<h4 id="_linesegment">LineSegment</h4>
+<div class="paragraph">
+<p>A table with <code>x</code> and <code>w</code> fields, both numbers. The length (<code>w</code>) is assumed to be greater than or equal to zero.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">LineSegment</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">0</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_linedelta">LineDelta</h4>
+<div class="paragraph">
+<p>A table with measurements for each side of a LineSegment. These are typically used to apply margins, padding, etc.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ld</span> <span class="o">=</span> <span class="p">{</span><span class="n">x1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">0</span><span class="p">}</span> <span class="c1">-- left, right</span></code></pre>
+</div>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 17:35:09 -0300
+</div>
+</div>
+</body>
+</html>

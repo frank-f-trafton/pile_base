@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pPool</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pPool</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p>(<strong>This module is experimental.</strong> Please see the <a href="#_module_notes">Module Notes</a> at the end of this page.)</p>
+</div>
+<div class="paragraph">
+<p><em>pPool</em> creates stacks of pooled resources (usually tables or userdata).</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pPool</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_pool"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="k">function</span> <span class="nf">_popping</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">r</span> <span class="k">then</span> <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">end</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+	<span class="k">return</span> <span class="n">r</span>
+<span class="k">end</span>
+
+<span class="kd">local</span> <span class="k">function</span> <span class="nf">_pushing</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">~=</span> <span class="s2">"table"</span> <span class="k">then</span> <span class="nb">error</span><span class="p">(</span><span class="s2">"expected table"</span><span class="p">)</span> <span class="k">end</span>
+	<span class="k">return</span> <span class="n">r</span>
+<span class="k">end</span>
+
+<span class="kd">local</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="kd">local</span> <span class="n">stack</span> <span class="o">=</span> <span class="n">pPool</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">_popping</span><span class="p">,</span> <span class="n">_pushing</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+
+<span class="c1">-- get a resource</span>
+<span class="kd">local</span> <span class="n">color1</span> <span class="o">=</span> <span class="n">stack</span><span class="p">:</span><span class="n">pop</span><span class="p">()</span>
+
+<span class="c1">-- (do stuff with 'color1')</span>
+
+<span class="c1">-- return the resource to the stack</span>
+<span class="n">color1</span> <span class="o">=</span> <span class="n">stack</span><span class="p">:</span><span class="n">push</span><span class="p">(</span><span class="n">color1</span><span class="p">)</span> <span class="c1">-- 'color1' is now nil</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api_ppool_the_module">API: pPool (The Module)</a>
+<ul class="sectlevel2">
+<li><a href="#_ppool_new">pPool.new</a></li>
+</ul>
+</li>
+<li><a href="#_api_pool_the_object">API: Pool (The Object)</a>
+<ul class="sectlevel2">
+<li><a href="#_poolgetthreshold">Pool:getThreshold</a></li>
+<li><a href="#_poolpop">Pool:pop</a></li>
+<li><a href="#_poolpush">Pool:push</a></li>
+<li><a href="#_poolreducestack">Pool:reduceStack</a></li>
+<li><a href="#_poolsetthreshold">Pool:setThreshold</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_ppool_the_module">API: pPool (The Module)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_ppool_new">pPool.new</h3>
+<div class="paragraph">
+<p>Creates a new pool stack.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">stack</span> <span class="o">=</span> <span class="n">pPool</span><span class="p">.</span><span class="n">new</span><span class="p">([</span><span class="n">popping</span><span class="p">],</span> <span class="p">[</span><span class="n">pushing</span><span class="p">],</span> <span class="p">[</span><span class="n">threshold</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[popping]</code>: <em>(false)</em> The initialization function, for creating new resources or refreshing old ones. It takes one argument for the resource (which may be <code>nil</code> if the stack is empty), and returns the resource.</p>
+</li>
+<li>
+<p><code>[pushing]</code>: <em>(false)</em> The cleanup function, for winding down resources before they are returned to the stack or discarded. It takes one argument for the resource, and returns the resource (or <code>nil</code> to discard it).</p>
+</li>
+<li>
+<p><code>[threshold]</code>: <em>(0)</em> How many resources to hold in the stack before pushed resources are simply discarded.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new pool stack.</p>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The default <code>threshold</code> of zero will always keep the pool stack empty.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_pool_the_object">API: Pool (The Object)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_poolgetthreshold">Pool:getThreshold</h3>
+<div class="paragraph">
+<p>Gets the pool stack&#8217;s current threshold.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">threshold</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">:</span><span class="n">getThreshold</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The threshold number.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_poolpop">Pool:pop</h3>
+<div class="paragraph">
+<p>Retrieves or creates a new resource.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">r</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">:</span><span class="n">pop</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new or used resource.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_poolpush">Pool:push</h3>
+<div class="paragraph">
+<p>Pushes a resource onto the stack (or discards it if the stack is full).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Pool</span><span class="p">:</span><span class="n">push</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The resource to push.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_poolreducestack">Pool:reduceStack</h3>
+<div class="paragraph">
+<p>Discards a certain number of resources in the stack.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Pool</span><span class="p">:</span><span class="n">reduceStack</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: <em>(0)</em> Resources above this index are discarded.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_poolsetthreshold">Pool:setThreshold</h3>
+<div class="paragraph">
+<p>Sets the pool stack&#8217;s threshold (at what size it should begin to discard pushed resources). A value of zero makes the stack discard all resources.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Pool</span><span class="p">:</span><span class="n">setThreshold</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>threshold</code>: The threshold number.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Some <em>do</em>'s and <em>don&#8217;t</em>s and other tips:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When you push a resource onto a pool stack, you must <em>not</em> continue to use it through any existing references.</p>
+</li>
+<li>
+<p>Do not push the same resource onto a pool stack multiple times.</p>
+</li>
+<li>
+<p>Junk fields in tables will persist across pushes and pops, unless you go out of your way to clean them (which leads to more overhead).</p>
+</li>
+<li>
+<p>Rather than push extremely large arrays, you can discard them in the 'pushing' callback by returning <code>nil</code>.</p>
+</li>
+<li>
+<p>If you suspect that pooling is causing trouble, you can effectively disable pool stacks by setting their threshold numbers to zero.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 17:21:49 -0300
+</div>
+</div>
+</body>
+</html>

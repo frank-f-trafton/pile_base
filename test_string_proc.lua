@@ -1,5 +1,5 @@
--- Test: PILE StringProc
--- VERSION: 2.101
+-- Test: pStringProc
+-- VERSION: 2.105
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
@@ -9,8 +9,8 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pStringWalk = require(PATH .. "pile_string_walk")
-local pStringProc = require(PATH .. "pile_string_proc")
+local pStringWalk = require(PATH .. "p_string_walk")
+local pStringProc = require(PATH .. "p_string_proc")
 
 
 local _mt_walk = getmetatable(pStringWalk.new())
@@ -400,7 +400,7 @@ a = 3.21
 		--[[
 		You get the idea.
 
-		PILE StringProc gets more serious use in the Lua XML Library:
+		pStringProc gets more serious use in the Lua XML Library:
 		https://github.com/frank-f-trafton/lxl
 		--]]
 	end

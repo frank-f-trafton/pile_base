@@ -1,5 +1,5 @@
--- Test: pile_path.lua
--- VERSION: 2.101
+-- Test: p_path.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,7 +10,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pPath = require(PATH .. "pile_path")
+local pPath = require(PATH .. "p_path")
 
 
 local cli_verbosity
@@ -24,7 +24,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE Path", cli_verbosity)
+local self = errTest.new("pPath", cli_verbosity)
 
 
 self:registerFunction("pPath.getExtension()", pPath.getExtension)

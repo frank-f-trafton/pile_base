@@ -1,5 +1,5 @@
--- Test: pile_assert.lua
--- VERSION: 2.101
+-- Test: p_assert.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,8 +10,8 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pAssert = require(PATH .. "pile_assert")
-local pTable = require(PATH .. "pile_table") -- for pTable.newNamedMap()
+local pAssert = require(PATH .. "p_assert")
+local pTable = require(PATH .. "p_table") -- for pTable.newNamedMap()
 
 
 local cli_verbosity
@@ -207,54 +207,25 @@ end
 
 
 -- [===[
-self:registerFunction("pAssert.numberNotNaN()", pAssert.numberNotNaN)
-self:registerJob("pAssert.numberNotNaN()", function(self)
+self:registerFunction("pAssert.numberNotNan()", pAssert.numberNotNan)
+self:registerJob("pAssert.numberNotNan()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", pAssert.numberNotNaN, 1, 5)
-		self:expectLuaError("wrong type", pAssert.numberNotNaN, 1, true)
-		self:expectLuaError("reject NaN", pAssert.numberNotNaN, 1, 0/0)
+		self:expectLuaReturn("expected behavior", pAssert.numberNotNan, 1, 5)
+		self:expectLuaError("wrong type", pAssert.numberNotNan, 1, true)
+		self:expectLuaError("reject NaN", pAssert.numberNotNan, 1, 0/0)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pAssert.numberNotNaN, nil, true)
-		self:expectLuaError("argument 1: error", pAssert.numberNotNaN, 1, true)
-		self:expectLuaError("argument 100: error", pAssert.numberNotNaN, 100, true)
-		self:expectLuaError("arbitrary string: error", pAssert.numberNotNaN, "foo", true)
-		self:expectLuaError("table-key: error", pAssert.numberNotNaN, {"t1", "x"}, true)
-		self:expectLuaError("function: error", pAssert.numberNotNaN, _funcLabelTest, true)
-	end
-	--]====]
-end
-)
---]===]
-
-
--- [===[
-self:registerFunction("pAssert.numberNotNaNEval()", pAssert.numberNotNaNEval)
-self:registerJob("pAssert.numberNotNaNEval()", function(self)
-	-- [====[
-	do
-		self:expectLuaReturn("expected behavior", pAssert.numberNotNaNEval, 1, 5)
-		self:expectLuaError("wrong type", pAssert.numberNotNaNEval, 1, true)
-		self:expectLuaError("reject NaN", pAssert.numberNotNaNEval, 1, 0/0)
-		self:expectLuaReturn("accept false", pAssert.numberNotNaNEval, 1, false)
-		self:expectLuaReturn("accept nil", pAssert.numberNotNaNEval, 1, nil)
-	end
-	--]====]
-
-
-	-- [====[
-	do
-		self:expectLuaError("no argument: error", pAssert.numberNotNaNEval, nil, true)
-		self:expectLuaError("argument 1: error", pAssert.numberNotNaNEval, 1, true)
-		self:expectLuaError("argument 100: error", pAssert.numberNotNaNEval, 100, true)
-		self:expectLuaError("arbitrary string: error", pAssert.numberNotNaNEval, "foo", true)
-		self:expectLuaError("table-key: error", pAssert.numberNotNaNEval, {"t1", "x"}, true)
-		self:expectLuaError("function: error", pAssert.numberNotNaNEval, _funcLabelTest, true)
+		self:expectLuaError("no argument: error", pAssert.numberNotNan, nil, true)
+		self:expectLuaError("argument 1: error", pAssert.numberNotNan, 1, true)
+		self:expectLuaError("argument 100: error", pAssert.numberNotNan, 100, true)
+		self:expectLuaError("arbitrary string: error", pAssert.numberNotNan, "foo", true)
+		self:expectLuaError("table-key: error", pAssert.numberNotNan, {"t1", "x"}, true)
+		self:expectLuaError("function: error", pAssert.numberNotNan, _funcLabelTest, true)
 	end
 	--]====]
 end
@@ -263,26 +234,27 @@ end
 
 
 -- [===[
-self:registerFunction("pAssert.numberGE()", pAssert.numberGE)
-self:registerJob("pAssert.numberGE()", function(self)
+self:registerFunction("pAssert.numberNotNanEval()", pAssert.numberNotNanEval)
+self:registerJob("pAssert.numberNotNanEval()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", pAssert.numberGE, 1, 100, 50)
-		self:expectLuaError("bad type", pAssert.numberGE, 1, false, 50)
-		self:expectLuaError("under the minimum", pAssert.numberGE, 1, 5, 80)
-		self:expectLuaError("NaN", pAssert.numberGE, 1, 0/0, 0)
+		self:expectLuaReturn("expected behavior", pAssert.numberNotNanEval, 1, 5)
+		self:expectLuaError("wrong type", pAssert.numberNotNanEval, 1, true)
+		self:expectLuaError("reject NaN", pAssert.numberNotNanEval, 1, 0/0)
+		self:expectLuaReturn("accept false", pAssert.numberNotNanEval, 1, false)
+		self:expectLuaReturn("accept nil", pAssert.numberNotNanEval, 1, nil)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pAssert.numberGE, nil, 50, 100)
-		self:expectLuaError("argument 1: error", pAssert.numberGE, 1, 50, 100)
-		self:expectLuaError("argument 100: error", pAssert.numberGE, 100, 50, 100)
-		self:expectLuaError("arbitrary string: error", pAssert.numberGE, "foo", 50, 100)
-		self:expectLuaError("table-key: error", pAssert.numberGE, {"t1", "x"}, 50, 100)
-		self:expectLuaError("function: error", pAssert.numberGE, _funcLabelTest, 50, 100)
+		self:expectLuaError("no argument: error", pAssert.numberNotNanEval, nil, true)
+		self:expectLuaError("argument 1: error", pAssert.numberNotNanEval, 1, true)
+		self:expectLuaError("argument 100: error", pAssert.numberNotNanEval, 100, true)
+		self:expectLuaError("arbitrary string: error", pAssert.numberNotNanEval, "foo", true)
+		self:expectLuaError("table-key: error", pAssert.numberNotNanEval, {"t1", "x"}, true)
+		self:expectLuaError("function: error", pAssert.numberNotNanEval, _funcLabelTest, true)
 	end
 	--]====]
 end
@@ -291,27 +263,55 @@ end
 
 
 -- [===[
-self:registerFunction("pAssert.numberGEEval()", pAssert.numberGEEval)
-self:registerJob("pAssert.numberGEEval()", function(self)
+self:registerFunction("pAssert.numberGe()", pAssert.numberGe)
+self:registerJob("pAssert.numberGe()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", pAssert.numberGEEval, 1, 100, 50)
-		self:expectLuaReturn("expected behavior (eval false)", pAssert.numberGEEval, 1, false, 50)
-		self:expectLuaError("bad type", pAssert.numberGEEval, 1, true, 50)
-		self:expectLuaError("under the minimum", pAssert.numberGEEval, 1, 5, 80)
-		self:expectLuaError("NaN", pAssert.numberGEEval, 1, 0/0, 0)
+		self:expectLuaReturn("expected behavior", pAssert.numberGe, 1, 100, 50)
+		self:expectLuaError("bad type", pAssert.numberGe, 1, false, 50)
+		self:expectLuaError("under the minimum", pAssert.numberGe, 1, 5, 80)
+		self:expectLuaError("NaN", pAssert.numberGe, 1, 0/0, 0)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pAssert.numberGEEval, nil, 5, 80)
-		self:expectLuaError("argument 1: error", pAssert.numberGEEval, 1, 5, 80)
-		self:expectLuaError("argument 100: error", pAssert.numberGEEval, 100, 5, 80)
-		self:expectLuaError("arbitrary string: error", pAssert.numberGEEval, "foo", 5, 80)
-		self:expectLuaError("table-key: error", pAssert.numberGEEval, {"t1", "x"}, 5, 80)
-		self:expectLuaError("function: error", pAssert.numberGEEval, _funcLabelTest, 5, 80)
+		self:expectLuaError("no argument: error", pAssert.numberGe, nil, 50, 100)
+		self:expectLuaError("argument 1: error", pAssert.numberGe, 1, 50, 100)
+		self:expectLuaError("argument 100: error", pAssert.numberGe, 100, 50, 100)
+		self:expectLuaError("arbitrary string: error", pAssert.numberGe, "foo", 50, 100)
+		self:expectLuaError("table-key: error", pAssert.numberGe, {"t1", "x"}, 50, 100)
+		self:expectLuaError("function: error", pAssert.numberGe, _funcLabelTest, 50, 100)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerFunction("pAssert.numberGeEval()", pAssert.numberGeEval)
+self:registerJob("pAssert.numberGeEval()", function(self)
+	-- [====[
+	do
+		self:expectLuaReturn("expected behavior", pAssert.numberGeEval, 1, 100, 50)
+		self:expectLuaReturn("expected behavior (eval false)", pAssert.numberGeEval, 1, false, 50)
+		self:expectLuaError("bad type", pAssert.numberGeEval, 1, true, 50)
+		self:expectLuaError("under the minimum", pAssert.numberGeEval, 1, 5, 80)
+		self:expectLuaError("NaN", pAssert.numberGeEval, 1, 0/0, 0)
+	end
+	--]====]
+
+
+	-- [====[
+	do
+		self:expectLuaError("no argument: error", pAssert.numberGeEval, nil, 5, 80)
+		self:expectLuaError("argument 1: error", pAssert.numberGeEval, 1, 5, 80)
+		self:expectLuaError("argument 100: error", pAssert.numberGeEval, 100, 5, 80)
+		self:expectLuaError("arbitrary string: error", pAssert.numberGeEval, "foo", 5, 80)
+		self:expectLuaError("table-key: error", pAssert.numberGeEval, {"t1", "x"}, 5, 80)
+		self:expectLuaError("function: error", pAssert.numberGeEval, _funcLabelTest, 5, 80)
 	end
 	--]====]
 end
@@ -437,27 +437,27 @@ end
 
 
 -- [===[
-self:registerFunction("pAssert.integerGE()", pAssert.integerGE)
-self:registerJob("pAssert.integerGE()", function(self)
+self:registerFunction("pAssert.integerGe()", pAssert.integerGe)
+self:registerJob("pAssert.integerGe()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", pAssert.integerGE, 1, 100, 50)
-		self:expectLuaError("bad type", pAssert.integerGE, 1, false, 50)
-		self:expectLuaError("not an integer", pAssert.integerGE, 1, 5.5, 1)
-		self:expectLuaError("under the minimum", pAssert.integerGE, 1, 5, 80)
-		self:expectLuaError("NaN", pAssert.integerGE, 1, 0/0, 0)
+		self:expectLuaReturn("expected behavior", pAssert.integerGe, 1, 100, 50)
+		self:expectLuaError("bad type", pAssert.integerGe, 1, false, 50)
+		self:expectLuaError("not an integer", pAssert.integerGe, 1, 5.5, 1)
+		self:expectLuaError("under the minimum", pAssert.integerGe, 1, 5, 80)
+		self:expectLuaError("NaN", pAssert.integerGe, 1, 0/0, 0)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pAssert.integerGE, nil, 50, 100)
-		self:expectLuaError("argument 1: error", pAssert.integerGE, 1, 50, 100)
-		self:expectLuaError("argument 100: error", pAssert.integerGE, 100, 50, 100)
-		self:expectLuaError("arbitrary string: error", pAssert.integerGE, "foo", 50, 100)
-		self:expectLuaError("table-key: error", pAssert.integerGE, {"t1", "x"}, 50, 100)
-		self:expectLuaError("function: error", pAssert.integerGE, _funcLabelTest, 50, 100)
+		self:expectLuaError("no argument: error", pAssert.integerGe, nil, 50, 100)
+		self:expectLuaError("argument 1: error", pAssert.integerGe, 1, 50, 100)
+		self:expectLuaError("argument 100: error", pAssert.integerGe, 100, 50, 100)
+		self:expectLuaError("arbitrary string: error", pAssert.integerGe, "foo", 50, 100)
+		self:expectLuaError("table-key: error", pAssert.integerGe, {"t1", "x"}, 50, 100)
+		self:expectLuaError("function: error", pAssert.integerGe, _funcLabelTest, 50, 100)
 	end
 	--]====]
 end
@@ -466,28 +466,28 @@ end
 
 
 -- [===[
-self:registerFunction("pAssert.integerGEEval()", pAssert.integerGEEval)
-self:registerJob("pAssert.integerGEEval()", function(self)
+self:registerFunction("pAssert.integerGeEval()", pAssert.integerGeEval)
+self:registerJob("pAssert.integerGeEval()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", pAssert.integerGEEval, 1, 100, 50)
-		self:expectLuaReturn("expected behavior (eval false)", pAssert.integerGEEval, 1, false, 50)
-		self:expectLuaError("bad type", pAssert.integerGEEval, 1, true, 50)
-		self:expectLuaError("not an integer", pAssert.integerGEEval, 1, 5.5, 1)
-		self:expectLuaError("under the minimum", pAssert.integerGEEval, 1, 5, 80)
-		self:expectLuaError("NaN", pAssert.integerGEEval, 1, 0/0, 0)
+		self:expectLuaReturn("expected behavior", pAssert.integerGeEval, 1, 100, 50)
+		self:expectLuaReturn("expected behavior (eval false)", pAssert.integerGeEval, 1, false, 50)
+		self:expectLuaError("bad type", pAssert.integerGeEval, 1, true, 50)
+		self:expectLuaError("not an integer", pAssert.integerGeEval, 1, 5.5, 1)
+		self:expectLuaError("under the minimum", pAssert.integerGeEval, 1, 5, 80)
+		self:expectLuaError("NaN", pAssert.integerGeEval, 1, 0/0, 0)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pAssert.integerGEEval, nil, 5, 80)
-		self:expectLuaError("argument 1: error", pAssert.integerGEEval, 1, 5, 80)
-		self:expectLuaError("argument 100: error", pAssert.integerGEEval, 100, 5, 80)
-		self:expectLuaError("arbitrary string: error", pAssert.integerGEEval, "foo", 5, 80)
-		self:expectLuaError("table-key: error", pAssert.integerGEEval, {"t1", "x"}, 5, 80)
-		self:expectLuaError("function: error", pAssert.integerGEEval, _funcLabelTest, 5, 80)
+		self:expectLuaError("no argument: error", pAssert.integerGeEval, nil, 5, 80)
+		self:expectLuaError("argument 1: error", pAssert.integerGeEval, 1, 5, 80)
+		self:expectLuaError("argument 100: error", pAssert.integerGeEval, 100, 5, 80)
+		self:expectLuaError("arbitrary string: error", pAssert.integerGeEval, "foo", 5, 80)
+		self:expectLuaError("table-key: error", pAssert.integerGeEval, {"t1", "x"}, 5, 80)
+		self:expectLuaError("function: error", pAssert.integerGeEval, _funcLabelTest, 5, 80)
 	end
 	--]====]
 end
@@ -643,26 +643,26 @@ end
 
 
 -- [===[
-self:registerFunction("pAssert.notNilNotNaN()", pAssert.notNilNotNaN)
-self:registerJob("pAssert.notNilNotNaN()", function(self)
+self:registerFunction("pAssert.notNilNotNan()", pAssert.notNilNotNan)
+self:registerJob("pAssert.notNilNotNan()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", pAssert.notNilNotNaN, 1, "foo")
-		self:expectLuaError("reject nil", pAssert.notNilNotNaN, 1, nil)
-		self:expectLuaReturn("accept false", pAssert.notNilNotNaN, 1, false)
-		self:expectLuaError("reject NaN", pAssert.notNilNotNaN, 1, 0/0)
+		self:expectLuaReturn("expected behavior", pAssert.notNilNotNan, 1, "foo")
+		self:expectLuaError("reject nil", pAssert.notNilNotNan, 1, nil)
+		self:expectLuaReturn("accept false", pAssert.notNilNotNan, 1, false)
+		self:expectLuaError("reject NaN", pAssert.notNilNotNan, 1, 0/0)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pAssert.notNilNotNaN, nil, nil)
-		self:expectLuaError("argument 1: error", pAssert.notNilNotNaN, 1, nil)
-		self:expectLuaError("argument 100: error", pAssert.notNilNotNaN, 100, nil)
-		self:expectLuaError("arbitrary string: error", pAssert.notNilNotNaN, "foo", nil)
-		self:expectLuaError("table-key: error", pAssert.notNilNotNaN, {"t1", "x"}, nil)
-		self:expectLuaError("function: error", pAssert.notNilNotNaN, _funcLabelTest, nil)
+		self:expectLuaError("no argument: error", pAssert.notNilNotNan, nil, nil)
+		self:expectLuaError("argument 1: error", pAssert.notNilNotNan, 1, nil)
+		self:expectLuaError("argument 100: error", pAssert.notNilNotNan, 100, nil)
+		self:expectLuaError("arbitrary string: error", pAssert.notNilNotNan, "foo", nil)
+		self:expectLuaError("table-key: error", pAssert.notNilNotNan, {"t1", "x"}, nil)
+		self:expectLuaError("function: error", pAssert.notNilNotNan, _funcLabelTest, nil)
 	end
 	--]====]
 end
@@ -699,26 +699,26 @@ end
 
 
 -- [===[
-self:registerFunction("pAssert.notNilNotFalseNotNaN()", pAssert.notNilNotFalseNotNaN)
-self:registerJob("pAssert.notNilNotFalseNotNaN()", function(self)
+self:registerFunction("pAssert.notNilNotFalseNotNan()", pAssert.notNilNotFalseNotNan)
+self:registerJob("pAssert.notNilNotFalseNotNan()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", pAssert.notNilNotFalseNotNaN, 1, "foo")
-		self:expectLuaError("reject nil", pAssert.notNilNotFalseNotNaN, 1, nil)
-		self:expectLuaError("reject false", pAssert.notNilNotFalseNotNaN, 1, false)
-		self:expectLuaError("reject NaN", pAssert.notNilNotFalseNotNaN, 1, 0/0)
+		self:expectLuaReturn("expected behavior", pAssert.notNilNotFalseNotNan, 1, "foo")
+		self:expectLuaError("reject nil", pAssert.notNilNotFalseNotNan, 1, nil)
+		self:expectLuaError("reject false", pAssert.notNilNotFalseNotNan, 1, false)
+		self:expectLuaError("reject NaN", pAssert.notNilNotFalseNotNan, 1, 0/0)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pAssert.notNilNotFalseNotNaN, nil, nil)
-		self:expectLuaError("argument 1: error", pAssert.notNilNotFalseNotNaN, 1, nil)
-		self:expectLuaError("argument 100: error", pAssert.notNilNotFalseNotNaN, 100, nil)
-		self:expectLuaError("arbitrary string: error", pAssert.notNilNotFalseNotNaN, "foo", nil)
-		self:expectLuaError("table-key: error", pAssert.notNilNotFalseNotNaN, {"t1", "x"}, nil)
-		self:expectLuaError("function: error", pAssert.notNilNotFalseNotNaN, _funcLabelTest, nil)
+		self:expectLuaError("no argument: error", pAssert.notNilNotFalseNotNan, nil, nil)
+		self:expectLuaError("argument 1: error", pAssert.notNilNotFalseNotNan, 1, nil)
+		self:expectLuaError("argument 100: error", pAssert.notNilNotFalseNotNan, 100, nil)
+		self:expectLuaError("arbitrary string: error", pAssert.notNilNotFalseNotNan, "foo", nil)
+		self:expectLuaError("table-key: error", pAssert.notNilNotFalseNotNan, {"t1", "x"}, nil)
+		self:expectLuaError("function: error", pAssert.notNilNotFalseNotNan, _funcLabelTest, nil)
 	end
 	--]====]
 end
@@ -727,26 +727,26 @@ end
 
 
 -- [===[
-self:registerFunction("pAssert.notNaN()", pAssert.notNaN)
-self:registerJob("pAssert.notNaN()", function(self)
+self:registerFunction("pAssert.notNan()", pAssert.notNan)
+self:registerJob("pAssert.notNan()", function(self)
 	-- [====[
 	do
-		self:expectLuaReturn("expected behavior", pAssert.notNaN, 1, "foo")
-		self:expectLuaReturn("accept nil", pAssert.notNaN, 1, nil)
-		self:expectLuaReturn("accept false", pAssert.notNaN, 1, false)
-		self:expectLuaError("reject NaN", pAssert.notNaN, 1, 0/0)
+		self:expectLuaReturn("expected behavior", pAssert.notNan, 1, "foo")
+		self:expectLuaReturn("accept nil", pAssert.notNan, 1, nil)
+		self:expectLuaReturn("accept false", pAssert.notNan, 1, false)
+		self:expectLuaError("reject NaN", pAssert.notNan, 1, 0/0)
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:expectLuaError("no argument: error", pAssert.notNaN, nil, 0/0)
-		self:expectLuaError("argument 1: error", pAssert.notNaN, 1, 0/0)
-		self:expectLuaError("argument 100: error", pAssert.notNaN, 100, 0/0)
-		self:expectLuaError("arbitrary string: error", pAssert.notNaN, "foo", 0/0)
-		self:expectLuaError("table-key: error", pAssert.notNaN, {"t1", "x"}, 0/0)
-		self:expectLuaError("function: error", pAssert.notNaN, _funcLabelTest, 0/0)
+		self:expectLuaError("no argument: error", pAssert.notNan, nil, 0/0)
+		self:expectLuaError("argument 1: error", pAssert.notNan, 1, 0/0)
+		self:expectLuaError("argument 100: error", pAssert.notNan, 100, 0/0)
+		self:expectLuaError("arbitrary string: error", pAssert.notNan, "foo", 0/0)
+		self:expectLuaError("table-key: error", pAssert.notNan, {"t1", "x"}, 0/0)
+		self:expectLuaError("function: error", pAssert.notNan, _funcLabelTest, 0/0)
 	end
 	--]====]
 end

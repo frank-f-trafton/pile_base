@@ -1,0 +1,865 @@
+= PILE Base: pStringWalk
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pStringWalk__ creates string parsing objects.
+
+Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp]
+
+[source,lua]
+----
+local W = pStringWalk.new("foobar")
+local first = W:litReq("foo", "Missing crucial 'foo'")
+local second = W:litReq("bar", "Missing irreplacable 'bar'")
+
+print(first, second) --> foo	bar
+----
+
+
+toc::[]
+
+
+== API: pStringWalk (The Module)
+
+
+=== pStringWalk.countLineChar
+
+Gets the line and character numbers for a byte position in a UTF-8 string.
+
+[source,lua]
+----
+local ln, cn  = pStringWalk.countLineChar(s, i, j, ln, cn)
+----
+
+* `s`: The string to scan.
+
+* `i`: The byte position in the string.
+
+* `j`: Where to start scanning in the string (1 on the first call).
+
+* `ln`: The initial line number to use (1 on the first call).
+
+* `cn`: The initial character number to use (1 on the first call).
+
+**Returns:** The line and character numbers.
+
+
+[discrete]
+==== Notes
+
+This function can be used instead of xref:p_string_walk.adoc#_wgetlinecharnumbers[W:getLineCharNumbers] for collecting sequential line and character numbers in a loop. While the walker method begins counting from the first byte every time, this function can start from any valid UTF-8 start byte.
+
+The results are unreliable if the UTF-8 encoding is bad, if `i` is out of bounds or greater than `j`, or if any of the numeric arguments are not integers.
+
+'''
+
+
+=== pStringWalk.new
+
+Creates a new walker.
+
+[source,lua]
+----
+local W = pStringWalk.new([s], [name])
+----
+
+* `[s]`: __(empty string)__ An optional string to assign.
+
+* `[name]`: __(nil)__ An optional name to use when generating warnings and error messages.
+
+**Returns:** The xref:p_string_walk.adoc#_walkers[walker].
+
+
+== API: Walker (The Object)
+
+
+=== W:_status
+
+Prints details about the walker's internal state to the terminal. Intended for debugging.
+
+[source,lua]
+----
+W:_status()
+----
+
+'''
+
+
+=== W:assert
+
+Raises an error if `exp` evaluates to false.
+
+[source,lua]
+----
+local retval = W:assert(exp, [err])
+----
+
+* `exp`: The expression to evaluate.
+
+* `[err]`: The error message.
+
+**Returns:** the result of `exp`, for the convenience of variable assignment.
+
+'''
+
+
+=== W:bytes
+
+Gets a substring, from the walker's position to an offset in bytes. If the offset is end-of-string (for example, attempting to get 10 bytes from the string ``"foo"``), then ``nil`` is returned.
+
+[source,lua]
+----
+local sub_str = W:bytes([n])
+----
+
+* `n`: __(1)__ How many bytes to read from the walker's position.
+
+**Returns:** The substring, or `nil` if the offset goes beyond the end of the string.
+
+
+[discrete]
+==== Notes
+
+It's an error to provide an offset of zero or less, or a fractional value.
+
+'''
+
+
+=== W:bytesReq
+
+Like xref:p_string_walk.adoc#_wbytes[W:bytes], but raises an error when the request is unsuccessful.
+
+[source,lua]
+----
+local sub_str = W:bytesReq([n], [err])
+----
+
+* `n`: __(1)__ How many bytes to read from the walker's position.
+
+* `[err]`: The error message.
+
+**Returns:** The substring.
+
+'''
+
+
+=== W:error
+
+Raises an error. Depending on the walker's xref:p_string_walk.adoc#_walker_options[configuration], the output may include a name, a line number, and a character number. If the walker is in xref:p_string_walk.adoc#_terse_mode[Terse Mode], then a generic error message will be displayed instead.
+
+[source,lua]
+----
+W:error([str], [level])
+----
+
+* `[str]`: The error string to pass to https://www.lua.org/manual/5.1/manual.html#pdf-error[**error**]. Any non-string value will be converted to one.
+
+* `[level]`: __(2)__ The stack level to pass to https://www.lua.org/manual/5.1/manual.html#pdf-error[**error**].
+
+'''
+
+
+=== W:find
+
+Calls https://www.lua.org/manual/5.1/manual.html#pdf-string.find[**string.find**] at the current position. If a match is found, returns the `i` and `j` indices and captures, and advances the walker's position past `j`.
+
+[source,lua]
+----
+local i, j --[[, captures...]] = W:find(ptn)
+----
+
+* `ptn`: The search pattern string.
+
+**Returns:** The boundaries of the result, and up to 16 captures, or `nil` if there wasn't a match.
+
+'''
+
+
+=== W:findReq
+
+Like xref:p_string_walk.adoc#_wfind[W:find], but raises an error when the search is unsuccessful.
+
+[source,lua]
+----
+local i, j --[[, captures...]] = W:findReq(ptn, [err])
+----
+
+* `ptn`: The search pattern string.
+
+* `[err]`: The error message.
+
+**Returns:** The boundaries of the result, and up to 16 captures.
+
+'''
+
+
+=== W:getByteMode
+
+Gets the xref:p_string_walk.adoc#_byte_mode[Byte Mode] setting.
+
+[source,lua]
+----
+local enabled = W:getByteMode()
+----
+
+**Returns:** `true` or `false`.
+
+'''
+
+
+=== W:getIndex
+
+Gets the walker's position in bytes. If there are stack frames, then the lowest stack position is used.
+
+[source,lua]
+----
+local i = W:getIndex()
+----
+
+**Returns:** Byte index of the walker in the string.
+
+
+[discrete]
+==== Notes
+
+The walker's current byte index can be read directly at `W.I`. This may be wanted instead of the position of the lowest stack frame.
+
+'''
+
+
+=== W:getLineCharDisplay
+
+Gets the display settings for xref:p_string_walk.adoc#_line_char_display[line and character numbers].
+
+[source,lua]
+----
+local line, char = W:getLineCharDisplay()
+----
+
+**Returns:** two booleans: the first for line number display, the second for character number display.
+
+'''
+
+
+=== W:getLineCharNumbers
+
+Gets a line and character number for the walker's position. If there are stack frames, then the lowest stack position is used.
+
+[source,lua]
+----
+local ln, cn = W:getLineCharNumbers()
+----
+
+**Returns:** The walker's line number and character number.
+
+
+[discrete]
+==== Notes
+
+This method is __only__ valid for correctly encoded UTF-8 strings.
+
+The count always starts from index 1 of the string. To count line and character numbers incrementally, see the function xref:p_string_walk.adoc#_pstringwalk_countlinechar[pStringWalk.countLineChar].
+
+'''
+
+
+=== W:getName
+
+Gets the current xref:p_string_walk.adoc#_walker_name[walker name], if any.
+
+[source,lua]
+----
+local name = W:getName()
+----
+
+**Returns:** The walker name, or `nil`.
+
+'''
+
+
+=== W:getTerseMode
+
+Gets the xref:p_string_walk.adoc#_terse_mode[Terse Mode] setting.
+
+[source,lua]
+----
+local enabled = W:getTerseMode()
+----
+
+**Returns:** `true` or `false`.
+
+'''
+
+
+=== W:goEOS
+
+Moves the walker position to end-of-string.
+
+[source,lua]
+----
+W:goEOS()
+----
+
+**Returns:** `W`, for method chaining.
+
+'''
+
+
+=== W:isEOS
+
+Tells if the walker position is end-of-string.
+
+[source,lua]
+----
+local eos = W:isEOS()
+----
+
+**Returns:** `true` if the walker position is end-of-string, `false` if not.
+
+'''
+
+
+=== W:lit
+
+Compares a substring at the walker's position against a string literal. If a match is found, returns the substring and advances the walker's position. If not, returns `nil`.
+
+[source,lua]
+----
+local match = W:lit(s)
+----
+
+* `s`: The string literal to compare.
+
+**Returns:** The matching substring, or `nil`.
+
+[discrete]
+==== Notes
+
+The search is anchored to the walker's position. To search the remainder of the string for a literal substring, use xref:p_string_walk.adoc#_wplain[W:plain] or xref:p_string_walk.adoc#_wplainreq[W:plainReq].
+
+The successful return value is always the same as the `s` argument. This allows for short circuit evaluations, like:
+
+[source,lua]
+----
+local facing_dir = W:lit("left") or W:litReq("right", "bad direction")
+----
+
+'''
+
+
+=== W:litReq
+
+Like xref:p_string_walk.adoc#_wlit[W:lit], but raises an error when the search is unsuccessful.
+
+[source,lua]
+----
+W:litReq(str, [err])
+----
+
+* `s`: The string literal to compare.
+
+* `[err]`: The error message.
+
+**Returns:** The match.
+
+'''
+
+
+=== W:match
+
+Behaves like https://www.lua.org/manual/5.1/manual.html#pdf-string.match[**string.match**]. If a match is found at the current position, returns the captures (or the whole result, if the pattern contained no captures) and advances the position.
+
+[source,lua]
+----
+local match --[[or captures...]] = W:match(ptn)
+----
+
+* `ptn`: The search pattern string.
+
+**Returns:** The match, or up to 16 captures, or `nil`.
+
+
+[discrete]
+==== Notes
+
+This method uses https://www.lua.org/manual/5.1/manual.html#pdf-string.find[**string.find**] under the hood, but it modifies the output to be like that of https://www.lua.org/manual/5.1/manual.html#pdf-string.match[**string.match**].
+
+'''
+
+
+=== W:matchReq
+
+Like xref:p_string_walk.adoc#_wmatch[W:match], but raises an error if the search was unsuccessful.
+
+[source,lua]
+----
+local match --[[or captures...]] = W:matchReq(ptn, [err])
+----
+
+* `ptn`: The search pattern string.
+
+* `[err]`: The error message.
+
+**Returns:** The match, or up to 16 captures.
+
+'''
+
+
+=== W:peek
+
+Gets a substring, from the walker's current position to an offset in bytes. Does not advance the walker.
+
+[source,lua]
+----
+local sub_str = W:peek([n])
+----
+
+* `[n]`: __(1)__ How many bytes to read from the walker's position. A value of 1 will return the current byte.
+
+**Returns:** The substring.
+
+
+[discrete]
+==== Notes
+
+If the walker position is end-of-string, then an empty string is returned.
+
+It's an error to provide an offset of zero or less, or a fractional value.
+
+'''
+
+
+=== W:plain
+
+Calls https://www.lua.org/manual/5.1/manual.html#pdf-string.find[**string.find**] at the current position, in __plain mode__. If a match is found, returns the `i` and `j` indices, and advances the position past `j`.
+
+[source,lua]
+----
+local i, j = W:plain(ptn)
+----
+
+* `ptn`: The search pattern string.
+
+**Returns:** The boundaries of the result, or `nil` if there wasn't a match.
+
+
+[discrete]
+==== Notes
+
+All pattern-matching symbols are treated as ordinary characters. As such, this method does not support captures.
+
+This method does __not__ anchor the search to the walker position. For that, use xref:p_string_walk.adoc#_wlit[W:lit] or xref:p_string_walk.adoc#_wlitreq[W:litReq]
+
+'''
+
+
+=== W:plainReq
+
+Like xref:p_string_walk.adoc#_wplain[W:plain], but raises an error if the search was unsuccessful.
+
+[source,lua]
+----
+local i, j = W:plainReq(ptn, [err])
+----
+
+* `ptn`: The search pattern string.
+
+* `[err]`: The error message.
+
+**Returns:** The boundaries of the result.
+
+'''
+
+
+=== W:pop
+
+Pops the last string and position from the stack.
+
+[source,lua]
+----
+W:pop()
+----
+
+**Returns:** `W`, for method chaining.
+
+
+[discrete]
+==== Notes
+
+Stack frames are not automatically popped when reaching end-of-string.
+
+It's an error to call this on an empty stack.
+
+'''
+
+
+=== W:popAll
+
+Pops all strings from the stack.
+
+[source,lua]
+----
+W:popAll()
+----
+
+**Returns:** `W`, for method chaining.
+
+
+[discrete]
+==== Notes
+
+Unlike xref:p_string_walk.adoc#_wpop[W:pop], this method does not raise an error when the stack is empty.
+
+'''
+
+
+=== W:push
+
+Pushes a new string, moving the existing string and position to the stack. The walker's new position is 1.
+
+[source,lua]
+----
+W:push(str)
+----
+
+* `str`: The new string to push.
+
+**Returns:** `W`, for method chaining.
+
+'''
+
+
+=== W:req
+
+The assertion method used by the `*Req` method variations. Raises an error if the first return value is `nil`/`false`.
+
+[source,lua]
+----
+local a, b, c --[[, etc.]] = W:req(fn, [err], ...)
+----
+
+* `fn`: The function to call. It takes a walker as its first argument, and `...` as its remaining arguments.
+
+* `[err]`: The error message.
+
+* `...`: Additional arguments for `fn`.
+
+**Returns:** Up to 18 values returned by `fn`.
+
+'''
+
+
+=== W:reset
+
+Resets the position to 1 and empties the string stack.
+
+
+[source,lua]
+----
+W:reset()
+----
+
+**Returns:** `W`, for method chaining.
+
+'''
+
+
+=== W:seek
+
+Sets the walker's byte position, clamped between 1 and `#str + 1`.
+
+[source,lua]
+----
+local i = W:seek(n)
+----
+
+* `n`: The desired byte position.
+
+**Returns:** The new (clamped) byte position.
+
+
+[discrete]
+==== Notes
+
+This method can move the walker to a UTF-8 __continuation byte__.
+
+'''
+
+
+=== W:setByteMode
+
+Turns xref:p_string_walk.adoc#_byte_mode[Byte Mode] on or off.
+
+[source,lua]
+----
+W:setByteMode(enabled)
+----
+
+* `enabled`: `true` to enable Byte Mode, `false`/`nil` to disable it.
+
+**Returns:** `W`, for method chaining.
+
+
+[discrete]
+==== Notes
+
+xref:p_string_walk.adoc#_terse_mode[Terse Mode] overrides this setting.
+
+'''
+
+
+=== W:setLineCharDisplay
+
+Turns on or off the printing of xref:p_string_walk.adoc#_line_char_display[line and character numbers].
+
+[source,lua]
+----
+W:setLineCharDisplay(line, char)
+----
+
+* `line`: `true` to enable the printing of line numbers, `false`/`nil` to disable it.
+
+* `char`: `true` to enable the printing of character numbers, `false`/`nil` to disable it.
+
+**Returns:** `W`, for method chaining.
+
+
+[discrete]
+==== Notes
+
+xref:p_string_walk.adoc#_byte_mode[Byte Mode] and xref:p_string_walk.adoc#_terse_mode[Terse Mode] both override these settings.
+
+'''
+
+
+=== W:setName
+
+Sets or clears the xref:p_string_walk.adoc#_walker_name[walker name], which can appear in warnings and error messages.
+
+[source,lua]
+----
+W:setName([name])
+----
+
+* `[name]`: __(nil)__ The name, or `nil` to unset any current name.
+
+**Returns:** `W`, for method chaining.
+
+
+[discrete]
+==== Notes
+
+The name is not cleared by xref:p_string_walk.adoc#_wsetstring[W:setString] or xref:p_string_walk.adoc#_wreset[W:reset].
+
+xref:p_string_walk.adoc#_terse_mode[Terse Mode] overrides this setting.
+
+'''
+
+
+=== W:setString
+
+Assigns a string to the walker, resets the position to 1, and empties the string stack.
+
+[source,lua]
+----
+W:setString(s)
+----
+
+* `s`: The string to assign.
+
+**Returns:** `W`, for method chaining.
+
+'''
+
+
+=== W:setTerseMode
+
+Sets xref:p_string_walk.adoc#_terse_mode[Terse Mode]. When active, error messages display only a generic message, with no positional information (byte index, line + character number) and no xref:p_string_walk.adoc#_walker_name[name].
+
+[source,lua]
+----
+W:setTerseMode(enabled)
+----
+
+* `enabled`: `true` to enable Terse Mode, `false`/`nil` to disable it.
+
+**Returns:** `W`, for method chaining.
+
+'''
+
+
+=== W:step
+
+Moves the walker's byte position forward or backward. The final position is clamped between 1 and `#str + 1`.
+
+[source,lua]
+----
+local i = W:step(n)
+----
+
+* `n`: How many bytes to advance or rewind (negative).
+
+**Returns:** The new byte position.
+
+[discrete]
+==== Notes
+
+This method can move the walker to a UTF-8 __continuation byte__.
+
+'''
+
+
+=== W:warn
+
+Prints a warning message to the console. Depending on the walker's xref:p_string_walk.adoc#_walker_options[configuration], the output may include a name, a line number, and a character number. If the walker is in xref:p_string_walk.adoc#_terse_mode[Terse Mode], no message is printed.
+
+[source,lua]
+----
+W:warn(...)
+----
+
+* `...`: Arguments for https://www.lua.org/manual/5.1/manual.html#pdf-print[**print**].
+
+**Returns:** `W`, for method chaining.
+
+'''
+
+
+=== W:ws
+
+Advances the walker position past ASCII whitespace until it either rests on a non-whitespace byte or reaches end-of-string.
+
+[source,lua]
+----
+local advanced = W:ws()
+----
+
+**Returns:** `true` if the walker position advanced, `false` if not.
+
+'''
+
+
+=== W:wsNext
+
+If the walker is currently on a non-whitespace character, advances to the next bit of whitespace, or to the end of the string if none is found. Does not advance if the walker is already on whitespace.
+
+[source,lua]
+----
+W:wsNext()
+----
+
+'''
+
+
+=== W:wsReq
+
+Like xref:p_string_walk.adoc#_wws[W:ws], but raises an error if the position did not advance.
+
+[source,lua]
+----
+W:wsReq([err])
+----
+
+* `[err]`: The error message.
+
+
+== Module Notes
+
+
+=== Walkers
+
+A walker object ties Lua search functions to an internal position. Generally, when a search is successful, the position advances past the match region, and when unsuccessful, it stays put (or throws an error). Some knowledge of Lua's https://www.lua.org/manual/5.1/manual.html#5.4[**string**] module is necessary to understand how walkers work.
+
+By convention, the walker is assigned to the variable `W`.
+
+
+=== Walker Options
+
+
+==== Byte Mode
+
+When active, the walker position is reported in warnings and errors as a byte index. Use this when the walker's string contains arbitrary data.
+
+* xref:p_string_walk.adoc#_wgetbytemode[W:getByteMode], xref:p_string_walk.adoc#_wsetbytemode[W:setByteMode]
+
+
+==== Line Char Display
+
+When active, line and character numbers are included in warnings and errors.
+
+* xref:p_string_walk.adoc#_wgetlinechardisplay[W:getLineCharDisplay], xref:p_string_walk.adoc#_wsetlinechardisplay[W:setLineCharDisplay]
+
+
+==== Terse Mode
+
+When active, errors display only a generic message, with no name or positional information (byte index, line + character number). Warnings are __completely__ silenced.
+
+* xref:p_string_walk.adoc#_wgettersemode[W:getTerseMode], xref:p_string_walk.adoc#_wsettersemode[W:setTerseMode]
+
+
+==== Walker Name
+
+The walker name is included in errors and warnings when Terse Mode is off.
+
+* xref:p_string_walk.adoc#_wgetname[W:getName], xref:p_string_walk.adoc#_wsetname[W:setName]
+
+
+=== Field Names
+
+It's convenient to attach state to a walker while parsing. Besides method names, the following field names are **reserved for internal use**:
+
+* Any field that is a single, upper-case ASCII letter (A-Z).
+
+* Any field that begins with an underscore.
+
+
+=== 16 Captures
+
+The limit of 16 returned captures is not connected to Lua's actual maximum returnable values; it is a limitation of the library. Captures #17 and up may be correctly processed by https://www.lua.org/manual/5.1/manual.html#pdf-string.find[**string.find**] and https://www.lua.org/manual/5.1/manual.html#pdf-string.match[**string.match**], but they will not be returned by the walker methods.
+
+
+=== 'Req' methods
+
+Methods ending in `req` will raise an error when unsuccessful. These methods take an optional argument, `err`, for the error string. If `err` is not provided, a generic error message will be used instead. As with Lua's https://www.lua.org/manual/5.1/manual.html#pdf-assert[**assert**] function, avoid constructing the error string directly within the method call, as those arguments will be evaluated even if the method is successful:
+
+[source,lua]
+----
+local chunk = W:matchReq("foobar", "missing foobar for " .. some_upvalue)
+--                                                       ^
+--                                           This concatenates every time!
+----
+
+
+=== Errors Within Protected Calls
+
+When a walker raises an error within a https://www.lua.org/manual/5.1/manual.html#pdf-pcall[**pcall**], its state is __not__ cleaned up. Any such walker should either be discarded or fully reset.
+
+
+=== Unicode Code Points
+
+Lua's string search library treats all characters as single bytes. In UTF-8, the first 127 code points are one byte, while the rest are 2, 3 or 4 bytes in length. It's easy to match code points 0-127, but multi-byte characters do not work with sets (`[a-zA-Z]`) or pattern items (`?`, `*`, etc.).
+
+That said, it's possible to match single code points with a pattern defined in Lua 5.3: https://www.lua.org/manual/5.3/manual.html#pdf-utf8.charpattern[**utf8.charpattern**]. __pStringWalk__ contains a modified version of this pattern, stored in `pStringWalk.ptn_code`.
+
+[source,lua]
+----
+-- Matches one UTF-8 character at the walker's position
+local u8_str = W:match(pStringWalk.ptn_code)
+----
+
+**The pattern assumes that the UTF-8 encoding is valid**, so it can return invalid code points if the string is corrupt. There are multiple ways to check a string's UTF-8 encoding from Lua, including Lua 5.3's https://www.lua.org/manual/5.3/manual.html#pdf-utf8.len[**utf8.len**] (which is included in https://www.love2d.org[**LÖVE**]), https://github.com/kikito/utf8_validator.lua[**utf8_validator.lua**], and PILE Base's own xref:p_utf8.adoc[pUtf8].
+
+
+=== Terms
+
+* __Continuation byte__: The second, third or fourth byte of a code point that is encoded in UTF-8.
+
+* __EOS__: End of String, signified by the byte index being greater than the string length.
+
+
+include::snippets/footer.adoc[]

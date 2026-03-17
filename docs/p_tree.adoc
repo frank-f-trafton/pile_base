@@ -1,0 +1,654 @@
+= PILE Base: pTree
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pTree__ provides functions for working with Lua tables as nodes in a tree.
+
+Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+
+[source,lua]
+----
+local pTree = require("p_tree")
+
+local root = pTree.nodeNew()
+local a = pTree.nodeAdd(root)
+local b = pTree.nodeAdd(a)
+
+print(a.parent == root) --> true
+print(b.parent == a) --> true
+print(pTree.nodeGetDepth(b)) --> 3
+----
+
+
+toc::[]
+
+
+== API
+
+
+=== pTree.nodeAdd
+
+Creates a new child node, attaches it to `self`, and returns the child.
+
+[source,lua]
+----
+local child = pTree.nodeAdd(self, [pos])
+----
+
+* `self`: The node.
+
+* `pos`: __(#nodes + 1)__ Where to place the child among ``self``'s other children (if any).
+
+**Returns:** The new child node.
+
+'''
+
+
+=== pTree.nodeAssertIndex
+
+Like xref:p_tree.adoc#_ptree_nodegetindex[pTree.nodeGetIndex], but assumes the caller has already checked the parent and obtained a reference to the table of siblings. **Cannot be used with root nodes.**
+
+[source,lua]
+----
+pTree.nodeAssertIndex(self, siblings)
+----
+
+* `self`: The node.
+
+* `siblings`: The table of siblings to check.
+
+**Returns:** The index.
+
+'''
+
+
+=== pTree.nodeAssertNoCycles
+
+Checks a tree for duplicate nodes, raising an error if any are found.
+
+[source,lua]
+----
+pTree.nodeAssertNoCycles(self)
+----
+
+* `self`: The node, which should be the tree root.
+
+
+[discrete]
+==== Notes
+
+This function incurs some overhead, because it makes a list of visited nodes every time it gets called.
+
+'''
+
+
+=== pTree.nodeAssertParent
+
+Gets the node's parent. Like xref:p_tree.adoc#_ptree_nodegetparent[pTree.nodeGetParent], but raises an error if the parent value is not a table. **Cannot be used with root nodes.**
+
+[source,lua]
+----
+pTree.nodeAssertParent(self)
+----
+
+* `self`: The node.
+
+**Returns:** The parent node.
+
+'''
+
+
+=== pTree.nodeAttach
+
+Attaches an existing node as a child to `self`. The node to attach must not currently have a parent.
+
+[source,lua]
+----
+local child = pTree.nodeAttach(self, node, [pos])
+----
+
+* `self`: The node.
+
+* `node`: The node to attach.
+
+* `pos`: __(#nodes + 1)__ Where to place the child among ``self``'s other children (if any).
+
+**Returns:** The newly attached node.
+
+
+[discrete]
+==== Notes
+
+Never attach a root node to its own descendants.
+
+'''
+
+
+=== pTree.nodeFindKeyAscending
+
+Looks for a key-value pair in a node, searching upward through this node's direct ancestors.
+
+[source,lua]
+----
+local node, v = pTree.nodeFindKeyAscending(self, inclusive, k, [v])
+----
+
+* `self`: The node.
+
+* `inclusive`: When true, include the calling node in the search.
+
+* `k`: The key to look for.
+
+* `v`: __(nil)__ The value to look for. When `nil`, any non-`false` value will be accepted.
+
+**Returns:** On success, the node and the value. On failure, `nil`.
+
+
+[discrete]
+==== Notes
+
+Does not return multiple successful candidates.
+
+'''
+
+
+=== pTree.nodeFindKeyDescending
+
+Looks for a key-value pair in a node, searching downward through this node's descendants.
+
+[source,lua]
+----
+local node, v = pTree.nodeFindKeyDescending(self, inclusive, k, [v])
+----
+
+* `self`: The node.
+
+* `inclusive`: When true, include the calling node in the search.
+
+* `k`: The key to look for.
+
+* `v`: __(nil)__ The value to look for. When `nil`, any non-`false` value will be accepted.
+
+**Returns:** On success, the node and the value. On failure, `nil`.
+
+
+[discrete]
+==== Notes
+
+Does not return multiple successful candidates.
+
+'''
+
+
+=== pTree.nodeFindKeyInChildren
+
+Looks for a key-value pair in a node's children, starting from index `i`.
+
+[source,lua]
+----
+local node, v, i = pTree.nodeFindKeyInChildren(self, i, k, [v])
+----
+
+* `self`: The node.
+
+* `i`: __(1)__ Which child index to start searching from.
+
+* `k`: The key to look for.
+
+* `v`: __(nil)__ The value to look for. When `nil`, any non-`false` value will be accepted.
+
+**Returns:** On success, the node, the value, and the node's child index. On failure, `nil`.
+
+
+[discrete]
+==== Notes
+
+Returns the first successful match.
+
+'''
+
+
+=== pTree.nodeForEach
+
+Runs a callback function on the calling node (optionally), and its descendants, in pre-order fashion, stopping if any callback returns a truthy value.
+
+[source,lua]
+----
+local a,b,c,d = pTree.nodeForEach(self, inclusive, callback, [...])
+----
+
+* `self`: The node.
+
+* `inclusive`: When true, runs the callback on `self` before the descendants.
+
+* `callback`: The callback function to run, as `callback(node, ...)`.
+
+* `[...]`: Additional arguments to pass to the callback.
+
+**Returns:** Up to four arguments that were provided by a successful callback, or `nil`.
+
+'''
+
+
+=== pTree.nodeForEachBack
+
+Runs a callback function on the calling node (optionally), and its descendants, in reverse post-order fashion, stopping if any callback returns a truthy value.
+
+[source,lua]
+----
+local a,b,c,d = pTree.nodeForEachBack(self, inclusive, callback, [...])
+----
+
+* `self`: The node.
+
+* `inclusive`: When true, runs the callback on `self` after the descendants.
+
+* `callback`: The callback function to run, as `callback(node, ...)`
+
+* `[...]`: Additional arguments to pass to the callback.
+
+**Returns:** Up to four arguments that were provided by a successful callback, or `nil`.
+
+'''
+
+
+=== pTree.nodeGetChild
+
+Gets one of the node's children, or `nil` if there is no child with this sibling index.
+
+[source,lua]
+----
+local child = pTree.nodeGetChild(self, n)
+----
+
+* `self`: The node.
+
+* `n`: The sibling array index.
+
+**Returns:** The child with this index, or `nil`.
+
+'''
+
+
+=== pTree.nodeGetChildren
+
+Gets the node's table of children.
+
+[source,lua]
+----
+local children = pTree.nodeGetChildren(self)
+----
+
+* `self`: The node.
+
+**Returns:** The node's table of children.
+
+
+[discrete]
+==== Notes
+
+The returned table is a direct reference to the array of children, __not__ a copy.
+
+'''
+
+
+=== pTree.nodeGetDepth
+
+Gets the node's depth in the tree (a count of its ancestors).
+
+[source,lua]
+----
+local depth = pTree.nodeGetDepth(self)
+----
+
+* `self`: The node.
+
+**Returns:** The node's depth in the tree.
+
+'''
+
+
+=== pTree.nodeGetIndex
+
+Gets a node's sibling array index. **Cannot be used with root nodes.**
+
+[source,lua]
+----
+pTree.nodeGetIndex(self)
+----
+
+* `self`: The node.
+
+**Returns:** The index.
+
+'''
+
+
+=== pTree.nodeGetNext
+
+Gets the next node, in pre-order fashion.
+
+[source,lua]
+----
+local node = pTree.nodeGetNext(self)
+----
+
+* `self`: The node.
+
+**Returns:** The next node, or `nil` if this is the very last node.
+
+'''
+
+
+=== pTree.nodeGetNextSibling
+
+Gets the node's next sibling, if any. **Cannot be used with root nodes.**
+
+[source,lua]
+----
+local node = pTree.nodeGetNextSibling(self)
+----
+
+* `self`: The node.
+
+**Returns:** The next sibling, or `nil`.
+
+'''
+
+
+=== pTree.nodeGetParent
+
+Gets the node's parent, or `nil` if it's a root node.
+
+[source,lua]
+----
+local parent = pTree.nodeGetParent(self)
+----
+
+* `self`: any node in the tree.
+
+**Returns:** The parent node, or `nil`.
+
+'''
+
+
+=== pTree.nodeGetPrevious
+
+Gets the previous node, in reverse post-order fashion.
+
+[source,lua]
+----
+local node = pTree.nodeGetPrevious(self)
+----
+
+* `self`: The node.
+
+**Returns:** The previous node, or `nil` if this is the first (root) node.
+
+'''
+
+
+=== pTree.nodeGetPreviousSibling
+
+Gets the node's previous sibling, if any. **Cannot be used with root nodes.**
+
+[source,lua]
+----
+local node = pTree.nodeGetPreviousSibling(self)
+----
+
+* `self`: The node.
+
+**Returns:** The previous sibling, or `nil`.
+
+'''
+
+
+=== pTree.nodeGetRoot
+
+Gets the root node. If this __is__ the root node, then returns `self`.
+
+[source,lua]
+----
+local root = pTree.nodeGetRoot(self)
+----
+
+* `self`: any node in the tree.
+
+**Returns:** The root node.
+
+'''
+
+
+=== pTree.nodeGetSiblings
+
+Gets the table of siblings which this node belongs to. **Cannot be run on root nodes.**
+
+[source,lua]
+----
+local siblings = pTree.nodeGetSiblings(self)
+----
+
+* `self`: The node.
+
+**Returns:** The table of siblings.
+
+
+[discrete]
+==== Notes
+
+The returned table is a direct reference to the parent's array of children, __not__ a copy.
+
+'''
+
+
+=== pTree.nodeGetVeryLast
+
+Gets the very last descendant in the tree, from the perspective of this node.
+
+[source,lua]
+----
+local node = pTree.nodeGetVeryLast(self)
+----
+
+* `self`: The node to begin searching from.
+
+**Returns:** The deepest and last node, or `self` if the calling node has no descendants.
+
+
+[discrete]
+==== Notes
+
+Taken from https://github.com/airstruck/luigi/blob/gh-pages/luigi/widget.lua#L375[**LUIGI**].
+
+'''
+
+
+=== pTree.nodeHasThisAncestor
+
+Checks if a node is an ancestor of another node.
+
+[source,lua]
+----
+local check = pTree.nodeHasThisAncestor(self, node)
+----
+
+* `self`: The node to begin searching from.
+
+* `node`: The potential ancestor.
+
+**Returns:** `true` if the node is an ancestor, `false` if not.
+
+'''
+
+
+=== pTree.nodeIsInLineage
+
+Like `pTree.nodeHasThisAncestor()`, but also checks `self`.
+
+[source,lua]
+----
+local check = pTree.nodeIsInLineage(self, node)
+----
+
+* `self`: The node.
+
+* `node`: The potential ancestor or `self`.
+
+**Returns:** `true` if the node is an ancestor or `self == node`, `false` otherwise.
+
+'''
+
+
+=== pTree.nodeIterate
+
+A pre-order iterator.
+
+[source,lua]
+----
+for node in pTree.nodeIterate(self) do --[[etc.]] end
+----
+
+* `self`: The node, first to be visited.
+
+**Returns:** Each node in the tree, in pre-order fashion, starting with the calling node.
+
+'''
+
+
+=== pTree.nodeIterateBack
+
+A reverse post-order iterator.
+
+[source,lua]
+----
+for node in pTree.nodeIterateBack(self) do --[[etc.]] end
+----
+
+* `self`: The node, last to be visited.
+
+**Returns:** Each node in the tree, depth-first, starting with the last, deepest node.
+
+'''
+
+
+=== pTree.nodeNew
+
+Creates a new root node.
+
+[source,lua]
+----
+local node = pTree.nodeNew()
+----
+
+**Returns:** The new root node.
+
+'''
+
+
+=== pTree.nodeRemove
+
+Removes a node from its parent. **Cannot be used with root nodes.**
+
+[source,lua]
+----
+pTree.nodeRemove(self)
+----
+
+* `self`: The node to remove.
+
+
+[discrete]
+==== Notes
+
+Do not call this function on nodes while looping forward through siblings or walking a tree in pre-order fashion.
+
+'''
+
+
+=== pTree.nodeResolvePath
+
+Searches for a node in a tree by following a path string.
+
+[source,lua]
+----
+local node, err, p = pTree.nodeResolvePath(self, path, id_key, [simple])
+----
+
+* `self`: The node.
+
+* `path`: The path string.
+
+* `id_key`: The key in each node which holds the Node ID. Cannot be `nil` or NaN.
+
+* `[simple]`: __(false)__ When true, disables special IDs (`.`, `..`) and anchoring the search from the root node (`/foo`).
+
+**Returns:** On success, the node. On failure, `nil`, an error string, and the index in the path where the search stopped.
+
+
+[discrete]
+==== Notes
+
+Path strings are a series of slash-separated Node IDs, like `foo/bar/bop`. The Node IDs are stored in `node[id_key]`.
+
+Trailing slashes are ignored: `foo/bar/` and `foo/bar` are functionally identical.
+
+Empty IDs (like `foo//bar`) cannot be addressed.
+
+If multiple sibling nodes have the same Node ID, then only the first such node in the array shall be selected.
+
+When `simple` is `false`/`nil`, then:
+
+* A path beginning with `/`, like `/foo/bar`, will anchor the search to the root node.
+
+* The special ID `..` will select the current node's parent, and `.` will do nothing.
+
+When `simple` is true, `.` and `..` are treated as plain Node IDs, and anchoring a path with `/` always fails.
+
+Use backslashes (`\`) to escape special characters in IDs. For example, with strings enclosed by double quotes, the path `"foo/do\\/op"` is treated as the two IDs `foo` and `do/op`. It is an error to have an incomplete escape sequence at the end of a path string.
+
+Escapes are always processed, even in `simple` mode.
+
+
+== Module Notes
+
+=== Nodes
+
+All __pTree__ nodes have a table of children at `node["nodes"]`, and all nodes except for roots have a link to their parent at `node["parent"]`. (In __pTree's__ source code, the square bracket notation is used so that the field names can be easily changed with a search-and-replace mechanism.) Every node in a tree must be a unique table, or else you risk breaking the traversal code.
+
+__pTree's__ functions can be called as object methods (ie `obj:nodeGetDepth()`) if you attach them to nodes or otherwise make them callable through `__index`.
+
+For more complex use cases, you may need to write your own versions of some functions.
+
+
+=== Traversal Order
+
+Given a tree with one root (`R`), two children (`A`, `B`), and four grandchildren (two per child; `A1`, `A2`, `B1`, `B2`)…
+
+....
+           ╭───╮
+           │ R │
+           ╰─┬─╯
+     ┌───────┴───────┐
+   ╭─┴─╮           ╭─┴─╮
+   │ A │           │ B │
+   ╰─┬─╯           ╰─┬─╯
+  ┌──┴──┐         ┌──┴──┐
+╭─┴─╮ ╭─┴─╮     ╭─┴─╮ ╭─┴─╮
+│A1 │ │ A2│     │B1 │ │ B2│
+╰───╯ ╰───╯     ╰───╯ ╰───╯
+....
+
+…the tree traversals look like this:
+
+* Pre-order: `R`, `A`, `A1`, `A2`, `B`, `B1`, `B2`
+
+* Reverse post-order: `B2`, `B1`, `B`, `A2`, `A1`, `A`, `R`
+
+
+include::snippets/footer.adoc[]

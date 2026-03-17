@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pUtf8</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pUtf8</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pUtf8</em> provides functions for working with UTF-8 strings.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="paragraph">
+<p>See also: <a href="p_utf8_conv.html">pUtf8Conv</a>, for converting between UTF-8 and UTF-16.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pUtf8</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_utf8"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">pUtf8</span><span class="p">.</span><span class="n">check</span><span class="p">(</span><span class="s2">"good string"</span><span class="p">))</span>
+<span class="c1">--&gt; 11</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">pUtf8</span><span class="p">.</span><span class="n">check</span><span class="p">(</span><span class="s2">"bad"</span> <span class="o">..</span> <span class="nb">string.char</span><span class="p">(</span><span class="mh">0xff</span><span class="p">)</span> <span class="o">..</span> <span class="s2">"string"</span><span class="p">))</span>
+<span class="c1">--&gt; nil; unknown UTF-8 byte length marker; 4</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_putf8_check">pUtf8.check</a></li>
+<li><a href="#_putf8_codes">pUtf8.codes</a></li>
+<li><a href="#_putf8_codefromstring">pUtf8.codeFromString</a></li>
+<li><a href="#_putf8_concatcodes">pUtf8.concatCodes</a></li>
+<li><a href="#_putf8_getchecksurrogates">pUtf8.getCheckSurrogates</a></li>
+<li><a href="#_putf8_scrub">pUtf8.scrub</a></li>
+<li><a href="#_putf8_setchecksurrogates">pUtf8.setCheckSurrogates</a></li>
+<li><a href="#_putf8_step">pUtf8.step</a></li>
+<li><a href="#_putf8_stepback">pUtf8.stepBack</a></li>
+<li><a href="#_putf8_stringfromcode">pUtf8.stringFromCode</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_terminology">Terminology</a></li>
+<li><a href="#_links">Links</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_putf8_check">pUtf8.check</h3>
+<div class="paragraph">
+<p>Checks a UTF-8 string for encoding problems.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">byte</span> <span class="o">=</span> <span class="n">pUtf8</span><span class="p">.</span><span class="n">check</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">[</span><span class="n">j</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string to check.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(empty string: 0; non-empty string: 1)</em> The first byte index.</p>
+</li>
+<li>
+<p><code>[j]</code>: <em>(#str)</em> The last byte index. Cannot be lower than <code>i</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> If no problems were found, the total number of code points scanned. Otherwise, <code>nil</code>, error string, and byte index.</p>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>As a special case, this function will return 0 when given an empty string and values of zero for <code>i</code> and <code>j</code>. (In other words, <code>pUtf8.check("")</code> will always return 0.)</p>
+</div>
+<div class="paragraph">
+<p>For non-empty strings, if the range arguments are specified, then <code>i</code> needs to point to a UTF-8 Start Byte, and <code>j</code> needs to point to the last byte of a UTF-8-encoded character.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_codes">pUtf8.codes</h3>
+<div class="paragraph">
+<p>A loop iterator for code points in a UTF-8 string, where <code>i</code> is the byte position, <code>c</code> is the code point number, and <code>u</code> is the code point&#8217;s UTF-8 substring.</p>
+</div>
+<div class="paragraph">
+<p>This function <strong>raises an error</strong> if it encounters a problem with the UTF-8 encoding.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">u</span> <span class="k">in</span> <span class="nb">utf8.codes</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[...]]</span> <span class="k">end</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string to iterate.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The byte position <code>i</code>, the code point number <code>c</code>, and the code point&#8217;s UTF-8 string representation <code>u</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_codefromstring">pUtf8.codeFromString</h3>
+<div class="paragraph">
+<p>Gets a Unicode Code Point and its isolated UTF-8 Sequence from a string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">code</span><span class="p">,</span> <span class="n">u8_seq</span> <span class="o">=</span> <span class="n">pUtf8</span><span class="p">.</span><span class="n">codeFromString</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The UTF-8 string to read. Cannot be empty.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(1)</em> The byte position to read from. Must point to a valid UTF-8 Start Byte.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The code point number and its equivalent UTF-8 Sequence as a string, or <code>nil</code> plus an error string if unsuccessful.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_concatcodes">pUtf8.concatCodes</h3>
+<div class="paragraph">
+<p>Creates a UTF-8 string from one or more code point numbers.</p>
+</div>
+<div class="paragraph">
+<p>This function <strong>raises an error</strong> if it encounters a problem with the code point numbers.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">str</span> <span class="o">=</span> <span class="n">pUtf8</span><span class="p">.</span><span class="n">concatCodes</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&#8230;&#8203;</code>: Code point numbers.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A concatenated UTF-8 string.</p>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This function allocates a temporary table. To convert single code points, <a href="#_putf8_stringfromcode">pUtf8.stringFromCode</a> may be used instead.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_getchecksurrogates">pUtf8.getCheckSurrogates</h3>
+<div class="paragraph">
+<p>Gets the library&#8217;s setting for checking surrogate values.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">pUtf8</span><span class="p">.</span><span class="n">getCheckSurrogates</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if surrogates are rejected as invalid, <code>false</code> if they are ignored.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_scrub">pUtf8.scrub</h3>
+<div class="paragraph">
+<p>Replaces bad UTF-8 Sequences in a string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">str</span> <span class="o">=</span> <span class="n">pUtf8</span><span class="p">.</span><span class="n">scrub</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">repl</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string to scrub.</p>
+</li>
+<li>
+<p><code>repl</code>: A replacement string to use in place of the bad UTF-8 Sequences. Use an empty string to remove the invalid bytes.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The scrubbed UTF-8 string.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_setchecksurrogates">pUtf8.setCheckSurrogates</h3>
+<div class="paragraph">
+<p><em>Default: true</em></p>
+</div>
+<div class="paragraph">
+<p>Sets the library to check or ignore surrogate values.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pUtf8</span><span class="p">.</span><span class="n">setCheckSurrogates</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to reject surrogates as invalid, <code>false</code>/<code>nil</code> to ignore them.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_step">pUtf8.step</h3>
+<div class="paragraph">
+<p>Looks for a Start Byte from a byte position through to the end of the string.</p>
+</div>
+<div class="paragraph">
+<p>This function <strong>does not validate</strong> the encoding.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">index</span> <span class="o">=</span> <span class="n">pUtf8</span><span class="p">.</span><span class="n">step</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string to search.</p>
+</li>
+<li>
+<p><code>i</code>: Starting position; bytes <em>after</em> this index are checked. Can be from 0 to <code>#str</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Index of the next Start Byte, or <code>nil</code> if the end of the string is reached.</p>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>With empty strings, the only accepted position for <code>i</code> is 0.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_stepback">pUtf8.stepBack</h3>
+<div class="paragraph">
+<p>Looks for a Start Byte from a byte position, traveling backwards, to the start of the string.</p>
+</div>
+<div class="paragraph">
+<p>This function <strong>does not validate</strong> the encoding.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">index</span> <span class="o">=</span> <span class="n">pUtf8</span><span class="p">.</span><span class="n">stepBack</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string to search.</p>
+</li>
+<li>
+<p><code>i</code>: Starting position; bytes <em>before</em> this index are checked. Can be from 1 to <code>#str + 1</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Index of the previous Start Byte, or <code>nil</code> if the start of the string is reached.</p>
+</div>
+<h4 id="_notes_4" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>With empty strings, the only accepted position for <code>i</code> is 1.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8_stringfromcode">pUtf8.stringFromCode</h3>
+<div class="paragraph">
+<p>Converts a code point in numeric form to a UTF-8 Sequence (string).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">u8_seq</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">pUtf8</span><span class="p">.</span><span class="n">stringFromCode</span><span class="p">(</span><span class="n">c</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>c</code>: The code point number.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> the UTF-8 Sequence (string), or <code>nil</code> plus an error string if unsuccessful.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_terminology">Terminology</h3>
+<div class="paragraph">
+<p><strong>Code Point</strong>: a Unicode Code Point, stored as a Lua number. E.g. <code>65</code> (for <code>A</code>)</p>
+</div>
+<div class="paragraph">
+<p><strong>UTF-8 Sequence</strong>: A single Unicode Code Point, encoded in UTF-8 and stored as a Lua string. E.g. <code>"A"</code></p>
+</div>
+<div class="paragraph">
+<p><strong>Start Byte</strong>: The first byte in a UTF-8 Sequence. The length of the sequence is encoded in the start byte.</p>
+</div>
+<div class="paragraph">
+<p><strong>Continuation Byte</strong>: The second, third or fourth byte in a UTF-8 Sequence. A UTF-8 Sequence may not be longer than 4 bytes.</p>
+</div>
+<div class="paragraph">
+<p><strong>Surrogate</strong>: Values in the range of U+D800 to U+DFFF are reserved for <em>surrogate pairs</em> in UTF-16, and are not valid code points.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_links">Links</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc3629"><strong>UTF-8 RFC 3629</strong></a></p>
+</li>
+<li>
+<p><a href="https://www.rfc-editor.org/rfc/rfc2781"><strong>UTF-16 RFC 2781</strong></a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Unicode"><strong>Wikipedia: Unicode</strong></a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/UTF-8"><strong>Wikipedia: UTF-8</strong></a></p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 21:44:29 -0300
+</div>
+</div>
+</body>
+</html>

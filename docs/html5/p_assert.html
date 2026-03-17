@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pAssert</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pAssert</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pAssert</em> provides Lua assertions with (mostly) apropos error messages.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_interp.html">pInterp</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pAssert</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_assert"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="k">function</span> <span class="nf">aStringCalledFoobar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+	<span class="n">pAssert</span><span class="p">.</span><span class="n">type</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s2">"string"</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">a</span> <span class="o">==</span> <span class="s2">"foobar"</span>
+<span class="k">end</span>
+
+<span class="n">aStringCalledFoobar</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1">--&gt; argument #1: bad type (expected string, got number)</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_passert_assert">pAssert.assert</a></li>
+<li><a href="#_passert_fail">pAssert.fail</a></li>
+<li><a href="#_passert_integer">pAssert.integer</a></li>
+<li><a href="#_passert_integereval">pAssert.integerEval</a></li>
+<li><a href="#_passert_integerge">pAssert.integerGe</a></li>
+<li><a href="#_passert_integergeeval">pAssert.integerGeEval</a></li>
+<li><a href="#_passert_integerrange">pAssert.integerRange</a></li>
+<li><a href="#_passert_integerrangeeval">pAssert.integerRangeEval</a></li>
+<li><a href="#_passert_namedmap">pAssert.namedMap</a></li>
+<li><a href="#_passert_namedmapeval">pAssert.namedMapEval</a></li>
+<li><a href="#_passert_notnan">pAssert.notNan</a></li>
+<li><a href="#_passert_notnil">pAssert.notNil</a></li>
+<li><a href="#_passert_notnilnotfalse">pAssert.notNilNotFalse</a></li>
+<li><a href="#_passert_notnilnotfalsenotnan">pAssert.notNilNotFalseNotNan</a></li>
+<li><a href="#_passert_notnilnotnan">pAssert.notNilNotNan</a></li>
+<li><a href="#_passert_numberge">pAssert.numberGe</a></li>
+<li><a href="#_passert_numbergeeval">pAssert.numberGeEval</a></li>
+<li><a href="#_passert_numbernotnan">pAssert.numberNotNan</a></li>
+<li><a href="#_passert_numbernotnaneval">pAssert.numberNotNanEval</a></li>
+<li><a href="#_passert_numberrange">pAssert.numberRange</a></li>
+<li><a href="#_passert_numberrangeeval">pAssert.numberRangeEval</a></li>
+<li><a href="#_passert_oneof">pAssert.oneOf</a></li>
+<li><a href="#_passert_oneofeval">pAssert.oneOfEval</a></li>
+<li><a href="#_passert_pass">pAssert.pass</a></li>
+<li><a href="#_passert_tablewithmetatable">pAssert.tableWithMetatable</a></li>
+<li><a href="#_passert_tablewithmetatableeval">pAssert.tableWithMetatableEval</a></li>
+<li><a href="#_passert_tablewithoutmetatable">pAssert.tableWithoutMetatable</a></li>
+<li><a href="#_passert_tablewithoutmetatableeval">pAssert.tableWithoutMetatableEval</a></li>
+<li><a href="#_passert_type">pAssert.type</a></li>
+<li><a href="#_passert_typeeval">pAssert.typeEval</a></li>
+<li><a href="#_passert_types">pAssert.types</a></li>
+<li><a href="#_passert_typeseval">pAssert.typesEval</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_the_passert_function_signature">The pAssert Function Signature</a></li>
+<li><a href="#_whats_nan">What&#8217;s NaN?</a></li>
+<li><a href="#_uses_of_name_tags">Uses of Name Tags</a></li>
+<li><a href="#_other_remarks">Other Remarks</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_passert_assert">pAssert.assert</h3>
+<div class="paragraph">
+<p>Raises an error with a custom message if the value is <code>false</code> or <code>nil</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">assert</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>[err]</code>: An optional error message to display.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Like <a href="#_passert_notnilnotfalse">pAssert.notNilNotFalse</a>, but with different error messages.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_fail">pAssert.fail</h3>
+<div class="paragraph">
+<p>Always raises an error.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">fail</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check. (Unused.)</p>
+</li>
+<li>
+<p><code>[err]</code>: An optional error message to display.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_integer">pAssert.integer</h3>
+<div class="paragraph">
+<p>The value is an integer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">integer</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_integereval">pAssert.integerEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or an integer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">integerEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_integerge">pAssert.integerGe</h3>
+<div class="paragraph">
+<p>The value is an integer, greater or equal to a minimum value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">integerGe</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">min</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>min</code>: The minimum permitted value.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_integergeeval">pAssert.integerGeEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or an integer that is greater or equal to a minimum value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">integerGeEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">min</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>min</code>: The minimum permitted value.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_integerrange">pAssert.integerRange</h3>
+<div class="paragraph">
+<p>The value is an integer within a specified range.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">integerRange</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">min</span><span class="p">,</span> <span class="n">max</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>min</code>: The minimum permitted value.</p>
+</li>
+<li>
+<p><code>max</code>: The maximum permitted value.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_integerrangeeval">pAssert.integerRangeEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or an integer within a specified range.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">integerRangeEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">min</span><span class="p">,</span> <span class="n">max</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>min</code>: The minimum permitted value.</p>
+</li>
+<li>
+<p><code>max</code>: The maximum permitted value.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_namedmap">pAssert.namedMap</h3>
+<div class="paragraph">
+<p>The value is in a <a href="p_table.html#_namedmaps">NamedMap</a> (or any other Lua table) as a key.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">namedMap</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">map</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>map</code>: The NamedMap table.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_namedmapeval">pAssert.namedMapEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or it appears in a <a href="p_table.html#_namedmaps">NamedMap</a> (or any other Lua table) as a key.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">namedMapEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">map</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>map</code>: The NamedMap table.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_notnan">pAssert.notNan</h3>
+<div class="paragraph">
+<p>The value is not NaN.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">notNan</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_notnil">pAssert.notNil</h3>
+<div class="paragraph">
+<p>The value is not <code>nil</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">notNil</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_notnilnotfalse">pAssert.notNilNotFalse</h3>
+<div class="paragraph">
+<p>The value is not <code>nil</code> and not <code>false</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">notNilNotFalse</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_notnilnotfalsenotnan">pAssert.notNilNotFalseNotNan</h3>
+<div class="paragraph">
+<p>The value is not <code>nil</code>, not <code>false</code>, and not NaN.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">notNilNotFalseNotNan</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_notnilnotnan">pAssert.notNilNotNan</h3>
+<div class="paragraph">
+<p>The value is not <code>nil</code> and not NaN.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">notNilNotNan</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_numberge">pAssert.numberGe</h3>
+<div class="paragraph">
+<p>The value is a number that is greater or equal to a minimum value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">numberGe</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">min</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>min</code>: The minimum permitted value.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_numbergeeval">pAssert.numberGeEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or a number that is greater or equal to a minimum value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">numberGeEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">min</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>min</code>: The minimum permitted value.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_numbernotnan">pAssert.numberNotNan</h3>
+<div class="paragraph">
+<p>The value is a number that isn&#8217;t NaN.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">numberNotNan</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_numbernotnaneval">pAssert.numberNotNanEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or a number that isn&#8217;t NaN.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">numberNotNanEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_numberrange">pAssert.numberRange</h3>
+<div class="paragraph">
+<p>The value is a number within a specified range.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">numberRange</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">min</span><span class="p">,</span> <span class="n">max</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>min</code>: The minimum permitted value.</p>
+</li>
+<li>
+<p><code>max</code>: The maximum permitted value.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_numberrangeeval">pAssert.numberRangeEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or a number within a specified range.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">numberRangeEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">min</span><span class="p">,</span> <span class="n">max</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>min</code>: The minimum permitted value.</p>
+</li>
+<li>
+<p><code>max</code>: The maximum permitted value.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_oneof">pAssert.oneOf</h3>
+<div class="paragraph">
+<p>The value matches one of any values in a vararg list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">oneOf</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>id</code>: What to the call the list in error messages.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: A vararg list of values to check against.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_oneofeval">pAssert.oneOfEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or it matches one of any values in a vararg list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">oneOfEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>id</code>: What to the call the list in error messages.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: A vararg list of values to check against.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_pass">pAssert.pass</h3>
+<div class="paragraph">
+<p>Does nothing (always passes).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">pass</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag. <em>(Unused.)</em></p>
+</li>
+<li>
+<p><code>v</code>: The value to check. <em>(Unused.)</em></p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_tablewithmetatable">pAssert.tableWithMetatable</h3>
+<div class="paragraph">
+<p>The value is a table which has a specific metatable assigned.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">tableWithMetatable</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mt</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>mt</code>: The metatable to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_tablewithmetatableeval">pAssert.tableWithMetatableEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or a table which has a specific metatable assigned.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">tableWithMetatableEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mt</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>mt</code>: The metatable to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_tablewithoutmetatable">pAssert.tableWithoutMetatable</h3>
+<div class="paragraph">
+<p>The value is a table with no metatable assigned.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">tableWithoutMetatable</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_tablewithoutmetatableeval">pAssert.tableWithoutMetatableEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or a table with no metatable assigned.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">tableWithoutMetatableEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_type">pAssert.type</h3>
+<div class="paragraph">
+<p>The value is one Lua type.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">type</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>e</code>: The expected type string (<code>"boolean"</code>, etc.)</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_typeeval">pAssert.typeEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or one Lua type.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">typeEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>e</code>: The expected type string (<code>"boolean"</code>, etc.)</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_types">pAssert.types</h3>
+<div class="paragraph">
+<p>The value is one of multiple Lua types.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">types</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: A vararg list of accepted type strings (<code>"boolean"</code>, etc.)</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_passert_typeseval">pAssert.typesEval</h3>
+<div class="paragraph">
+<p>The value is <code>false</code>/<code>nil</code>, or one of multiple Lua types.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">typesEval</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The name tag.</p>
+</li>
+<li>
+<p><code>v</code>: The value to check.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: A vararg list of accepted type strings (<code>"boolean"</code>, etc.)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_the_passert_function_signature">The pAssert Function Signature</h3>
+<div class="paragraph">
+<p>All <em>pAssert</em> functions share these first two arguments…</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pAssert</span><span class="p">.</span><span class="n">someFunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>…where <code>n</code> is the name tag (usually an argument count), and <code>v</code> is the value to check. If the value passes, nothing happens. If a problem is determined, then the assertion will <em>(surprise!)</em> raise an error.</p>
+</div>
+<div class="paragraph">
+<p>The name tag can be used in a few different ways (see <a href="#_uses_of_name_tags">Uses of Name Tags</a>).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_whats_nan">What&#8217;s NaN?</h3>
+<div class="paragraph">
+<p>NaN ("Not a Number") is an error state for floating point values. You can generate a NaN at run time by dividing zero by zero, and you can detect NaN by comparing a value against itself (which, for NaN, always produces <code>false</code>).</p>
+</div>
+<div class="paragraph">
+<p>In <em>pAssert</em>, all integer checks, and all number checks with a minimum or maximum bound also reject NaN.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_uses_of_name_tags">Uses of Name Tags</h3>
+<div class="paragraph">
+<p>The name tag <code>n</code> can be used in the following ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>false</code>/<code>nil</code>, for nothing:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>pAssert.integer(nil, 1.1)</code> &#8594; expected integer</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A number, for an argument count:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>pAssert.integer(1, 1.1)</code> &#8594; <strong>argument #1:</strong> expected integer</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A string, for any arbitrary tag:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>pAssert.integer("Something Important", 1.1)</code> &#8594; <strong>Something Important:</strong> expected integer</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A table with its first two indices set, for table and field names:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>pAssert.integer({"hash", "foo"}, 1.1)</code> &#8594; <strong>table 'hash', field 'foo':</strong> expected integer</p>
+</div>
+<div class="paragraph">
+<p>(To reduce the creation of throwaway tables, a shared table may be used for many calls. The table <code>pAssert.L</code> is allocated for this purpose.)</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A function that returns a string, for any arbitrary tag:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="k">function</span> <span class="nf">F</span><span class="p">()</span>
+	<span class="k">return</span> <span class="s2">"Nuh-uh"</span>
+<span class="k">end</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>pAssert.integer(F, 1.1)</code> &#8594; <strong>Nuh-uh:</strong> expected integer</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_other_remarks">Other Remarks</h3>
+<div class="paragraph">
+<p>These functions are run time checks, so they will add processing overhead anywhere they are called.</p>
+</div>
+<div class="paragraph">
+<p>The assertions don&#8217;t check their own arguments. Incorrect arguments can lead to misleading error messages, or incidental errors being raised from within assertions.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-12 21:38:54 -0300
+</div>
+</div>
+</body>
+</html>

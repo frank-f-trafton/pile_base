@@ -1,5 +1,5 @@
--- Test: pile_hook.lua
--- VERSION: 2.101
+-- Test: p_hook.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,7 +10,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pHook = require(PATH .. "pile_hook")
+local pHook = require(PATH .. "p_hook")
 
 
 local cli_verbosity
@@ -24,7 +24,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE Hook", cli_verbosity)
+local self = errTest.new("pHook", cli_verbosity)
 
 
 -- Some hooks and a filter that are used in multiple jobs.

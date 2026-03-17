@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pUtf8Conv</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pUtf8Conv</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pUtf8Conv</em> contains auxiliary functions for converting UTF-16 and ISO 8859-1 (Latin 1) to UTF-8 and back.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a>, <a href="p_name.html">pName</a>, <a href="p_utf8.html">pUtf8</a></p>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_putf8conv_fromlatin1toutf8">pUtf8Conv.fromLatin1ToUtf8</a></li>
+<li><a href="#_putf8conv_fromutf16toutf8">pUtf8Conv.fromUtf16ToUtf8</a></li>
+<li><a href="#_putf8conv_fromutf8tolatin1">pUtf8Conv.fromUtf8ToLatin1</a></li>
+<li><a href="#_putf8conv_fromutf8toutf16">pUtf8Conv.fromUtf8ToUtf16</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_putf8conv_fromlatin1toutf8">pUtf8Conv.fromLatin1ToUtf8</h3>
+<div class="paragraph">
+<p>Converts a Latin 1 (ISO 8859-1) string to UTF-8.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pUtf8Conv</span><span class="p">.</span><span class="n">fromLatin1ToUtf8</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The Latin 1 string to convert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The converted UTF-8 string, or <code>nil</code>, error string, and byte index if there was a problem.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8conv_fromutf16toutf8">pUtf8Conv.fromUtf16ToUtf8</h3>
+<div class="paragraph">
+<p>Converts a UTF-16 string to UTF-8.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pUtf8Conv</span><span class="p">.</span><span class="n">fromUtf16ToUtf8</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">big_en</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The UTF-16 string to convert.</p>
+</li>
+<li>
+<p><code>[big_en]</code>: <em>(nil)</em> <code>true</code> if the input UTF-16 string is big-endian, <code>false</code>/<code>nil</code> if it is little-endian.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The converted UTF-8 string, or <code>nil</code>, error string, and byte index if there was a problem.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8conv_fromutf8tolatin1">pUtf8Conv.fromUtf8ToLatin1</h3>
+<div class="paragraph">
+<p>Converts a UTF-8 string to Latin 1 (ISO 8859-1).</p>
+</div>
+<div class="paragraph">
+<p>Only code points 0 through 255 can be directly mapped to a Latin 1 string. Use the <code>[unmapped]</code> argument to control what happens when an unmappable code point is encountered.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pUtf8Conv</span><span class="p">.</span><span class="n">fromUtf8ToLatin1</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">unmapped</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The UTF-8 string to convert.</p>
+</li>
+<li>
+<p><code>[unmapped]</code>: When <code>unmapped</code> is a string, it is used in place of unmappable code points. (Pass in an empty string to ignore unmappable code points.) When <code>unmapped</code> is any other type, the function returns <code>nil</code>, an error string, and the byte where the unmappable code point was encountered.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The converted Latin 1 string, or <code>nil</code>, error string, and byte index if there was a problem.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_putf8conv_fromutf8toutf16">pUtf8Conv.fromUtf8ToUtf16</h3>
+<div class="paragraph">
+<p>Converts a UTF-8 string to UTF-16.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pUtf8Conv</span><span class="p">.</span><span class="n">fromUtf8ToUtf16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">big_en</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The UTF-8 string to convert.</p>
+</li>
+<li>
+<p><code>[big_en]</code>: <em>(nil)</em> <code>true</code> if the converted UTF-16 string is big-endian, <code>false</code>/<code>nil</code> if it is little-endian.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The converted UTF-16 string, or <code>nil</code>, error string, and byte index if there was a problem.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-16 20:43:52 -0300
+</div>
+</div>
+</body>
+</html>

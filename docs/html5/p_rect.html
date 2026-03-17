@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pRect</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pRect</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pRect</em> provides functions for placing and mutating axis-aligned rectangles.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_math.html">pMath</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pRect</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_rect"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">r1</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">16</span><span class="p">}</span>
+<span class="kd">local</span> <span class="n">r2</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">8</span><span class="p">}</span>
+<span class="n">pRect</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">r2</span><span class="p">.</span><span class="n">w</span><span class="p">,</span> <span class="n">r2</span><span class="p">.</span><span class="n">h</span><span class="p">)</span> <span class="c1">--&gt; 16 16</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_prect_center">pRect.center</a></li>
+<li><a href="#_prect_centerhorizontal">pRect.centerHorizontal</a></li>
+<li><a href="#_prect_centervertical">pRect.centerVertical</a></li>
+<li><a href="#_prect_copy">pRect.copy</a></li>
+<li><a href="#_prect_expand">pRect.expand</a></li>
+<li><a href="#_prect_expandbottom">pRect.expandBottom</a></li>
+<li><a href="#_prect_expandhorizontal">pRect.expandHorizontal</a></li>
+<li><a href="#_prect_expandleft">pRect.expandLeft</a></li>
+<li><a href="#_prect_expandright">pRect.expandRight</a></li>
+<li><a href="#_prect_expandt">pRect.expandT</a></li>
+<li><a href="#_prect_expandtop">pRect.expandTop</a></li>
+<li><a href="#_prect_expandvertical">pRect.expandVertical</a></li>
+<li><a href="#_prect_fliphorizontal">pRect.flipHorizontal</a></li>
+<li><a href="#_prect_flipvertical">pRect.flipVertical</a></li>
+<li><a href="#_prect_getbounds">pRect.getBounds</a></li>
+<li><a href="#_prect_getboundst">pRect.getBoundsT</a></li>
+<li><a href="#_prect_placeinner">pRect.placeInner</a></li>
+<li><a href="#_prect_placeinnerhorizontal">pRect.placeInnerHorizontal</a></li>
+<li><a href="#_prect_placeinnervertical">pRect.placeInnerVertical</a></li>
+<li><a href="#_prect_placemidpoint">pRect.placeMidpoint</a></li>
+<li><a href="#_prect_placemidpointhorizontal">pRect.placeMidpointHorizontal</a></li>
+<li><a href="#_prect_placemidpointvertical">pRect.placeMidpointVertical</a></li>
+<li><a href="#_prect_placeouter">pRect.placeOuter</a></li>
+<li><a href="#_prect_placeouterhorizontal">pRect.placeOuterHorizontal</a></li>
+<li><a href="#_prect_placeoutervertical">pRect.placeOuterVertical</a></li>
+<li><a href="#_prect_pointoverlap">pRect.pointOverlap</a></li>
+<li><a href="#_prect_reduce">pRect.reduce</a></li>
+<li><a href="#_prect_reducebottom">pRect.reduceBottom</a></li>
+<li><a href="#_prect_reducehorizontal">pRect.reduceHorizontal</a></li>
+<li><a href="#_prect_reduceleft">pRect.reduceLeft</a></li>
+<li><a href="#_prect_reduceright">pRect.reduceRight</a></li>
+<li><a href="#_prect_reducet">pRect.reduceT</a></li>
+<li><a href="#_prect_reducetop">pRect.reduceTop</a></li>
+<li><a href="#_prect_reducevertical">pRect.reduceVertical</a></li>
+<li><a href="#_prect_set">pRect.set</a></li>
+<li><a href="#_prect_setdimensions">pRect.setDimensions</a></li>
+<li><a href="#_prect_setposition">pRect.setPosition</a></li>
+<li><a href="#_prect_split">pRect.split</a></li>
+<li><a href="#_prect_splitbottom">pRect.splitBottom</a></li>
+<li><a href="#_prect_splitleft">pRect.splitLeft</a></li>
+<li><a href="#_prect_splitoroverlay">pRect.splitOrOverlay</a></li>
+<li><a href="#_prect_splitright">pRect.splitRight</a></li>
+<li><a href="#_prect_splittop">pRect.splitTop</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_omissions">Omissions</a></li>
+<li><a href="#_structures">Structures</a>
+<ul class="sectlevel3">
+<li><a href="#_rectangle">Rectangle</a></li>
+<li><a href="#_sidedelta">SideDelta</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_prect_center">pRect.center</h3>
+<div class="paragraph">
+<p>Centers Rectangle <code>b</code> within Rectangle <code>a</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">center</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to center.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_centerhorizontal">pRect.centerHorizontal</h3>
+<div class="paragraph">
+<p>Horizontally centers Rectangle <code>b</code> within Rectangle <code>a</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">centerHorizontal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to center.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_centervertical">pRect.centerVertical</h3>
+<div class="paragraph">
+<p>Vertically centers Rectangle <code>b</code> within Rectangle <code>a</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">centerVertical</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to center.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_copy">pRect.copy</h3>
+<div class="paragraph">
+<p>Overwrites the position and dimensions of Rectangle <code>b</code> with those of <code>a</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The source <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to overwrite.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_expand">pRect.expand</h3>
+<div class="paragraph">
+<p>Expands a Rectangle by shifting its sides.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">expand</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to expand.</p>
+</li>
+<li>
+<p><code>x1</code>, <code>y1</code>: How much to expand the left and top sides.</p>
+</li>
+<li>
+<p><code>x2</code>, <code>y2</code>: How much to expand the right and bottom sides.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_expandbottom">pRect.expandBottom</h3>
+<div class="paragraph">
+<p>Expands a Rectangle&#8217;s bottom side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">expandBottom</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>y2</code>: How much to expand the bottom side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_expandhorizontal">pRect.expandHorizontal</h3>
+<div class="paragraph">
+<p>Expands a Rectangle&#8217;s left and right sides.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">expandHorizontal</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>x1</code>, <code>x2</code>: How much to expand the left and right sides.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_expandleft">pRect.expandLeft</h3>
+<div class="paragraph">
+<p>Expand a Rectangle&#8217;s left side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">expandLeft</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>x1</code>: How much to expand the left side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_expandright">pRect.expandRight</h3>
+<div class="paragraph">
+<p>Expands a Rectangle&#8217;s right side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">expandRight</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>x2</code>: How much to expand the right side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_expandt">pRect.expandT</h3>
+<div class="paragraph">
+<p>Expands a Rectangle by shifting its sides. Like <a href="#_prect_expand">pRect.expand</a>, but takes a SideDelta.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">expandT</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">sd</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>sd</code>: The <a href="#_sidedelta">SideDelta</a> to use.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_expandtop">pRect.expandTop</h3>
+<div class="paragraph">
+<p>Expands a Rectangle&#8217;s top side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">expandTop</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>y1</code>: How much to expand the top side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_expandvertical">pRect.expandVertical</h3>
+<div class="paragraph">
+<p>Expands a Rectangle&#8217;s top and bottom sides.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">expandVertical</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>y1</code>, <code>y2</code>: How much to expand the top and bottom sides.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_fliphorizontal">pRect.flipHorizontal</h3>
+<div class="paragraph">
+<p>Horizontally flips a Rectangle within another Rectangle.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">flipHorizontal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to flip.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_flipvertical">pRect.flipVertical</h3>
+<div class="paragraph">
+<p>Vertically flips a Rectangle within another Rectangle.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">flipVertical</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to flip.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_getbounds">pRect.getBounds</h3>
+<div class="paragraph">
+<p>Gets the horizontal and vertical ranges of a group of Rectangles.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">pRect</span><span class="p">.</span><span class="n">getBounds</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&#8230;&#8203;</code>: A vararg list of <a href="#_rectangle">Rectangles</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The furthest left, top, right and bottom positions.</p>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>If no Rectangles are provided, this function will return zero for all positions.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_getboundst">pRect.getBoundsT</h3>
+<div class="paragraph">
+<p>Gets the horizontal and vertical ranges of a group of Rectangles. Like <a href="#_prect_getbounds">pRect.getBounds</a>, but takes an array instead of a vararg list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">pRect</span><span class="p">.</span><span class="n">getBoundsT</span><span class="p">(</span><span class="n">list</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>list</code>: An array of <a href="#_rectangle">Rectangles</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The furthest left, top, right and bottom positions.</p>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>If there are no elements in the array, this function will return zero for all positions.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placeinner">pRect.placeInner</h3>
+<div class="paragraph">
+<p>Places Rectangle <code>b</code> within the boundaries of Rectangle <code>a</code> at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeInner</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ux</span><span class="p">,</span> <span class="n">uy</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>ux</code>, <code>uy</code>: The horizontal and vertical positions; numbers from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><code>a</code> is assumed to be at least as big as <code>b</code>.</p>
+</div>
+<div class="paragraph">
+<p>The final coordinates of <code>b</code> are rounded to integers.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placeinnerhorizontal">pRect.placeInnerHorizontal</h3>
+<div class="paragraph">
+<p>Horizontally places Rectangle <code>b</code> within the boundaries of Rectangle <code>a</code> at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeInnerHorizontal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ux</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>ux</code>: The horizontal position; a number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placeinnervertical">pRect.placeInnerVertical</h3>
+<div class="paragraph">
+<p>Vertically places Rectangle <code>b</code> within the boundaries of Rectangle <code>a</code> at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeInnerVertical</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">uy</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>uy</code>: The vertical position; a number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placemidpoint">pRect.placeMidpoint</h3>
+<div class="paragraph">
+<p>Places Rectangle <code>b</code>'s center point within the boundaries of Rectangle <code>a</code>, at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeMidpoint</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ux</span><span class="p">,</span> <span class="n">uy</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>ux</code>, <code>uy</code>: The horizontal and vertical positions; numbers from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_4" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The final coordinates of <code>b</code> are rounded to integers.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placemidpointhorizontal">pRect.placeMidpointHorizontal</h3>
+<div class="paragraph">
+<p>Horizontally places Rectangle <code>b</code>'s center point within the boundaries of Rectangle <code>a</code>, at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeMidpointHorizontal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ux</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>ux</code>: The horizontal position; a number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placemidpointvertical">pRect.placeMidpointVertical</h3>
+<div class="paragraph">
+<p>Vertically places Rectangle <code>b</code>'s center point within the boundaries of Rectangle <code>a</code>, at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeMidpointVertical</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">uy</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>uy</code>: The vertical position; a number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placeouter">pRect.placeOuter</h3>
+<div class="paragraph">
+<p>Places Rectangle <code>b</code> within or just outside the boundaries of Rectangle <code>a</code> at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeOuter</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ux</span><span class="p">,</span> <span class="n">uy</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>ux</code>, <code>uy</code>: The horizontal and vertical positions; numbers from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_5" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The final coordinates of <code>b</code> are rounded to integers.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placeouterhorizontal">pRect.placeOuterHorizontal</h3>
+<div class="paragraph">
+<p>Horizontally places Rectangle <code>b</code> within or just outside the boundaries of Rectangle <code>a</code> at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeOuterHorizontal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ux</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>ux</code>: The horizontal position; a number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_placeoutervertical">pRect.placeOuterVertical</h3>
+<div class="paragraph">
+<p>Vertically places Rectangle <code>b</code> within or just outside the boundaries of Rectangle <code>a</code> at an interpolated position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">placeOuterVertical</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">uy</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The reference <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to place.</p>
+</li>
+<li>
+<p><code>uy</code>: The vertical position; a number from 0.0 to 1.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_pointoverlap">pRect.pointOverlap</h3>
+<div class="paragraph">
+<p>Checks if a point is within a Rectangle.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">pRect</span><span class="p">.</span><span class="n">pointOverlap</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to check.</p>
+</li>
+<li>
+<p><code>x</code>, <code>y</code>: The point&#8217;s position.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the point overlaps the Rectangle, <code>false</code> if not.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_reduce">pRect.reduce</h3>
+<div class="paragraph">
+<p>Shortens a Rectangle by shifting its sides.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to expand.</p>
+</li>
+<li>
+<p><code>x1</code>, <code>y1</code>: How much to shorten the left and top sides.</p>
+</li>
+<li>
+<p><code>x2</code>, <code>y2</code>: How much to shorten the right and bottom sides.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_reducebottom">pRect.reduceBottom</h3>
+<div class="paragraph">
+<p>Shortens a Rectangle&#8217;s bottom side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">reduceBottom</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>y2</code>: How much to shorten the bottom side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_reducehorizontal">pRect.reduceHorizontal</h3>
+<div class="paragraph">
+<p>Shortens a Rectangle&#8217;s left and right sides.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">reduceHorizontal</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>x1</code>, <code>x2</code>: How much to shorten the left and right sides.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_reduceleft">pRect.reduceLeft</h3>
+<div class="paragraph">
+<p>Shortens a Rectangle&#8217;s left side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">reduceLeft</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>x1</code>: How much to shorten the left side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_reduceright">pRect.reduceRight</h3>
+<div class="paragraph">
+<p>Shortens a Rectangle&#8217;s right side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">reduceRight</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>x2</code>: How much to shorten the right side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_reducet">pRect.reduceT</h3>
+<div class="paragraph">
+<p>Shortens a Rectangle by shifting its sides. Like <a href="#_prect_reduce">pRect.reduce</a>, but takes a SideDelta.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">reduceT</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">sd</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to shorten.</p>
+</li>
+<li>
+<p><code>sd</code>: The <a href="#_sidedelta">SideDelta</a> to use.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_reducetop">pRect.reduceTop</h3>
+<div class="paragraph">
+<p>Shortens a Rectangle&#8217;s top side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">reduceTop</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>y1</code>: How much to shorten the top side.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_reducevertical">pRect.reduceVertical</h3>
+<div class="paragraph">
+<p>Shortens a Rectangle&#8217;s top and bottom sides.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">reduceVertical</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to change.</p>
+</li>
+<li>
+<p><code>y1</code>, <code>y2</code>: How much to shorten the top and bottom sides.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_set">pRect.set</h3>
+<div class="paragraph">
+<p>Sets a Rectangle&#8217;s position and dimensions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to modify.</p>
+</li>
+<li>
+<p><code>x</code>, <code>y</code>: The new position.</p>
+</li>
+<li>
+<p><code>w</code>, <code>h</code>: The new dimensions.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_setdimensions">pRect.setDimensions</h3>
+<div class="paragraph">
+<p>Sets a Rectangle&#8217;s dimensions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">setDimensions</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to modify.</p>
+</li>
+<li>
+<p><code>w</code>, <code>h</code>: The new dimensions.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_setposition">pRect.setPosition</h3>
+<div class="paragraph">
+<p>Sets a Rectangle&#8217;s position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">setPosition</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>r</code>: The <a href="#_rectangle">Rectangle</a> to modify.</p>
+</li>
+<li>
+<p><code>x</code>, <code>y</code>: The new position.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>r</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_split">pRect.split</h3>
+<div class="paragraph">
+<p>Splits a Rectangle.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The input <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The output Rectangle (to be assigned the removed part of <code>a</code>).</p>
+</li>
+<li>
+<p><code>side</code>: The side to split: <code>left</code>, <code>right</code>, <code>top</code>, or <code>bottom</code>.</p>
+</li>
+<li>
+<p><code>len</code>: The length of the split.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_splitbottom">pRect.splitBottom</h3>
+<div class="paragraph">
+<p>Shortens Rectangle <code>a</code> by cutting a chunk from its bottom side, and overwrites Rectangle <code>b</code> to match the chunk.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">splitBottom</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_rectangle">Rectangle</a> to shorten.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to be assigned the removed part.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_splitleft">pRect.splitLeft</h3>
+<div class="paragraph">
+<p>Shortens Rectangle <code>a</code> by cutting a chunk from its left side, and overwrites Rectangle <code>b</code> to match the chunk.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">splitLeft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_rectangle">Rectangle</a> to shorten.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to be assigned the removed part.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_splitoroverlay">pRect.splitOrOverlay</h3>
+<div class="paragraph">
+<p>Splits or copies a Rectangle, based on the arguments provided.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">splitOrOverlay</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">placement</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The input <a href="#_rectangle">Rectangle</a>.</p>
+</li>
+<li>
+<p><code>b</code>: The output Rectangle.</p>
+</li>
+<li>
+<p><code>placement</code>: How to place Rectangle <code>b</code>: by splitting Rectangle <code>a</code> (<code>left</code>, <code>right</code>, <code>top</code>, <code>bottom</code>), or by copying it (<code>overlay</code>).</p>
+</li>
+<li>
+<p><code>len</code>: The length of the split. Not used when the placement mode is <code>overlay</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_splitright">pRect.splitRight</h3>
+<div class="paragraph">
+<p>Shortens Rectangle <code>a</code> by cutting a chunk from its right side, and overwrites Rectangle <code>b</code> to match the chunk.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">splitRight</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_rectangle">Rectangle</a> to shorten.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to be assigned the removed part.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_prect_splittop">pRect.splitTop</h3>
+<div class="paragraph">
+<p>Shortens Rectangle <code>a</code> by cutting a chunk from its top side, and overwrites Rectangle <code>b</code> to match the chunk.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pRect</span><span class="p">.</span><span class="n">splitTop</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The <a href="#_rectangle">Rectangle</a> to shorten.</p>
+</li>
+<li>
+<p><code>b</code>: The Rectangle to be assigned the removed part.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>a</code>, for method chaining.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_omissions">Omissions</h3>
+<div class="paragraph">
+<p>Functions that would only change one variable in a trivial way, like <code>setX()</code> or <code>setHeight()</code>, are omitted from the API.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_structures">Structures</h3>
+<div class="paragraph">
+<p><em>pRect</em> does not come with functions to create the following structures. Any table that contains the expected fields may be used. Out of concern for overhead, function arguments are not validated by default.</p>
+</div>
+<div class="sect3">
+<h4 id="_rectangle">Rectangle</h4>
+<div class="paragraph">
+<p>A table with <code>x</code>, <code>y</code>, <code>w</code> and <code>h</code> fields, all numbers. The width and height are assumed to be greater than or equal to zero.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">rect</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">0</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_sidedelta">SideDelta</h4>
+<div class="paragraph">
+<p>A table with measurements for each side of a rectangle. These are typically used to apply margins, padding, etc.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sd</span> <span class="o">=</span> <span class="p">{</span><span class="n">x1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">0</span><span class="p">}</span> <span class="c1">-- left, top, right, bottom</span></code></pre>
+</div>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 17:54:12 -0300
+</div>
+</div>
+</body>
+</html>

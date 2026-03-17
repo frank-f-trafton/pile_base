@@ -1,0 +1,834 @@
+= PILE Base: pTable
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pTable__ provides some helper functions for Lua tables.
+
+Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+
+[source,lua]
+----
+local pTable = require("p_table")
+
+local lut_foo = pTable.newLut({"foo", "bar", "baz"})
+--> {foo=true, bar=true, baz=true}
+----
+
+
+toc::[]
+
+
+== API
+
+
+=== pTable.arrayHasDuplicateValues
+
+Checks if the array part of a table contains duplicate values.
+
+[source,lua]
+----
+local dupe_i = pTable.arrayHasDuplicateValues(t)
+----
+
+* `t`: The array to check.
+
+**Returns:** If found, two indices of the duplicated element. Otherwise, `nil`.
+
+'''
+
+
+=== pTable.assertResolve
+
+A wrapper for xref:p_table.adoc#_ptable_resolve[pTable.resolve] which raises an error if no value was found.
+
+[source,lua]
+----
+local value, count = pTable.assertResolve(t, str, [raw])
+----
+
+* `t`: The starting table.
+
+* `str`: The string of delimited fields to check. Cannot be an empty string.
+
+* `[raw]`: When true, uses https://www.lua.org/manual/5.1/manual.html#pdf-rawget[**rawget**] to read table fields (thus ignoring the mechanisms of Lua metatables).
+
+**Returns:** The resolved value, followed by the count of delimited fields.
+
+'''
+
+
+=== pTable.assignIfNil
+
+If `table[key]` is `nil`, assigns the first non-`nil` value from a vararg list.
+
+[source,lua]
+----
+pTable.assignIfNil(t, k, ...)
+----
+
+* `t`: The target table.
+
+* `k`: The target key.
+
+* `...`: A list of values to consider.
+
+
+[discrete]
+==== Notes
+
+For example:
+
+[source,lua]
+----
+local t = {}
+pTable.assignIfNil(t, "foo", nil) -- (No change)
+pTable.assignIfNil(t, "foo", "bar", "zoop") --> t[foo] = "bar"
+pTable.assignIfNil(t, "foo", false) --> (No change: t.foo is no longer nil.)
+----
+
+'''
+
+
+=== pTable.assignIfNilOrFalse
+
+If `table[key]` is `nil` or `false`, assigns the first non-`nil`, non-`false` value from a vararg list.
+
+[source,lua]
+----
+pTable.assignIfNilOrFalse(t, k, ...)
+----
+
+* `t`: The target table.
+
+* `k`: The target key.
+
+* `...`: A list of values to consider.
+
+
+[discrete]
+==== Notes
+
+For example:
+
+[source,lua]
+----
+local t = {foo=false}
+pTable.assignIfNil(t, "foo", nil) -- (No change)
+pTable.assignIfNil(t, "foo", true, 100) --> t[foo] = true
+pTable.assignIfNil(t, "foo", false) -- (No change: t.foo is no longer false/nil)
+----
+
+'''
+
+
+=== pTable.clearAll
+
+Erases all keys in a table.
+
+[source,lua]
+----
+pTable.clearAll(t)
+----
+
+* `t`: The table to clear.
+
+
+[discrete]
+==== Notes
+
+When LuaJIT is detected, https://luajit.org/extensions.html#table_clear[**table.clear**] is substituted for this function.
+
+'''
+
+
+=== pTable.clearArray
+
+Erases a table's array indices.
+
+[source,lua]
+----
+pTable.clearArray(t)
+----
+
+* `t`: The table/array to clear.
+
+
+[discrete]
+==== Notes
+
+Use this if you want to delete __only__ array elements.
+
+'''
+
+
+=== pTable.copy
+
+Makes a "shallow" copy of a table. Sub-tables are copied as references.
+
+[source,lua]
+----
+local copied = pTable.copy(t)
+----
+
+* `t`: The table to copy.
+
+**Returns:** The copied table.
+
+'''
+
+
+=== pTable.copyArray
+
+Makes a copy of a table's array elements.
+
+[source,lua]
+----
+local copied = pTable.copyArray(t)
+----
+
+* `t`: The array to copy.
+
+**Returns:** The copied array.
+
+'''
+
+
+=== pTable.deepCopy
+
+Makes a recursive "deep" copy of a table.
+
+[source,lua]
+----
+local copied = pTable.deepCopy(t)
+----
+
+* `t`: The table to deep-copy.
+
+**Returns:** The copied table.
+
+
+[discrete]
+==== Notes
+
+In Lua, there are many ways to copy a table, and no single way covers all use cases. This function is a pretty narrow implementation:
+
+* It does not handle tables as keys: `t = {[{true}] = "foo"}`
+
+* It does not handle loops ('A' referring to 'B' referring back to 'A'); the Lua stack will overflow.
+
+* Multiple appearances of the same table in the source will generate unique tables in the copy.
+
+'''
+
+
+=== pTable.deepPatch
+
+Given two tables, recursively copies values from the second table to the first. The procedure runs on all table values in the patch table. If the destination table is lacking a sub-table that is present in the patch table, then a new table will be assigned.
+
+[source,lua]
+----
+pTable.deepPatch(a, b, overwrite)
+----
+
+* `a`: The table to be modified.
+
+* `b`: The table with patch values.
+
+* `overwrite`: When `true`, existing values in `a` are overwritten by those in `b` with matching keys. When `false`, existing values in `a` (including `false`) are preserved.
+
+
+[discrete]
+==== Notes
+
+Limitations:
+
+* All tables involved __must__ be unique.
+
+* Tables as keys are not supported.
+
+* This function can modify, but not replace existing tables in the destination.
+
+'''
+
+
+=== pTable.hasAnyDuplicateTables
+
+Recursively checks a list of tables for duplicate table references.
+
+[source,lua]
+----
+local t = pTable.hasAnyDuplicateTables(...)
+----
+
+* `...`: A vararg list of tables to check.
+
+**Returns:** The first duplicate table encountered, or `nil` if there are no duplicates.
+
+
+[discrete]
+==== Notes
+
+Does not check metatables.
+
+'''
+
+
+=== pTable.invertKeysAndValues
+
+Makes a inverted copy (keys and values swapped) of a table. The table must have unique values for all keys.
+
+[source,lua]
+----
+local inverted = pTable.invertKeysAndValues(t)
+----
+
+* `t`: The table to invert.
+
+**Returns:** The inverted table.
+
+
+[discrete]
+==== Notes
+
+The function will raise an error if duplicate values are encountered (`{a=1, b=1}`).
+
+'''
+
+
+=== pTable.isArray
+
+Checks if a table is an array: that there are no gaps from index 1 to the highest integer key.
+
+[source,lua]
+----
+local ok = pTable.isArray(t)
+----
+
+**Returns:** `true` if the table has contiguous array indices, `false` otherwise.
+
+
+[discrete]
+==== Notes
+
+Tables with __no__ array indices are also considered OK.
+
+'''
+
+
+=== pTable.isArrayOnly
+
+Checks if a table is an array only: that if there are any keys, they are __only__ array indices from 1 to the highest integer key.
+
+[source,lua]
+----
+local ok = pTable.isArrayOnly(t)
+----
+
+* `t`: The table to check.
+
+**Returns:** `true` if the table contains only array indices, `false` otherwise.
+
+
+[discrete]
+==== Notes
+
+Completely empty tables are also considered OK.
+
+'''
+
+
+=== pTable.isArrayOnlyZero
+
+Like xref:p_table.adoc#_ptable_isarrayonly[pTable.isArrayOnly], but carves out an exception for index zero.
+
+[source,lua]
+----
+local ok = pTable.isArrayOnlyZero(t)
+----
+
+* `t`: The table to check.
+
+**Returns:** `true` if the table contains only array indices (and optionally index 0), `false` otherwise.
+
+'''
+
+
+=== pTable.isValueInArray
+
+Checks if a value is in an array.
+
+[source,lua]
+----
+local index = pTable.isValueInArray(t, v, [i])
+----
+
+* `t`: The array to check.
+
+* `v`: The value.
+
+* `[i]`: __(1)__ The starting index.
+
+**Returns:** The index of the value when found, or `nil` if it was not found.
+
+'''
+
+
+=== pTable.makeArrayFromKeys
+
+Makes an array from a table's keys.
+
+[source,lua]
+----
+local array = pTable.makeArrayFromKeys(t)
+----
+
+* `t`: The table.
+
+**Returns:** An array of ``t``'s keys.
+
+
+[discrete]
+==== Notes
+
+The array order is undefined.
+
+'''
+
+
+=== pTable.moveElement
+
+Moves a table array element from one index to another.
+
+[source,lua]
+----
+pTable.moveElement(t, i, j)
+----
+
+* `t`: The array.
+
+* `i`: The element's current index.
+
+* `j`: The destination index.
+
+
+[discrete]
+==== Notes
+
+Both `t[i]` and `t[j]` must be non-`nil`.
+
+Performance may be poor when moving many low indices in extremely large arrays.
+
+'''
+
+
+=== pTable.mt_restrict
+
+A metatable that raises an error when accessing or assigning unpopulated fields in a table.
+
+
+[discrete]
+==== Notes
+
+For example:
+
+[source,lua]
+----
+my_table = {foo=1, bar=2}
+setmetatable(my_table, pTable.mt_restrict)
+my_table.foo = 3
+my_table.zut = 4 -- Error
+----
+
+This metatable is similar in purpose to the https://www.lua.org/extras/[**strict.lua**] snippet, but it has enough differences in behavior that it cannot be treated as a drop-in replacement.
+
+`mt_restrict` cannot do anything about the usage of https://www.lua.org/manual/5.1/manual.html#pdf-rawset[**rawset**] or https://www.lua.org/manual/5.1/manual.html#pdf-rawget[**rawget**].
+
+The behavior of https://www.lua.org/manual/5.1/manual.html#pdf-table.insert[**table.insert**] changed in Lua 5.3, as the langauge designers updated table functions to respect metamethods.
+
+'''
+
+
+=== pTable.newLut
+
+Makes a lookup table from an array.
+
+[source,lua]
+----
+local lookup = pTable.newLut(t)
+----
+
+* `t`: The array to convert.
+
+**Returns:** The converted lookup table.
+
+
+[discrete]
+==== Notes
+
+For example:
+
+[source,lua]
+----
+local array = {"one", "two", "three"}
+local hash = pTable.newLut(array)
+--> {one=true, two=true, three=true}
+----
+
+'''
+
+
+=== pTable.newLutV
+
+Makes a lookup table from a vararg list.
+
+[source,lua]
+----
+local lookup = pTable.newLutV(...)
+----
+
+* `...`: The vararg list to use as keys.
+
+**Returns:** The converted lookup table.
+
+
+[discrete]
+==== Notes
+
+For example:
+
+[source,lua]
+----
+local hash = pTable.newLutV("four", "five", "six")
+--> {four=true, five=true, six=true}
+----
+
+'''
+
+
+=== pTable.newNamedMap
+
+Creates a xref:p_table.adoc#_namedmaps[NamedMap].
+
+[source,lua]
+----
+local n_map = pTable.newNamedMap([name], [t])
+----
+
+* `[name]`: The NamedMap's name.
+
+* `[t]`: An optional, pre-existing table. When not provided, a new table will be created.
+
+**Returns:** The table.
+
+'''
+
+
+=== pTable.newNamedMapV
+
+Creates a xref:p_table.adoc#_namedmaps[NamedMap]. Like xref:p_table.adoc#_ptable_newnamedmap[pTable.newNamedMap], but uses a vararg list to populate keys. All values in the returned table are `true`.
+
+[source,lua]
+----
+local n_map = pTable.newNamedMapV(name, ...)
+----
+
+* `name`: __("NamedMap")__ The NamedMap's name.
+
+* `...`: A vararg list of values to use as keys.
+
+**Returns:** The NamedMap table.
+
+'''
+
+
+=== pTable.patch
+
+Given two tables, copies values from the second table to the first.
+
+[source,lua]
+----
+pTable.patch(a, b, overwrite)
+----
+
+* `a`: The table to be modified.
+
+* `b`: The table with patch values.
+
+* `overwrite`: When `true`, existing values in `a` are overwritten by those in `b` with matching keys. When `false`, existing values in `a` (including `false`) are preserved.
+
+**Returns:** A count of how many fields were overwritten (or if `overwrite` is false, then how many fields were __not__ overwritten).
+
+
+[discrete]
+==== Notes
+
+* Sub-tables within `b` are copied by reference to `a`.
+
+'''
+
+
+=== pTable.removeValueFromArray
+
+Removes elements from an array that are equal to a particular value, iterating backwards from the last entry.
+
+[source,lua]
+----
+local count = pTable.removeValueFromArray(t, v, [n])
+----
+
+* `t`: The table to scan.
+
+* `v`: The value to be removed.
+
+* `[n]`: __(math.huge)__ How many elements to remove in this call.
+
+**Returns:** The number of elements removed.
+
+'''
+
+
+=== pTable.resolve
+
+Looks up a value in a nested table structure, by following a string of fields delimited by slashes (`/`).
+
+[source,lua]
+----
+local value, count = pTable.resolve(t, str, [raw])
+----
+
+* `t`: The starting table.
+
+* `str`: The string of delimited fields to check.
+
+* `[raw]`: When true, uses https://www.lua.org/manual/5.1/manual.html#pdf-rawget[**rawget**] to read table fields (thus ignoring the mechanisms of Lua metatables).
+
+**Returns:** 1) Either the resolved value or `nil`, followed by 2) the count of delimited fields when the search stopped.
+
+
+[discrete]
+==== Notes
+
+The call `local v = pTable.resolve(tbl, "foo/bar")` is analogous to `local v = tbl.foo.bar`.
+
+The function will raise an error if ``t``'s starting value is not a table, or if any of the fields are empty (like ``foo//bar``).
+
+'''
+
+
+=== pTable.reverseArray
+
+Reverses the contents of an array.
+
+[source,lua]
+----
+pTable.reverseArray(t)
+----
+
+* `t`: The array to reverse.
+
+'''
+
+
+=== pTable.safeTableConcat
+
+A wrapper for https://www.lua.org/manual/5.1/manual.html#pdf-table.concat[**table.concat**] which duplicates the table and converts its values to strings. (The concat function normally raises an error if an element cannot be implicitly converted to string.)
+
+[source,lua]
+----
+local str = pTable.safeTableConcat(t, [sep], [i], [j])
+----
+
+* `t`: The input table.
+
+* `[sep]`: An optional separator string, like `", "`.
+
+* `[i]`: __(1)__ The first index.
+
+* `[j]`: __(#t)__ The last index.
+
+**Returns:** The concatenated string.
+
+'''
+
+
+=== pTable.set
+
+Assigns a value to a table field.
+
+[source,lua]
+----
+local changed = pTable.set(t, f, v)
+----
+
+* `t`: The table.
+
+* `f`: The field in the table.
+
+* `v`: The value to assign.
+
+**Returns:** `true` if the value changed, `false` otherwise.
+
+
+[discrete]
+==== Notes
+
+This function can be used to shorten some comparisons to previous values. It should be avoided in busy codepaths.
+
+[source,lua]
+----
+-- Without
+local old_x = self.x
+self.x = self.x % 2
+if self.x ~= old_x then
+	self.y = self.y + 1
+end
+
+-- With
+if pTable.set(self, "x", self.x % 2) then
+	self.y = self.y + 1
+end
+----
+
+'''
+
+
+=== pTable.setDouble
+
+Assigns a xref:p_table.adoc#_double_variables[double variable], falling back to a default value when `false`/`nil` is provided.
+
+[source,lua]
+----
+local changed = pTable.setDouble(t, setting, field, v, default)
+----
+
+* `t`: The table.
+
+* `setting`: The user-facing field, which will be assigned `v`.
+
+* `field`: The internal field, which will be assigned `v` or `default`.
+
+* `v`: The value to assign, when not `false`/`nil`.
+
+* `default:` The default value to use if `v` is `false`/`nil`. (This default value cannot itself be `false`/`nil`.)
+
+**Returns:** `true` if the field value was updated, `false` otherwise.
+
+'''
+
+
+=== pTable.swapElements
+
+Swaps two array elements in a table.
+
+[source,lua]
+----
+pTable.swapElements(t, i, j)
+----
+
+* `t`: The array.
+
+* `i`: The first index.
+
+* `j`: The second index.
+
+
+[discrete]
+==== Notes
+
+Both `t[i]` and `t[j]` must be non-`nil`.
+
+'''
+
+
+=== pTable.updateDouble
+
+Updates a xref:p_table.adoc#_double_variables[double variable]'s internal value, if the user-facing value is `false`/`nil`.
+
+[source,lua]
+----
+pTable.updateDouble(t, setting, field, default)
+----
+
+* `t`: The table.
+
+* `setting`: The user-facing field, which might be `false`/`nil`.
+
+* `field`: The internal field, which might be assigned `default`.
+
+* `default`: The value to assign to `t[field]`, if `t[setting]` is `false`/`nil`.
+
+
+[discrete]
+==== Notes
+
+To be used when the default value itself may have changed.
+
+'''
+
+
+=== pTable.wrap1Array
+
+Returns an element from an array at position `n`, wrapped to the array's length.
+
+[source,lua]
+----
+local element = pTable.wrap1Array(t, n)
+----
+
+* `t`: The table to access.
+
+* `n`: The index to wrap.
+
+**Returns:** The element at the wrapped position.
+
+
+[discrete]
+==== Notes
+
+The behavior is undefined when the array length is zero.
+
+
+== Module Notes
+
+
+=== NamedMaps
+
+A NamedMap is an https://en.wikipedia.org/wiki/Enumerated_type[**enum**]-like table with a name registered in the xref:p_name.adoc[pName] module.
+
+A NamedMap's name can be retrieved with xref:p_name.adoc#_pname_safeget[pName.safeGet]. For example:
+
+[source,lua]
+----
+local nm_obj_side = pTable.newNamedMap("ObjectSide", {left=0.0, center=0.5, right=1.0})
+
+local function checkNamedMap(n_map, v)
+	if not n_map[v] then
+		error("invalid " .. pName.safeGet(n_map, "NamedMap") .. ": " .. tostring(v))
+	end
+end
+
+checkNamedMap(nm_obj_side, "sideways")
+--> invalid ObjectSide: sideways
+----
+
+
+=== Double Variables
+
+The double variable functions work on two copies of a setting in a table. The first, user-facing copy may be `false`/`nil` to indicate that a default value should be used. The second, internal copy mirrors the first, except that a default value is substituted for `false`/`nil`.
+
+This is useful when the default value can change, perhaps as a result of loading new theme data. For example, consider a text widget that can be aligned left, right, or center:
+
+....
+'self.S_align' can be "left", "center", "right", or false
+'self.align' *must* be "left", "center", or "right".
+....
+
+The widget's drawing code would read `self.align`, while the interface system would read `self.S_align`.
+
+
+include::snippets/footer.adoc[]

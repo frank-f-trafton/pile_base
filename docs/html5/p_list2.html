@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pList2</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pList2</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pList2</em> provides functions for working with doubly linked lists.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pList2</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_list2"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">head</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeNew</span><span class="p">()</span>
+
+<span class="kd">local</span> <span class="n">a</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeNew</span><span class="p">()</span>
+<span class="n">pList2</span><span class="p">.</span><span class="n">nodeLink</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="c1">-- [head]--[a]</span>
+
+<span class="kd">local</span> <span class="n">b</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeNew</span><span class="p">()</span>
+<span class="n">pList2</span><span class="p">.</span><span class="n">nodeLink</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="c1">-- [head]--[a]--[b]</span>
+
+<span class="n">pList2</span><span class="p">.</span><span class="n">nodeUnlink</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="c1">-- [head]--[b]</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_plist2_nodeassertnocycles">pList2.nodeAssertNoCycles</a></li>
+<li><a href="#_plist2_nodegethead">pList2.nodeGetHead</a></li>
+<li><a href="#_plist2_nodegetnext">pList2.nodeGetNext</a></li>
+<li><a href="#_plist2_nodegetprevious">pList2.nodeGetPrevious</a></li>
+<li><a href="#_plist2_nodegettail">pList2.nodeGetTail</a></li>
+<li><a href="#_plist2_nodeinlist">pList2.nodeInList</a></li>
+<li><a href="#_plist2_nodeinlistbackward">pList2.nodeInListBackward</a></li>
+<li><a href="#_plist2_nodeinlistforward">pList2.nodeInListForward</a></li>
+<li><a href="#_plist2_nodeiteratenext">pList2.nodeIterateNext</a></li>
+<li><a href="#_plist2_nodeiterateprevious">pList2.nodeIteratePrevious</a></li>
+<li><a href="#_plist2_nodelink">pList2.nodeLink</a></li>
+<li><a href="#_plist2_nodenew">pList2.nodeNew</a></li>
+<li><a href="#_plist2_nodeunlink">pList2.nodeUnlink</a></li>
+<li><a href="#_plist2_nodeunlinknext">pList2.nodeUnlinkNext</a></li>
+<li><a href="#_plist2_nodeunlinkprevious">pList2.nodeUnlinkPrevious</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_nodes">Nodes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_plist2_nodeassertnocycles">pList2.nodeAssertNoCycles</h3>
+<div class="paragraph">
+<p>Raises an error if a list contains cycles (duplicate references or looping) in either direction.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pList2</span><span class="p">.</span><span class="n">nodeAssertNoCycles</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: Any node in the list to be checked.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodegethead">pList2.nodeGetHead</h3>
+<div class="paragraph">
+<p>Gets the list head (the first node).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">head</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeGetHead</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: Any node in the list.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node head.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodegetnext">pList2.nodeGetNext</h3>
+<div class="paragraph">
+<p>Gets the next node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">next_node</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeGetNext</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node after <code>self</code>, or <code>nil</code> if the end of the list is reached.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodegetprevious">pList2.nodeGetPrevious</h3>
+<div class="paragraph">
+<p>Gets the previous node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">prev_node</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeGetPrevious</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node before <code>self</code>, or nil if the beginning of the list is reached.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodegettail">pList2.nodeGetTail</h3>
+<div class="paragraph">
+<p>Gets the list tail (the last node).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeGetTail</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: Any node in the list.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node tail.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodeinlist">pList2.nodeInList</h3>
+<div class="paragraph">
+<p>Checks if <code>node</code> is in a list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">in_list</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeInList</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: Any node that <em>is</em> part of the list. Cannot be <code>nil</code>.</p>
+</li>
+<li>
+<p><code>node</code>: The node to look for.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if there is a match, <code>false</code> otherwise.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodeinlistbackward">pList2.nodeInListBackward</h3>
+<div class="paragraph">
+<p>Checks if <code>node</code> is in a list, from <code>self</code>, marching backward.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">in_list</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeInListBackward</span><span class="p">([</span><span class="n">self</span><span class="p">],</span> <span class="n">node</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[self]</code>: The node to start searching from. Can be <code>false</code>/<code>nil</code>, such that <code>node["prev"]</code> may be specified.</p>
+</li>
+<li>
+<p><code>node</code>: The node to look for.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if there is a match, <code>false</code> otherwise.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodeinlistforward">pList2.nodeInListForward</h3>
+<div class="paragraph">
+<p>Checks if <code>node</code> is in a list, from <code>self</code>, marching forward.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">in_list</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">inListForward</span><span class="p">([</span><span class="n">self</span><span class="p">],</span> <span class="n">node</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[self]</code>: The node to start searching from. Can be <code>false</code>/<code>nil</code>, such that <code>node["next"]</code> may be specified.</p>
+</li>
+<li>
+<p><code>node</code>: The node to look for.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if there is a match, <code>false</code> otherwise.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodeiteratenext">pList2.nodeIterateNext</h3>
+<div class="paragraph">
+<p>An iterator that steps forward through a list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">for</span> <span class="n">node</span> <span class="k">in</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeIterateNext</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[...]]</span> <span class="k">end</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The first node to consider.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Each node in the list, from <code>self</code>, stepping forward.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodeiterateprevious">pList2.nodeIteratePrevious</h3>
+<div class="paragraph">
+<p>An iterator that steps backward through a list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">for</span> <span class="n">node</span> <span class="k">in</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeIteratePrevious</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[...]]</span> <span class="k">end</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The first node to consider.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Each node in the list, from <code>self</code>, stepping backward.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodelink">pList2.nodeLink</h3>
+<div class="paragraph">
+<p>Links two nodes together. Any existing links are removed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pList2</span><span class="p">.</span><span class="n">nodeLink</span><span class="p">(</span><span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>from</code>: The first node to link.</p>
+</li>
+<li>
+<p><code>to</code>: The second node to link.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodenew">pList2.nodeNew</h3>
+<div class="paragraph">
+<p>Creates a new list node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">node</span> <span class="o">=</span> <span class="n">pList2</span><span class="p">.</span><span class="n">nodeNew</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new node.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodeunlink">pList2.nodeUnlink</h3>
+<div class="paragraph">
+<p>Unlinks a node from the list and connects its neighbors.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pList2</span><span class="p">.</span><span class="n">nodeUnlink</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Before:
+[n1]-[n2]-[n3]-[n4]-[n5]
+
+After pList2.nodeUnlink(n3):
+[n1]-[n2]-[n4]-[n5]
+
+       [n3]</pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodeunlinknext">pList2.nodeUnlinkNext</h3>
+<div class="paragraph">
+<p>Unlinks a node from its next node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pList2</span><span class="p">.</span><span class="n">nodeUnlinkNext</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node whose next link will be removed.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Before:
+[n1]-[n2]-[n3]-[n4]-[n5]
+
+After pList2.nodeUnlinkNext(n3):
+[n1]-[n2]-[n3] × [n4]-[n5]</pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_plist2_nodeunlinkprevious">pList2.nodeUnlinkPrevious</h3>
+<div class="paragraph">
+<p>Unlinks a node from its previous node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pList2</span><span class="p">.</span><span class="n">nodeUnlinkPrevious</span><span class="p">(</span><span class="n">self</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self</code>: The node whose previous link will be removed.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Before:
+[n1]-[n2]-[n3]-[n4]-[n5]
+
+After pList2.nodeUnlinkPrevious(n3):
+[n1]-[n2] × [n3]-[n4]-[n5]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_nodes">Nodes</h3>
+<div class="paragraph">
+<p>All <em>pList2</em> nodes reference the next and previous nodes as <code>node["next"]</code> and <code>node["prev"]</code>. (The square bracket notation is used so that the field names can be easily changed with a search-and-replace mechanism.) Every node in a list must be unique table, or else you risk breaking the traversal code.</p>
+</div>
+<div class="paragraph">
+<p><em>pList2&#8217;s</em> functions can be called as object methods (ie <code>obj:nodeGetHead()</code>) if you attach them to nodes or otherwise make them callable through <code>__index</code>.</p>
+</div>
+<div class="paragraph">
+<p>For more complex use cases, you may need to write your own versions of some of these functions.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 16:49:41 -0300
+</div>
+</div>
+</body>
+</html>

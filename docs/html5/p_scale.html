@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pScale</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pScale</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pScale</em> scales numbers.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pScale</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_scale"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">n</span> <span class="o">=</span> <span class="n">pScale</span><span class="p">.</span><span class="n">number</span><span class="p">(</span><span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span> <span class="c1">--&gt; n == 60</span>
+
+<span class="kd">local</span> <span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">16</span><span class="p">}</span>
+<span class="n">pScale</span><span class="p">.</span><span class="n">fieldInteger</span><span class="p">(</span><span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">)</span> <span class="c1">--&gt; t.x == 4</span>
+<span class="n">pScale</span><span class="p">.</span><span class="n">fieldInteger</span><span class="p">(</span><span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">)</span> <span class="c1">--&gt; t.y == 6</span>
+<span class="n">pScale</span><span class="p">.</span><span class="n">fieldInteger</span><span class="p">(</span><span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="c1">--&gt; t.w == 64</span>
+<span class="n">pScale</span><span class="p">.</span><span class="n">fieldInteger</span><span class="p">(</span><span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s2">"h"</span><span class="p">)</span> <span class="c1">--&gt; t.h == 32</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_pscale_fieldinteger">pScale.fieldInteger</a></li>
+<li><a href="#_pscale_fieldnumber">pScale.fieldNumber</a></li>
+<li><a href="#_pscale_integer">pScale.integer</a></li>
+<li><a href="#_pscale_number">pScale.number</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_pscale_fieldinteger">pScale.fieldInteger</h3>
+<div class="paragraph">
+<p>Scales and floors a number in a table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pScale</span><span class="p">.</span><span class="n">fieldInteger</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">[</span><span class="n">min</span><span class="p">],</span> <span class="p">[</span><span class="n">max</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>scale</code>: The scale to use.</p>
+</li>
+<li>
+<p><code>t</code>: The table.</p>
+</li>
+<li>
+<p><code>k</code>: The key, such that indexing <code>t[k]</code> provides a number.</p>
+</li>
+<li>
+<p><code>[min]</code>: An optional minimum limit on the scaled number.</p>
+</li>
+<li>
+<p><code>[max]</code>: An optional maximum limit on the scaled number.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pscale_fieldnumber">pScale.fieldNumber</h3>
+<div class="paragraph">
+<p>Scales a number in a table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pScale</span><span class="p">.</span><span class="n">fieldNumber</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">[</span><span class="n">min</span><span class="p">],</span> <span class="p">[</span><span class="n">max</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>scale</code>: The scale to use.</p>
+</li>
+<li>
+<p><code>t</code>: The table.</p>
+</li>
+<li>
+<p><code>k</code>: The key, such that indexing <code>t[k]</code> provides a number.</p>
+</li>
+<li>
+<p><code>[min]</code>: An optional minimum limit on the scaled number.</p>
+</li>
+<li>
+<p><code>[max]</code>: An optional maximum limit on the scaled number.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pscale_integer">pScale.integer</h3>
+<div class="paragraph">
+<p>Scales and floors a number.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">n</span> <span class="o">=</span> <span class="n">pScale</span><span class="p">.</span><span class="n">integer</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">min</span><span class="p">],</span> <span class="p">[</span><span class="n">max</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>scale</code>: The scale to use.</p>
+</li>
+<li>
+<p><code>v</code>: The number to scale.</p>
+</li>
+<li>
+<p><code>[min]</code>: An optional minimum limit on the return value.</p>
+</li>
+<li>
+<p><code>[max]</code>: An optional maximum limit on the return value.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The scaled and floored number.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pscale_number">pScale.number</h3>
+<div class="paragraph">
+<p>Scales a number.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">n</span> <span class="o">=</span> <span class="n">pScale</span><span class="p">.</span><span class="n">number</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">min</span><span class="p">],</span> <span class="p">[</span><span class="n">max</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>scale</code>: The scale to use.</p>
+</li>
+<li>
+<p><code>v</code>: The number to scale.</p>
+</li>
+<li>
+<p><code>[min]</code>: An optional minimum limit on the return value.</p>
+</li>
+<li>
+<p><code>[max]</code>: An optional maximum limit on the return value.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The scaled number.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All functions reject NaN for the scale, value, minimum, and maximum.</p>
+</div>
+<div class="paragraph">
+<p>In the 'integer' functions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The input number does not have to be an integer.</p>
+</li>
+<li>
+<p>Flooring is applied after clamping.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 17:59:11 -0300
+</div>
+</div>
+</body>
+</html>

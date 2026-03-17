@@ -1,0 +1,244 @@
+= PILE Base: pStringProc
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pStringProc__ is an auxiliary module for xref:p_string_walk.adoc[pStringWalk] which parses strings according to grammar productions. The format is similar to, **but not fully compatible with** the version of eBNF that https://www.w3.org/TR/REC-xml/#sec-notation[**appears in the XML specification**].
+
+Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_string_walk.adoc[pStringWalk]
+
+// This module is too complex for an embedded example.
+
+toc::[]
+
+
+== API
+
+
+=== pStringProc.checkSymbols
+
+Checks the types of keys and values in a symbol lookup table, raising an error upon encountering a problem.
+
+[source,lua]
+----
+pStringProc.checkSymbols(symbols)
+----
+
+* `symbols`: The xref:p_string_proc.adoc#_symbols[symbol] lookup table. All keys must be strings, and all values must be one of: `string`, `number`, `function`, or boolean `true`.
+
+
+[discrete]
+==== Notes
+
+The iteration order is undefined.
+
+'''
+
+
+=== pStringProc.checkWords
+
+Checks xref:p_string_proc.adoc#_word[words] in a production table against the keys in a symbol lookup table. Raises an error if the symbol table does not have entries for all words in the production table.
+
+[source,lua]
+----
+pStringProc.checkWords(symbols, t)
+----
+
+* `symbols`: The xref:p_string_proc.adoc#_symbols[symbol] lookup table.
+
+* `t`: The production table to check.
+
+'''
+
+
+=== pStringProc.toTable
+
+Converts a grammar production string to a table.
+
+[source,lua]
+----
+local t = pStringProc.toTable(s)
+----
+
+* `s`: The production string to convert.
+
+**Returns:** The converted table, to be used with xref:p_string_proc.adoc#_pstringproc_traverse[pStringProc.traverse].
+
+'''
+
+
+=== pStringProc.traverse
+
+Processes a string, following a grammar production table and a table of symbols.
+
+[source,lua]
+----
+local res = pStringProc.traverse(W, t, symbols)
+----
+
+* `W`: The xref:p_string_walk.adoc#_walkers[walker] object, configured with the string to be processed and its start position.
+
+* `t`: A production table for the string, having been created by xref:p_string_proc.adoc#_pstringproc_totable[pStringProc.toTable].
+
+* `symbols`: A lookup table of xref:p_string_proc.adoc#_symbols[symbols].
+
+**Returns:** A table of return values, or `false` if the walker's string failed to match the grammar.
+
+
+== Module Notes
+
+
+=== Notation
+
+
+==== string literal
+
+
+`"` / `'`: A string literal, enclosed in single or double quotes.
+
+....
+"foo" 'bar'
+....
+
+* "Empty" string literals are permitted: `''`, `""`
+
+* You can enclose one type of quote within another, like `"foo 'bar' baz"`.
+
+* There is no character escape mechanism.
+
+
+==== word
+
+`[a-zA-Z0-9_]+`: Any non-empty string of latin letters, digits and underscores.
+
+....
+foo
+....
+
+* The word must be populated in the symbol lookup table. Unhandled words will raise an error.
+
+
+==== match zero or one
+
+....
+foo?
+....
+
+
+==== match zero, one, or many
+
+....
+foo*
+....
+
+
+==== match one or many
+
+....
+foo+
+....
+
+
+==== group
+
+`()`: A subgroup of tokens that are handled like one word.
+
+....
+foo (bar baz) bop
+....
+
+* Empty groups are permitted: `()`
+
+* It's an error to have an unbalanced number of brackets: `a((b)`, `ab)c`
+
+
+==== alternate
+
+`|`: Alternate choice.
+
+....
+foo | bar
+....
+
+* If *this* expression failed, try the next token in the group.
+
+* If *this* expression succeeded, exit the group.
+
+* It's an error when an alternate token is not followed by an expression: `foo |`, `foo | | bar`
+
+
+=== Precedence
+
+From highest to lowest: `()`, `A[?*+]`, `A B`, `A | B`
+
+
+=== Traverse Return Tables
+
+On success, xref:p_string_proc.adoc#_pstringproc_traverse[pStringProc.traverse] returns a table of values that were fetched while processing the string:
+
+* Quoted string literals: appended with the quotes stripped.
+
+* Group (Parentheses): If successful, group results are appended to this level's results table.
+
+* Words: results are based on the symbol lookup table.
+
+On failure, it returns `false`.
+
+
+=== Symbols
+
+The symbols lookup table controls how words are processed. The keys in this table match words in the production table, while the values determine the evaluation status of words. The values control what is included in the return table.
+
+Values can be any of the following:
+
+* `false`/`nil`: failed to process the word.
+
+* `true`: success; add nothing to the results table.
+
+* String, Number: success; add the value to the results table.
+
+* Table: success; the table's array contents are pasted into the results table.
+
+* Function:
+
+** Takes `W` (the xref:p_string_walk.adoc#_walkers[walker]) as its only argument.
+
+** Returns `false`/`nil`, `true`, a string, a number, or a table.
+
+When a function returns a table, the second return value being `true` will cause the table itself to be added rather than its array contents. The second return value has no significance in other cases.
+
+The function is expected to advance the walker's position.
+
+Be careful about function side effects, as the return table's contents may be erased or go unused if an expression fails. Also, it's an error for the traversal function to encounter a word that is not populated in the symbols table.
+
+
+=== Infinite Loops
+
+The parser can be tricked into reading the same chunks over and over. For example, the following production will loop endlessly (assume that 'never' returns `nil` every time):
+
+....
+(never*)*
+....
+
+Zero matches of 'never' is OK, so the outer group is continuously successful.
+
+Empty string literals (`''`, `""`) will not advance the walker position, so they will match endlessly when paired with `*` or `+`.
+
+To halt infinite loops, assign a large (but not too large) number to `pStringProc._iter` before every top-level call to the parser. If the loop count exceeds this number, the parser will raise an error.
+
+
+=== No Sets Or Ranges
+
+__pStringProc__ does not support matching characters by ranges, like `[#x20-#xd7ff]`. Lua's built-in string engine works on characters as bytes, so it's not easy to match ranges of Unicode code points greater than U+007F, which can be two, three or four bytes in size when encoded as UTF-8.
+
+
+=== No 'Except' Token
+
+There is no *except* token (`-`). The XML spec's _except_ is mostly used to describe forbidden substrings within larger runs of text.
+
+
+include::snippets/footer.adoc[]

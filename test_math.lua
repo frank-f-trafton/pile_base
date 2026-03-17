@@ -1,5 +1,5 @@
--- Test: pile_math.lua
--- VERSION: 2.101
+-- Test: p_math.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,7 +10,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pMath = require(PATH .. "pile_math")
+local pMath = require(PATH .. "p_math")
 
 
 local cli_verbosity
@@ -24,7 +24,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE Math", cli_verbosity)
+local self = errTest.new("pMath", cli_verbosity)
 
 
 self:registerFunction("pMath.clamp", pMath.clamp)

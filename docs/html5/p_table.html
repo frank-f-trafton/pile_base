@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pTable</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pTable</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pTable</em> provides some helper functions for Lua tables.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a>, <a href="p_name.html">pName</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pTable</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_table"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">lut_foo</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">newLut</span><span class="p">({</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">})</span>
+<span class="c1">--&gt; {foo=true, bar=true, baz=true}</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_ptable_arrayhasduplicatevalues">pTable.arrayHasDuplicateValues</a></li>
+<li><a href="#_ptable_assertresolve">pTable.assertResolve</a></li>
+<li><a href="#_ptable_assignifnil">pTable.assignIfNil</a></li>
+<li><a href="#_ptable_assignifnilorfalse">pTable.assignIfNilOrFalse</a></li>
+<li><a href="#_ptable_clearall">pTable.clearAll</a></li>
+<li><a href="#_ptable_cleararray">pTable.clearArray</a></li>
+<li><a href="#_ptable_copy">pTable.copy</a></li>
+<li><a href="#_ptable_copyarray">pTable.copyArray</a></li>
+<li><a href="#_ptable_deepcopy">pTable.deepCopy</a></li>
+<li><a href="#_ptable_deeppatch">pTable.deepPatch</a></li>
+<li><a href="#_ptable_hasanyduplicatetables">pTable.hasAnyDuplicateTables</a></li>
+<li><a href="#_ptable_invertkeysandvalues">pTable.invertKeysAndValues</a></li>
+<li><a href="#_ptable_isarray">pTable.isArray</a></li>
+<li><a href="#_ptable_isarrayonly">pTable.isArrayOnly</a></li>
+<li><a href="#_ptable_isarrayonlyzero">pTable.isArrayOnlyZero</a></li>
+<li><a href="#_ptable_isvalueinarray">pTable.isValueInArray</a></li>
+<li><a href="#_ptable_makearrayfromkeys">pTable.makeArrayFromKeys</a></li>
+<li><a href="#_ptable_moveelement">pTable.moveElement</a></li>
+<li><a href="#_ptable_mt_restrict">pTable.mt_restrict</a></li>
+<li><a href="#_ptable_newlut">pTable.newLut</a></li>
+<li><a href="#_ptable_newlutv">pTable.newLutV</a></li>
+<li><a href="#_ptable_newnamedmap">pTable.newNamedMap</a></li>
+<li><a href="#_ptable_newnamedmapv">pTable.newNamedMapV</a></li>
+<li><a href="#_ptable_patch">pTable.patch</a></li>
+<li><a href="#_ptable_removevaluefromarray">pTable.removeValueFromArray</a></li>
+<li><a href="#_ptable_resolve">pTable.resolve</a></li>
+<li><a href="#_ptable_reversearray">pTable.reverseArray</a></li>
+<li><a href="#_ptable_safetableconcat">pTable.safeTableConcat</a></li>
+<li><a href="#_ptable_set">pTable.set</a></li>
+<li><a href="#_ptable_setdouble">pTable.setDouble</a></li>
+<li><a href="#_ptable_swapelements">pTable.swapElements</a></li>
+<li><a href="#_ptable_updatedouble">pTable.updateDouble</a></li>
+<li><a href="#_ptable_wrap1array">pTable.wrap1Array</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_namedmaps">NamedMaps</a></li>
+<li><a href="#_double_variables">Double Variables</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_ptable_arrayhasduplicatevalues">pTable.arrayHasDuplicateValues</h3>
+<div class="paragraph">
+<p>Checks if the array part of a table contains duplicate values.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">dupe_i</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">arrayHasDuplicateValues</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The array to check.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> If found, two indices of the duplicated element. Otherwise, <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_assertresolve">pTable.assertResolve</h3>
+<div class="paragraph">
+<p>A wrapper for <a href="#_ptable_resolve">pTable.resolve</a> which raises an error if no value was found.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">value</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">assertResolve</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="p">[</span><span class="n">raw</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The starting table.</p>
+</li>
+<li>
+<p><code>str</code>: The string of delimited fields to check. Cannot be an empty string.</p>
+</li>
+<li>
+<p><code>[raw]</code>: When true, uses <a href="https://www.lua.org/manual/5.1/manual.html#pdf-rawget"><strong>rawget</strong></a> to read table fields (thus ignoring the mechanisms of Lua metatables).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The resolved value, followed by the count of delimited fields.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_assignifnil">pTable.assignIfNil</h3>
+<div class="paragraph">
+<p>If <code>table[key]</code> is <code>nil</code>, assigns the first non-<code>nil</code> value from a vararg list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">assignIfNil</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The target table.</p>
+</li>
+<li>
+<p><code>k</code>: The target key.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: A list of values to consider.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">t</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">pTable</span><span class="p">.</span><span class="n">assignIfNil</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span> <span class="c1">-- (No change)</span>
+<span class="n">pTable</span><span class="p">.</span><span class="n">assignIfNil</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"zoop"</span><span class="p">)</span> <span class="c1">--&gt; t[foo] = "bar"</span>
+<span class="n">pTable</span><span class="p">.</span><span class="n">assignIfNil</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span> <span class="c1">--&gt; (No change: t.foo is no longer nil.)</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_assignifnilorfalse">pTable.assignIfNilOrFalse</h3>
+<div class="paragraph">
+<p>If <code>table[key]</code> is <code>nil</code> or <code>false</code>, assigns the first non-<code>nil</code>, non-<code>false</code> value from a vararg list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">assignIfNilOrFalse</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The target table.</p>
+</li>
+<li>
+<p><code>k</code>: The target key.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: A list of values to consider.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="n">foo</span><span class="o">=</span><span class="kc">false</span><span class="p">}</span>
+<span class="n">pTable</span><span class="p">.</span><span class="n">assignIfNil</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span> <span class="c1">-- (No change)</span>
+<span class="n">pTable</span><span class="p">.</span><span class="n">assignIfNil</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="c1">--&gt; t[foo] = true</span>
+<span class="n">pTable</span><span class="p">.</span><span class="n">assignIfNil</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span> <span class="c1">-- (No change: t.foo is no longer false/nil)</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_clearall">pTable.clearAll</h3>
+<div class="paragraph">
+<p>Erases all keys in a table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">clearAll</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table to clear.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>When LuaJIT is detected, <a href="https://luajit.org/extensions.html#table_clear"><strong>table.clear</strong></a> is substituted for this function.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_cleararray">pTable.clearArray</h3>
+<div class="paragraph">
+<p>Erases a table&#8217;s array indices.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">clearArray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table/array to clear.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_4" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Use this if you want to delete <em>only</em> array elements.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_copy">pTable.copy</h3>
+<div class="paragraph">
+<p>Makes a "shallow" copy of a table. Sub-tables are copied as references.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">copied</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table to copy.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The copied table.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_copyarray">pTable.copyArray</h3>
+<div class="paragraph">
+<p>Makes a copy of a table&#8217;s array elements.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">copied</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">copyArray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The array to copy.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The copied array.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_deepcopy">pTable.deepCopy</h3>
+<div class="paragraph">
+<p>Makes a recursive "deep" copy of a table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">copied</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">deepCopy</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table to deep-copy.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The copied table.</p>
+</div>
+<h4 id="_notes_5" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>In Lua, there are many ways to copy a table, and no single way covers all use cases. This function is a pretty narrow implementation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It does not handle tables as keys: <code>t = {[{true}] = "foo"}</code></p>
+</li>
+<li>
+<p>It does not handle loops ('A' referring to 'B' referring back to 'A'); the Lua stack will overflow.</p>
+</li>
+<li>
+<p>Multiple appearances of the same table in the source will generate unique tables in the copy.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_deeppatch">pTable.deepPatch</h3>
+<div class="paragraph">
+<p>Given two tables, recursively copies values from the second table to the first. The procedure runs on all table values in the patch table. If the destination table is lacking a sub-table that is present in the patch table, then a new table will be assigned.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">deepPatch</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The table to be modified.</p>
+</li>
+<li>
+<p><code>b</code>: The table with patch values.</p>
+</li>
+<li>
+<p><code>overwrite</code>: When <code>true</code>, existing values in <code>a</code> are overwritten by those in <code>b</code> with matching keys. When <code>false</code>, existing values in <code>a</code> (including <code>false</code>) are preserved.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_6" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Limitations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>All tables involved <em>must</em> be unique.</p>
+</li>
+<li>
+<p>Tables as keys are not supported.</p>
+</li>
+<li>
+<p>This function can modify, but not replace existing tables in the destination.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_hasanyduplicatetables">pTable.hasAnyDuplicateTables</h3>
+<div class="paragraph">
+<p>Recursively checks a list of tables for duplicate table references.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">t</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">hasAnyDuplicateTables</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&#8230;&#8203;</code>: A vararg list of tables to check.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The first duplicate table encountered, or <code>nil</code> if there are no duplicates.</p>
+</div>
+<h4 id="_notes_7" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Does not check metatables.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_invertkeysandvalues">pTable.invertKeysAndValues</h3>
+<div class="paragraph">
+<p>Makes a inverted copy (keys and values swapped) of a table. The table must have unique values for all keys.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">inverted</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">invertKeysAndValues</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table to invert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The inverted table.</p>
+</div>
+<h4 id="_notes_8" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The function will raise an error if duplicate values are encountered (<code>{a=1, b=1}</code>).</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_isarray">pTable.isArray</h3>
+<div class="paragraph">
+<p>Checks if a table is an array: that there are no gaps from index 1 to the highest integer key.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">isArray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the table has contiguous array indices, <code>false</code> otherwise.</p>
+</div>
+<h4 id="_notes_9" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Tables with <em>no</em> array indices are also considered OK.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_isarrayonly">pTable.isArrayOnly</h3>
+<div class="paragraph">
+<p>Checks if a table is an array only: that if there are any keys, they are <em>only</em> array indices from 1 to the highest integer key.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">isArrayOnly</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table to check.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the table contains only array indices, <code>false</code> otherwise.</p>
+</div>
+<h4 id="_notes_10" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Completely empty tables are also considered OK.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_isarrayonlyzero">pTable.isArrayOnlyZero</h3>
+<div class="paragraph">
+<p>Like <a href="#_ptable_isarrayonly">pTable.isArrayOnly</a>, but carves out an exception for index zero.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">isArrayOnlyZero</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table to check.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the table contains only array indices (and optionally index 0), <code>false</code> otherwise.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_isvalueinarray">pTable.isValueInArray</h3>
+<div class="paragraph">
+<p>Checks if a value is in an array.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">index</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">isValueInArray</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The array to check.</p>
+</li>
+<li>
+<p><code>v</code>: The value.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(1)</em> The starting index.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The index of the value when found, or <code>nil</code> if it was not found.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_makearrayfromkeys">pTable.makeArrayFromKeys</h3>
+<div class="paragraph">
+<p>Makes an array from a table&#8217;s keys.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">array</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">makeArrayFromKeys</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An array of <code>t</code>'s keys.</p>
+</div>
+<h4 id="_notes_11" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The array order is undefined.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_moveelement">pTable.moveElement</h3>
+<div class="paragraph">
+<p>Moves a table array element from one index to another.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">moveElement</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The array.</p>
+</li>
+<li>
+<p><code>i</code>: The element&#8217;s current index.</p>
+</li>
+<li>
+<p><code>j</code>: The destination index.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_12" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Both <code>t[i]</code> and <code>t[j]</code> must be non-<code>nil</code>.</p>
+</div>
+<div class="paragraph">
+<p>Performance may be poor when moving many low indices in extremely large arrays.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_mt_restrict">pTable.mt_restrict</h3>
+<div class="paragraph">
+<p>A metatable that raises an error when accessing or assigning unpopulated fields in a table.</p>
+</div>
+<h4 id="_notes_13" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">my_table</span> <span class="o">=</span> <span class="p">{</span><span class="n">foo</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="mi">2</span><span class="p">}</span>
+<span class="nb">setmetatable</span><span class="p">(</span><span class="n">my_table</span><span class="p">,</span> <span class="n">pTable</span><span class="p">.</span><span class="n">mt_restrict</span><span class="p">)</span>
+<span class="n">my_table</span><span class="p">.</span><span class="n">foo</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">my_table</span><span class="p">.</span><span class="n">zut</span> <span class="o">=</span> <span class="mi">4</span> <span class="c1">-- Error</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This metatable is similar in purpose to the <a href="https://www.lua.org/extras/"><strong>strict.lua</strong></a> snippet, but it has enough differences in behavior that it cannot be treated as a drop-in replacement.</p>
+</div>
+<div class="paragraph">
+<p><code>mt_restrict</code> cannot do anything about the usage of <a href="https://www.lua.org/manual/5.1/manual.html#pdf-rawset"><strong>rawset</strong></a> or <a href="https://www.lua.org/manual/5.1/manual.html#pdf-rawget"><strong>rawget</strong></a>.</p>
+</div>
+<div class="paragraph">
+<p>The behavior of <a href="https://www.lua.org/manual/5.1/manual.html#pdf-table.insert"><strong>table.insert</strong></a> changed in Lua 5.3, as the langauge designers updated table functions to respect metamethods.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_newlut">pTable.newLut</h3>
+<div class="paragraph">
+<p>Makes a lookup table from an array.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">newLut</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The array to convert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The converted lookup table.</p>
+</div>
+<h4 id="_notes_14" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">array</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"one"</span><span class="p">,</span> <span class="s2">"two"</span><span class="p">,</span> <span class="s2">"three"</span><span class="p">}</span>
+<span class="kd">local</span> <span class="n">hash</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">newLut</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+<span class="c1">--&gt; {one=true, two=true, three=true}</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_newlutv">pTable.newLutV</h3>
+<div class="paragraph">
+<p>Makes a lookup table from a vararg list.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">newLutV</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&#8230;&#8203;</code>: The vararg list to use as keys.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The converted lookup table.</p>
+</div>
+<h4 id="_notes_15" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">hash</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">newLutV</span><span class="p">(</span><span class="s2">"four"</span><span class="p">,</span> <span class="s2">"five"</span><span class="p">,</span> <span class="s2">"six"</span><span class="p">)</span>
+<span class="c1">--&gt; {four=true, five=true, six=true}</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_newnamedmap">pTable.newNamedMap</h3>
+<div class="paragraph">
+<p>Creates a <a href="#_namedmaps">NamedMap</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">n_map</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">newNamedMap</span><span class="p">([</span><span class="n">name</span><span class="p">],</span> <span class="p">[</span><span class="n">t</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[name]</code>: The NamedMap&#8217;s name.</p>
+</li>
+<li>
+<p><code>[t]</code>: An optional, pre-existing table. When not provided, a new table will be created.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The table.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_newnamedmapv">pTable.newNamedMapV</h3>
+<div class="paragraph">
+<p>Creates a <a href="#_namedmaps">NamedMap</a>. Like <a href="#_ptable_newnamedmap">pTable.newNamedMap</a>, but uses a vararg list to populate keys. All values in the returned table are <code>true</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">n_map</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">newNamedMapV</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>name</code>: <em>("NamedMap")</em> The NamedMap&#8217;s name.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: A vararg list of values to use as keys.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The NamedMap table.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_patch">pTable.patch</h3>
+<div class="paragraph">
+<p>Given two tables, copies values from the second table to the first.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">patch</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The table to be modified.</p>
+</li>
+<li>
+<p><code>b</code>: The table with patch values.</p>
+</li>
+<li>
+<p><code>overwrite</code>: When <code>true</code>, existing values in <code>a</code> are overwritten by those in <code>b</code> with matching keys. When <code>false</code>, existing values in <code>a</code> (including <code>false</code>) are preserved.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A count of how many fields were overwritten (or if <code>overwrite</code> is false, then how many fields were <em>not</em> overwritten).</p>
+</div>
+<h4 id="_notes_16" class="discrete">Notes</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Sub-tables within <code>b</code> are copied by reference to <code>a</code>.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_removevaluefromarray">pTable.removeValueFromArray</h3>
+<div class="paragraph">
+<p>Removes elements from an array that are equal to a particular value, iterating backwards from the last entry.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">removeValueFromArray</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table to scan.</p>
+</li>
+<li>
+<p><code>v</code>: The value to be removed.</p>
+</li>
+<li>
+<p><code>[n]</code>: <em>(math.huge)</em> How many elements to remove in this call.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The number of elements removed.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_resolve">pTable.resolve</h3>
+<div class="paragraph">
+<p>Looks up a value in a nested table structure, by following a string of fields delimited by slashes (<code>/</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">value</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="p">[</span><span class="n">raw</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The starting table.</p>
+</li>
+<li>
+<p><code>str</code>: The string of delimited fields to check.</p>
+</li>
+<li>
+<p><code>[raw]</code>: When true, uses <a href="https://www.lua.org/manual/5.1/manual.html#pdf-rawget"><strong>rawget</strong></a> to read table fields (thus ignoring the mechanisms of Lua metatables).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> 1) Either the resolved value or <code>nil</code>, followed by 2) the count of delimited fields when the search stopped.</p>
+</div>
+<h4 id="_notes_17" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The call <code>local v = pTable.resolve(tbl, "foo/bar")</code> is analogous to <code>local v = tbl.foo.bar</code>.</p>
+</div>
+<div class="paragraph">
+<p>The function will raise an error if <code>t</code>'s starting value is not a table, or if any of the fields are empty (like <code>foo//bar</code>).</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_reversearray">pTable.reverseArray</h3>
+<div class="paragraph">
+<p>Reverses the contents of an array.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">reverseArray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The array to reverse.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_safetableconcat">pTable.safeTableConcat</h3>
+<div class="paragraph">
+<p>A wrapper for <a href="https://www.lua.org/manual/5.1/manual.html#pdf-table.concat"><strong>table.concat</strong></a> which duplicates the table and converts its values to strings. (The concat function normally raises an error if an element cannot be implicitly converted to string.)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">str</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">safeTableConcat</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="p">[</span><span class="n">sep</span><span class="p">],</span> <span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">[</span><span class="n">j</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The input table.</p>
+</li>
+<li>
+<p><code>[sep]</code>: An optional separator string, like <code>", "</code>.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(1)</em> The first index.</p>
+</li>
+<li>
+<p><code>[j]</code>: <em>(#t)</em> The last index.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The concatenated string.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_set">pTable.set</h3>
+<div class="paragraph">
+<p>Assigns a value to a table field.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">changed</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table.</p>
+</li>
+<li>
+<p><code>f</code>: The field in the table.</p>
+</li>
+<li>
+<p><code>v</code>: The value to assign.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the value changed, <code>false</code> otherwise.</p>
+</div>
+<h4 id="_notes_18" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This function can be used to shorten some comparisons to previous values. It should be avoided in busy codepaths.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- Without</span>
+<span class="kd">local</span> <span class="n">old_x</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">x</span>
+<span class="n">self</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">x</span> <span class="o">%</span> <span class="mi">2</span>
+<span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="n">x</span> <span class="o">~=</span> <span class="n">old_x</span> <span class="k">then</span>
+	<span class="n">self</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="c1">-- With</span>
+<span class="k">if</span> <span class="n">pTable</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="k">then</span>
+	<span class="n">self</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">end</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_setdouble">pTable.setDouble</h3>
+<div class="paragraph">
+<p>Assigns a <a href="#_double_variables">double variable</a>, falling back to a default value when <code>false</code>/<code>nil</code> is provided.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">changed</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">setDouble</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table.</p>
+</li>
+<li>
+<p><code>setting</code>: The user-facing field, which will be assigned <code>v</code>.</p>
+</li>
+<li>
+<p><code>field</code>: The internal field, which will be assigned <code>v</code> or <code>default</code>.</p>
+</li>
+<li>
+<p><code>v</code>: The value to assign, when not <code>false</code>/<code>nil</code>.</p>
+</li>
+<li>
+<p><code>default:</code> The default value to use if <code>v</code> is <code>false</code>/<code>nil</code>. (This default value cannot itself be <code>false</code>/<code>nil</code>.)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the field value was updated, <code>false</code> otherwise.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_swapelements">pTable.swapElements</h3>
+<div class="paragraph">
+<p>Swaps two array elements in a table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">swapElements</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The array.</p>
+</li>
+<li>
+<p><code>i</code>: The first index.</p>
+</li>
+<li>
+<p><code>j</code>: The second index.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_19" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Both <code>t[i]</code> and <code>t[j]</code> must be non-<code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_updatedouble">pTable.updateDouble</h3>
+<div class="paragraph">
+<p>Updates a <a href="#_double_variables">double variable</a>'s internal value, if the user-facing value is <code>false</code>/<code>nil</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">pTable</span><span class="p">.</span><span class="n">updateDouble</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table.</p>
+</li>
+<li>
+<p><code>setting</code>: The user-facing field, which might be <code>false</code>/<code>nil</code>.</p>
+</li>
+<li>
+<p><code>field</code>: The internal field, which might be assigned <code>default</code>.</p>
+</li>
+<li>
+<p><code>default</code>: The value to assign to <code>t[field]</code>, if <code>t[setting]</code> is <code>false</code>/<code>nil</code>.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_20" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>To be used when the default value itself may have changed.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ptable_wrap1array">pTable.wrap1Array</h3>
+<div class="paragraph">
+<p>Returns an element from an array at position <code>n</code>, wrapped to the array&#8217;s length.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">element</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">wrap1Array</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>t</code>: The table to access.</p>
+</li>
+<li>
+<p><code>n</code>: The index to wrap.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The element at the wrapped position.</p>
+</div>
+<h4 id="_notes_21" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The behavior is undefined when the array length is zero.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_namedmaps">NamedMaps</h3>
+<div class="paragraph">
+<p>A NamedMap is an <a href="https://en.wikipedia.org/wiki/Enumerated_type"><strong>enum</strong></a>-like table with a name registered in the <a href="p_name.html">pName</a> module.</p>
+</div>
+<div class="paragraph">
+<p>A NamedMap&#8217;s name can be retrieved with <a href="p_name.html#_pname_safeget">pName.safeGet</a>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">nm_obj_side</span> <span class="o">=</span> <span class="n">pTable</span><span class="p">.</span><span class="n">newNamedMap</span><span class="p">(</span><span class="s2">"ObjectSide"</span><span class="p">,</span> <span class="p">{</span><span class="n">left</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">})</span>
+
+<span class="kd">local</span> <span class="k">function</span> <span class="nf">checkNamedMap</span><span class="p">(</span><span class="n">n_map</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">n_map</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">then</span>
+		<span class="nb">error</span><span class="p">(</span><span class="s2">"invalid "</span> <span class="o">..</span> <span class="n">pName</span><span class="p">.</span><span class="n">safeGet</span><span class="p">(</span><span class="n">n_map</span><span class="p">,</span> <span class="s2">"NamedMap"</span><span class="p">)</span> <span class="o">..</span> <span class="s2">": "</span> <span class="o">..</span> <span class="nb">tostring</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+	<span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">checkNamedMap</span><span class="p">(</span><span class="n">nm_obj_side</span><span class="p">,</span> <span class="s2">"sideways"</span><span class="p">)</span>
+<span class="c1">--&gt; invalid ObjectSide: sideways</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_double_variables">Double Variables</h3>
+<div class="paragraph">
+<p>The double variable functions work on two copies of a setting in a table. The first, user-facing copy may be <code>false</code>/<code>nil</code> to indicate that a default value should be used. The second, internal copy mirrors the first, except that a default value is substituted for <code>false</code>/<code>nil</code>.</p>
+</div>
+<div class="paragraph">
+<p>This is useful when the default value can change, perhaps as a result of loading new theme data. For example, consider a text widget that can be aligned left, right, or center:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>'self.S_align' can be "left", "center", "right", or false
+'self.align' *must* be "left", "center", or "right".</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The widget&#8217;s drawing code would read <code>self.align</code>, while the interface system would read <code>self.S_align</code>.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-16 21:39:41 -0300
+</div>
+</div>
+</body>
+</html>

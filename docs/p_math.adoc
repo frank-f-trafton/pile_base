@@ -1,0 +1,264 @@
+= PILE Base: pMath
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+:toclevels: 5
+
+include::snippets/header.adoc[]
+
+
+__pMath__ is a small set of math functions.
+
+Dependencies: None.
+
+[source,lua]
+----
+local pMath = require("p_math")
+
+print(pMath.clamp(100, 1, 50)) --> 50
+----
+
+
+toc::[]
+
+
+== API
+
+
+=== pMath.clamp
+
+Clamps a number to a range.
+
+[source,lua]
+----
+local clamped = pMath.clamp(n, a, b)
+----
+
+* `n`: The number to clamp.
+
+* `a`: The minimum value.
+
+* `b`: The maximum value.
+
+**Returns:** The clamped value.
+
+
+[discrete]
+==== Notes
+
+If the minimum is greater than the maximum, then this function will return the minimum.
+
+'''
+
+
+=== pMath.dist
+
+Gets the distance between two points.
+
+[source,lua]
+----
+local dist = pMath.dist(x1, y1, x2, y2)
+----
+
+* `x1`, `y1`: The first point.
+
+* `x2`, `y2`: The second point.
+
+**Returns:** The distance.
+
+
+[discrete]
+==== Notes
+
+Taken from https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumedistancex1-y1-x2-y2--squared[**lume**].
+
+'''
+
+
+=== pMath.distSq
+
+Gets the squared distance between two points.
+
+[source,lua]
+----
+local dist_sq = pMath.distSq(x1, y1, x2, y2)
+----
+
+* `x1`, `y1`: The first point.
+
+* `x2`, `y2`: The second point.
+
+**Returns:** The squared distance.
+
+
+[discrete]
+==== Notes
+
+Taken from https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumedistancex1-y1-x2-y2--squared[**lume**].
+
+This function skips xref:p_math.adoc#_pmath_dist[pMath.dist]'s call to https://www.lua.org/manual/5.1/manual.html#pdf-math.sqrt[**math.sqrt**]. It may be faster when comparing the distances of two sets of points.
+
+'''
+
+
+=== pMath.lerp
+
+Gets a value between two numbers, using https://en.wikipedia.org/wiki/Linear_interpolation[**linear interpolation**].
+
+[source,lua]
+----
+local lerped = pMath.lerp(a, b, v)
+----
+
+* `a`: The first point.
+
+* `b`: The second point.
+
+* `v`: The input value, between 0.0 and 1.0.
+
+**Returns:** The interpolated value.
+
+
+[discrete]
+==== Notes
+
+This function does not clamp the input value.
+
+'''
+
+
+=== pMath.roundInf
+
+Rounds a number toward infinity. `0.5` rounds to `1.0`; `-0.5` rounds to `-1.0`.
+
+[source,lua]
+----
+local rounded = pMath.roundInf(n)
+----
+
+* `n`: The number to round.
+
+**Returns:** The rounded number.
+
+
+[discrete]
+==== Notes
+
+See xref:p_math.adoc#_rounding_error[Module Notes: Rounding Error]
+
+'''
+
+
+=== pMath.roundInfIncrement
+
+Rounds a number toward infinity. Like xref:p_math.adoc#_pmath_roundinf[pMath.roundInf], but with support for increments other than 1.
+
+[source,lua]
+----
+local rounded = roundInfIncrement(n, incr)
+----
+
+* `n`: The number to round.
+
+* `incr`: The increment.
+
+**Returns:** The rounded number.
+
+
+[discrete]
+==== Notes
+
+Taken from https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumeroundx--increment[**lume**].
+
+See xref:p_math.adoc#_rounding_error[Module Notes: Rounding Error]
+
+'''
+
+
+=== pMath.sign
+
+Gets the sign of a number.
+
+[source,lua]
+----
+local s = pMath.sign(n)
+----
+
+* `n`: The number to check.
+
+**Returns:** -1 if the number is less than zero, 1 if the number is greater than zero, or 0 if the number is zero.
+
+'''
+
+
+=== pMath.signN
+
+Gets the sign of a number, treating zero as negative.
+
+[source,lua]
+----
+local sign = pMath.signN(n)
+----
+
+* `n`: The number to check.
+
+**Returns:** -1 if the number is zero or less, 1 if the number is greater than zero.
+
+'''
+
+
+=== pMath.signP
+
+Gets the sign of a number, treating zero as positive.
+
+[source,lua]
+----
+local s = pMath.signP(n)
+----
+
+* `n`: The number to check.
+
+**Returns:** -1 if the number is less than zero, 1 if the number is zero or greater.
+
+'''
+
+
+=== pMath.wrap1
+
+Wraps a one-indexed number using the modulo operator.
+
+[source,lua]
+----
+local wrapped = pMath.wrap1(n, max)
+----
+
+* `n`: The number to wrap.
+
+* `max`: The maximum to use with modulo. Should be 1 or greater.
+
+**Returns:** The wrapped number.
+
+
+[discrete]
+==== Notes
+
+Intended for Lua array indices.
+
+A `max` of zero will produce NaN.
+
+
+== Module Notes
+
+
+=== Rounding Error
+
+xref:p_math.adoc#_pmath_roundinf[pMath.roundInf] and xref:p_math.adoc#_pmath_roundinfincrement[pMath.roundInfIncrement] are susceptible to floating point rounding error when the input is extremely close to, but not exactly 0.5 or -0.5:
+
+[source,lua]
+----
+print(pMath.roundInf(0.49999999999999994)) --> 1
+print(pMath.roundInf(-0.49999999999999994)) --> -1
+----
+
+
+include::snippets/footer.adoc[]

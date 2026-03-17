@@ -1,5 +1,5 @@
--- Test: pile_utf8.lua
--- VERSION: 2.101
+-- Test: p_utf8.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -9,11 +9,11 @@ local strict = require(PATH .. "test.strict")
 
 
 local errTest = require(PATH .. "test.err_test")
-local pUTF8 = require(PATH .. "pile_utf8")
+local pUtf8 = require(PATH .. "p_utf8")
 
 
 local function resetOpts()
-	pUTF8.setCheckSurrogates(true)
+	pUtf8.setCheckSurrogates(true)
 end
 
 
@@ -75,7 +75,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("pUTF8", cli_verbosity)
+local self = errTest.new("pUtf8", cli_verbosity)
 
 
 --[[
@@ -83,29 +83,29 @@ Functions affected by options:
 
 | Function                   | check_surrogates |
 +----------------------------+------------------+
-| pUTF8.check()              | Yes              |
-| pUTF8.codeFromString()     | Yes              |
-| pUTF8.codes()              | Yes              |
-| pUTF8.concatCodes()        | Yes              |
-| pUTF8.reverse()            | Yes              |
-| pUTF8.step()               | No               |
-| pUTF8.stringFromCode()     | Yes              |
+| pUtf8.check()              | Yes              |
+| pUtf8.codeFromString()     | Yes              |
+| pUtf8.codes()              | Yes              |
+| pUtf8.concatCodes()        | Yes              |
+| pUtf8.reverse()            | Yes              |
+| pUtf8.step()               | No               |
+| pUtf8.stringFromCode()     | Yes              |
 --]]
 
 
 -- [===[
-self:registerFunction("pUTF8.codeFromString", pUTF8.codeFromString)
+self:registerFunction("pUtf8.codeFromString", pUtf8.codeFromString)
 
-self:registerJob("pUTF8.codeFromString", function(self)
+self:registerJob("pUtf8.codeFromString", function(self)
 	resetOpts()
 
-	self:expectLuaError("arg #1 bad type", pUTF8.codeFromString, nil, 1)
-	self:expectLuaError("arg #1 string too short", pUTF8.codeFromString, "", 1)
+	self:expectLuaError("arg #1 bad type", pUtf8.codeFromString, nil, 1)
+	self:expectLuaError("arg #1 string too short", pUtf8.codeFromString, "", 1)
 
-	self:expectLuaError("arg #2 bad type", pUTF8.codeFromString, "foobar", false)
-	self:expectLuaError("arg #2 too low", pUTF8.codeFromString, "12345", 0)
-	self:expectLuaError("arg #2 too high", pUTF8.codeFromString, "12345", 99)
-	self:expectLuaError("arg #2 not an integer", pUTF8.codeFromString, "12345", 0.333)
+	self:expectLuaError("arg #2 bad type", pUtf8.codeFromString, "foobar", false)
+	self:expectLuaError("arg #2 too low", pUtf8.codeFromString, "12345", 0)
+	self:expectLuaError("arg #2 too high", pUtf8.codeFromString, "12345", 99)
+	self:expectLuaError("arg #2 not an integer", pUtf8.codeFromString, "12345", 0.333)
 
 	local test_str = "@Æㇹ𐅀"
 
@@ -114,28 +114,28 @@ self:registerJob("pUTF8.codeFromString", function(self)
 		local i = 1
 		local code, u8_str
 
-		code, u8_str = pUTF8.codeFromString(test_str, i)
+		code, u8_str = pUtf8.codeFromString(test_str, i)
 		self:print(4, code, u8_str)
 		self:isEqual(code, 0x40)
 		self:isEqual(u8_str, "@")
 		i = i + #u8_str
 		self:lf(4)
 
-		code, u8_str = pUTF8.codeFromString(test_str, i)
+		code, u8_str = pUtf8.codeFromString(test_str, i)
 		self:print(4, code, u8_str)
 		self:isEqual(code, 0xc6)
 		self:isEqual(u8_str, "Æ")
 		i = i + #u8_str
 		self:lf(4)
 
-		code, u8_str = pUTF8.codeFromString(test_str, i)
+		code, u8_str = pUtf8.codeFromString(test_str, i)
 		self:print(4, code, u8_str)
 		self:isEqual(code, 0x31f9)
 		self:isEqual(u8_str, "ㇹ")
 		i = i + #u8_str
 		self:lf(4)
 
-		code, u8_str = pUTF8.codeFromString(test_str, i)
+		code, u8_str = pUtf8.codeFromString(test_str, i)
 		self:print(4, code, u8_str)
 		self:isEqual(code, 0x10140)
 		self:isEqual(u8_str, "𐅀")
@@ -145,7 +145,7 @@ self:registerJob("pUTF8.codeFromString", function(self)
 
 	do
 		self:print(3, "[-] Pass in bad data.")
-		local code, u8_str = pUTF8.codeFromString(hex(0xf0, 0x80, 0xe0), 1)
+		local code, u8_str = pUtf8.codeFromString(hex(0xf0, 0x80, 0xe0), 1)
 		self:print(4, code, u8_str)
 		self:isEvalFalse(code)
 		self:lf(4)
@@ -154,7 +154,7 @@ self:registerJob("pUTF8.codeFromString", function(self)
 
 	do
 		self:print(3, "[-] Test a bad byte offset.")
-		local code, u8_str = pUTF8.codeFromString(test_str, 3)
+		local code, u8_str = pUtf8.codeFromString(test_str, 3)
 		self:print(4, code, u8_str)
 		self:isEvalFalse(code)
 		self:lf(4)
@@ -163,7 +163,7 @@ self:registerJob("pUTF8.codeFromString", function(self)
 	do
 		self:print(3, "[-] input string contains Nul as continuation byte (\\0)")
 		local bad_string = "aaaa" .. hex(0xc3, 0x0) .. "aaaa" -- corrupted Æ. should be 0xc3, 0x86
-		local code, u8_str = pUTF8.codeFromString(bad_string, 5)
+		local code, u8_str = pUtf8.codeFromString(bad_string, 5)
 		self:print(4, code, u8_str)
 		self:isEvalFalse(code)
 		self:lf(4)
@@ -172,7 +172,7 @@ self:registerJob("pUTF8.codeFromString", function(self)
 	do
 		self:print(3, "[+] input string with an acceptable use of Nul (\\0)")
 		local ok_nul = "aaaa\000aaaa"
-		local code, u8_str = pUTF8.codeFromString(ok_nul, 5)
+		local code, u8_str = pUtf8.codeFromString(ok_nul, 5)
 		self:print(4, code, u8_str)
 		self:isEqual(code, 0)
 		self:lf(4)
@@ -181,7 +181,7 @@ self:registerJob("pUTF8.codeFromString", function(self)
 	do
 		self:print(3, "[-] invalid surrogate pair")
 		resetOpts()
-		local code, u8_str = pUTF8.codeFromString(surr_0xd800)
+		local code, u8_str = pUtf8.codeFromString(surr_0xd800)
 		self:print(4, code, u8_str)
 		self:isEvalFalse(code)
 		self:lf(4)
@@ -189,8 +189,8 @@ self:registerJob("pUTF8.codeFromString", function(self)
 
 	do
 		self:print(3, "[+] with 'check_surrogates' disabled")
-		pUTF8.setCheckSurrogates(false)
-		local code, u8_str = pUTF8.codeFromString(surr_0xd800)
+		pUtf8.setCheckSurrogates(false)
+		local code, u8_str = pUtf8.codeFromString(surr_0xd800)
 		self:print(4, code, u8_str)
 		self:isEvalTrue(code)
 		resetOpts()
@@ -202,17 +202,17 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8.step", pUTF8.step)
+self:registerFunction("pUtf8.step", pUtf8.step)
 
-self:registerJob("pUTF8.step", function(self)
+self:registerJob("pUtf8.step", function(self)
 	resetOpts()
 
-	self:expectLuaError("arg #1 bad type", pUTF8.step, nil, 1)
+	self:expectLuaError("arg #1 bad type", pUtf8.step, nil, 1)
 
-	self:expectLuaError("arg #2 bad type", pUTF8.step, "foobar", nil)
-	self:expectLuaError("arg #2 out of bounds (too low)", pUTF8.step, "foobar", -1)
-	self:expectLuaError("arg #2 out of bounds (too high)", pUTF8.step, "foobar", #"foobar" + 1)
-	self:expectLuaError("arg #2 not an integer", pUTF8.step, "foobar", 0.5)
+	self:expectLuaError("arg #2 bad type", pUtf8.step, "foobar", nil)
+	self:expectLuaError("arg #2 out of bounds (too low)", pUtf8.step, "foobar", -1)
+	self:expectLuaError("arg #2 out of bounds (too high)", pUtf8.step, "foobar", #"foobar" + 1)
+	self:expectLuaError("arg #2 not an integer", pUtf8.step, "foobar", 0.5)
 
 	local test_str = "@Æㇹ𐅀"
 
@@ -222,8 +222,8 @@ self:registerJob("pUTF8.step", function(self)
 
 		local i, c = 0, 0
 		while i do
-			self:print(4, "pUTF8.step()", i)
-			i = pUTF8.step(test_str, i)
+			self:print(4, "pUtf8.step()", i)
+			i = pUtf8.step(test_str, i)
 			c = c + 1
 			self:isEqual(i, expected_i[c])
 		end
@@ -234,17 +234,17 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8.stepBack", pUTF8.stepBack)
+self:registerFunction("pUtf8.stepBack", pUtf8.stepBack)
 
-self:registerJob("pUTF8.stepBack", function(self)
+self:registerJob("pUtf8.stepBack", function(self)
 	resetOpts()
 
-	self:expectLuaError("arg #1 bad type", pUTF8.stepBack, nil, 1)
+	self:expectLuaError("arg #1 bad type", pUtf8.stepBack, nil, 1)
 
-	self:expectLuaError("arg #2 bad type", pUTF8.stepBack, "foobar", nil)
-	self:expectLuaError("arg #2 out of bounds (too low)", pUTF8.stepBack, "foobar", 0)
-	self:expectLuaError("arg #2 out of bounds (too high)", pUTF8.stepBack, "foobar", #"foobar" + 2)
-	self:expectLuaError("arg #2 not an integer", pUTF8.stepBack, "foobar", 0.5)
+	self:expectLuaError("arg #2 bad type", pUtf8.stepBack, "foobar", nil)
+	self:expectLuaError("arg #2 out of bounds (too low)", pUtf8.stepBack, "foobar", 0)
+	self:expectLuaError("arg #2 out of bounds (too high)", pUtf8.stepBack, "foobar", #"foobar" + 2)
+	self:expectLuaError("arg #2 not an integer", pUtf8.stepBack, "foobar", 0.5)
 
 	local test_str = "@Æㇹ𐅀"
 
@@ -254,8 +254,8 @@ self:registerJob("pUTF8.stepBack", function(self)
 
 		local i, c = #test_str + 1, #expected_i + 1
 		while i do
-			self:print(4, "pUTF8.stepBack()", i)
-			i = pUTF8.stepBack(test_str, i)
+			self:print(4, "pUtf8.stepBack()", i)
+			i = pUtf8.stepBack(test_str, i)
 			c = c - 1
 			self:isEqual(i, expected_i[c])
 		end
@@ -266,26 +266,26 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8.check", pUTF8.check)
+self:registerFunction("pUtf8.check", pUtf8.check)
 
-self:registerJob("pUTF8.check", function(self)
+self:registerJob("pUtf8.check", function(self)
 	resetOpts()
 
-	self:expectLuaError("arg #1 bad type", pUTF8.check, nil)
+	self:expectLuaError("arg #1 bad type", pUtf8.check, nil)
 
-	self:expectLuaError("arg #2 bad type", pUTF8.check, "foobar", {})
-	self:expectLuaError("arg #2 not an integer", pUTF8.check, "foobar", 1.1)
-	self:expectLuaError("arg #2 too low", pUTF8.check, "foobar", -1)
-	self:expectLuaError("arg #2 too high", pUTF8.check, "foobar", 10000)
+	self:expectLuaError("arg #2 bad type", pUtf8.check, "foobar", {})
+	self:expectLuaError("arg #2 not an integer", pUtf8.check, "foobar", 1.1)
+	self:expectLuaError("arg #2 too low", pUtf8.check, "foobar", -1)
+	self:expectLuaError("arg #2 too high", pUtf8.check, "foobar", 10000)
 
-	self:expectLuaError("arg #3 bad type", pUTF8.check, "foobar", 1, {})
-	self:expectLuaError("arg #3 not an integer", pUTF8.check, "foobar", 1, 1.1)
-	self:expectLuaError("arg #3 too low", pUTF8.check, "foobar", 1, -1)
-	self:expectLuaError("arg #3 too high", pUTF8.check, "foobar", 1, 10000)
+	self:expectLuaError("arg #3 bad type", pUtf8.check, "foobar", 1, {})
+	self:expectLuaError("arg #3 not an integer", pUtf8.check, "foobar", 1, 1.1)
+	self:expectLuaError("arg #3 too low", pUtf8.check, "foobar", 1, -1)
+	self:expectLuaError("arg #3 too high", pUtf8.check, "foobar", 1, 10000)
 
 	do
 		self:print(3, "[-] corrupt UTF-8 detection")
-		local n_codes, err, i = pUTF8.check("goodgoodgoodgoodgoodb" .. hex(0xf0, 0x80, 0xe0) .. "d")
+		local n_codes, err, i = pUtf8.check("goodgoodgoodgoodgoodb" .. hex(0xf0, 0x80, 0xe0) .. "d")
 		self:print(4, "(should return nil, 22, and some error message)")
 		self:print(4, n_codes, i, err)
 		self:isEvalFalse(n_codes)
@@ -295,7 +295,7 @@ self:registerJob("pUTF8.check", function(self)
 
 	do
 		self:print(3, "[+] good UTF-8 detection")
-		local n_codes, err, i = pUTF8.check("!@~¡Æøſㇱㇹ㈅꠲꠹𐅀𐅁𐅅𰀀")
+		local n_codes, err, i = pUtf8.check("!@~¡Æøſㇱㇹ㈅꠲꠹𐅀𐅁𐅅𰀀")
 		self:print(4, n_codes, i, err)
 		self:isEqual(n_codes, 16) -- 16 code points
 		self:lf(4)
@@ -304,7 +304,7 @@ self:registerJob("pUTF8.check", function(self)
 
 	do
 		self:print(3, "[+] good UTF-8 detection of a substring")
-		local n_codes, err, i = pUTF8.check("!@~¡Æøſㇱㇹ㈅꠲꠹𐅀𐅁𐅅𰀀", 2, 3) -- "@~"
+		local n_codes, err, i = pUtf8.check("!@~¡Æøſㇱㇹ㈅꠲꠹𐅀𐅁𐅅𰀀", 2, 3) -- "@~"
 		self:print(4, n_codes, i, err)
 		self:isEqual(n_codes, 2) -- 2 code points
 		self:lf(4)
@@ -313,7 +313,7 @@ self:registerJob("pUTF8.check", function(self)
 	do
 		self:print(3, "[-] invalid surrogate pair")
 		resetOpts()
-		local n_codes, err, i = pUTF8.check("foo" .. surr_0xd800 .. "bar")
+		local n_codes, err, i = pUtf8.check("foo" .. surr_0xd800 .. "bar")
 		self:print(4, n_codes, i, err)
 		self:isEvalFalse(n_codes)
 		self:lf(4)
@@ -322,8 +322,8 @@ self:registerJob("pUTF8.check", function(self)
 	do
 		self:print(3, "[+] with 'check_surrogates' disabled")
 		resetOpts()
-		pUTF8.setCheckSurrogates(false)
-		local n_codes, err, i = pUTF8.check("foo" .. surr_0xd800 .. "bar")
+		pUtf8.setCheckSurrogates(false)
+		local n_codes, err, i = pUtf8.check("foo" .. surr_0xd800 .. "bar")
 		self:print(4, n_codes, i, err)
 		self:isEqual(n_codes, 7)
 		resetOpts()
@@ -332,7 +332,7 @@ self:registerJob("pUTF8.check", function(self)
 
 	do
 		self:print(3, "[-] invalid UTF-8 byte")
-		local n_codes, err, i = pUTF8.check("foo" .. str_invalid_byte .. "bar")
+		local n_codes, err, i = pUtf8.check("foo" .. str_invalid_byte .. "bar")
 		self:print(4, n_codes, i, err)
 		self:isEvalFalse(n_codes)
 		self:lf(4)
@@ -343,18 +343,18 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8.scrub", pUTF8.scrub)
+self:registerFunction("pUtf8.scrub", pUtf8.scrub)
 
-self:registerJob("pUTF8.scrub", function(self)
+self:registerJob("pUtf8.scrub", function(self)
 	resetOpts()
 
-	self:expectLuaError("arg #1 bad type", pUTF8.scrub, nil, "x")
-	self:expectLuaError("arg #2 bad type", pUTF8.scrub, "foo", nil)
+	self:expectLuaError("arg #1 bad type", pUtf8.scrub, nil, "x")
+	self:expectLuaError("arg #2 bad type", pUtf8.scrub, "foo", nil)
 
 	do
 		self:print(3, "[+] Good input, nothing to scrub")
 		local good_str = "The good string."
-		local str = pUTF8.scrub(good_str, "x")
+		local str = pUtf8.scrub(good_str, "x")
 		self:isEqual(str, good_str)
 		self:lf(4)
 	end
@@ -362,7 +362,7 @@ self:registerJob("pUTF8.scrub", function(self)
 	do
 		self:print(3, "[+] Malformed input, replace invalid bytes")
 		local bad_str = "The b" .. hex(0xff, 0xff, 0xff) .. "d string."
-		local str = pUTF8.scrub(bad_str, "x")
+		local str = pUtf8.scrub(bad_str, "x")
 		self:isEqual(str, "The bxd string.")
 		self:lf(4)
 	end
@@ -370,7 +370,7 @@ self:registerJob("pUTF8.scrub", function(self)
 	do
 		self:print(3, "[+] Malformed input, delete invalid bytes")
 		local bad_str = "The b" .. hex(0xff, 0xff, 0xff) .. "d string."
-		local str = pUTF8.scrub(bad_str, "")
+		local str = pUtf8.scrub(bad_str, "")
 		self:isEqual(str, "The bd string.")
 		self:lf(4)
 	end
@@ -379,7 +379,7 @@ self:registerJob("pUTF8.scrub", function(self)
 		self:print(3, "[+] Input with surrogate pair; replace")
 		resetOpts()
 		local surr_str = "abc" .. surr_0xd800 .. "def"
-		local str = pUTF8.scrub(surr_str, "_")
+		local str = pUtf8.scrub(surr_str, "_")
 		self:isEqual(str, "abc_def")
 		resetOpts()
 		self:lf(4)
@@ -388,9 +388,9 @@ self:registerJob("pUTF8.scrub", function(self)
 	do
 		self:print(3, "[+] Input with surrogate pair: ignore")
 		resetOpts()
-		pUTF8.setCheckSurrogates(false)
+		pUtf8.setCheckSurrogates(false)
 		local surr_str = "abc" .. surr_0xd800 .. "def"
-		local str = pUTF8.scrub(surr_str, "_")
+		local str = pUtf8.scrub(surr_str, "_")
 		self:isEqual(str, surr_str)
 		resetOpts()
 		self:lf(4)
@@ -401,16 +401,16 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8.stringFromCode()", pUTF8.stringFromCode)
+self:registerFunction("pUtf8.stringFromCode()", pUtf8.stringFromCode)
 
-self:registerJob("pUTF8.stringFromCode", function(self)
+self:registerJob("pUtf8.stringFromCode", function(self)
 	resetOpts()
 
-	self:expectLuaError("arg #1 bad type", pUTF8.stringFromCode, nil)
+	self:expectLuaError("arg #1 bad type", pUtf8.stringFromCode, nil)
 
 	do
 		self:print(3, "[-] invalid negative code point")
-		local u8_str, err = pUTF8.stringFromCode(-11111)
+		local u8_str, err = pUtf8.stringFromCode(-11111)
 		self:print(4, u8_str, err)
 		self:isEvalFalse(u8_str)
 		self:lf(4)
@@ -418,7 +418,7 @@ self:registerJob("pUTF8.stringFromCode", function(self)
 
 	do
 		self:print(3, "[-] overlarge code point")
-		local u8_str, err = pUTF8.stringFromCode(2^32)
+		local u8_str, err = pUtf8.stringFromCode(2^32)
 		self:print(4, u8_str, err)
 		self:isEvalFalse(u8_str)
 		self:lf(4)
@@ -427,17 +427,17 @@ self:registerJob("pUTF8.stringFromCode", function(self)
 	do
 		self:print(3, "[+] expected behavior")
 		local u8_str, err
-		u8_str, err = pUTF8.stringFromCode(33)
+		u8_str, err = pUtf8.stringFromCode(33)
 		self:print(4, u8_str, err)
 		self:isEqual(u8_str, "!")
 		self:lf(4)
 
-		u8_str, err = pUTF8.stringFromCode(198)
+		u8_str, err = pUtf8.stringFromCode(198)
 		self:print(4, u8_str, err)
 		self:isEqual(u8_str, "Æ")
 		self:lf(4)
 
-		u8_str, err = pUTF8.stringFromCode(12793)
+		u8_str, err = pUtf8.stringFromCode(12793)
 		self:print(4, u8_str, err)
 		self:isEqual(u8_str, "ㇹ")
 		self:lf(4)
@@ -446,7 +446,7 @@ self:registerJob("pUTF8.stringFromCode", function(self)
 	do
 		self:print(3, "[-] invalid surrogate pair")
 		resetOpts()
-		local u8_str, err = pUTF8.stringFromCode(0xd800)
+		local u8_str, err = pUtf8.stringFromCode(0xd800)
 		self:print(4, u8_str, err)
 		self:isEvalFalse(u8_str)
 		self:lf(4)
@@ -455,8 +455,8 @@ self:registerJob("pUTF8.stringFromCode", function(self)
 	do
 		self:print(3, "[+] with 'check_surrogates' disabled")
 		resetOpts()
-		pUTF8.setCheckSurrogates(false)
-		local u8_str, err = pUTF8.stringFromCode(0xd800)
+		pUtf8.setCheckSurrogates(false)
+		local u8_str, err = pUtf8.stringFromCode(0xd800)
 		self:print(4, u8_str, err)
 		self:isEvalTrue(u8_str)
 		resetOpts()
@@ -468,13 +468,13 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8.codes() (iterator)", pUTF8.codes)
+self:registerFunction("pUtf8.codes() (iterator)", pUtf8.codes)
 
-self:registerJob("pUTF8.codes", function(self)
+self:registerJob("pUtf8.codes", function(self)
 	resetOpts()
 
 	local func = function(s)
-		for i, c, u in pUTF8.codes(s) do
+		for i, c, u in pUtf8.codes(s) do
 			self:print(4, "i,c,u", i, c, u)
 		end
 	end
@@ -488,7 +488,7 @@ self:registerJob("pUTF8.codes", function(self)
 	resetOpts()
 	self:expectLuaError("surrogate byte (excluded)", func, "foo" .. surr_0xd800 .. "bar")
 
-	pUTF8.setCheckSurrogates(false)
+	pUtf8.setCheckSurrogates(false)
 	self:expectLuaReturn("surrogate byte (allowed)", func, "foo" .. surr_0xd800 .. "bar")
 	resetOpts()
 end
@@ -497,21 +497,21 @@ end
 
 
 -- [===[
-self:registerFunction("pUTF8.concatCodes()", pUTF8.concatCodes)
+self:registerFunction("pUtf8.concatCodes()", pUtf8.concatCodes)
 
-self:registerJob("pUTF8.concatCodes", function(self)
+self:registerJob("pUtf8.concatCodes", function(self)
 	resetOpts()
 
-	self:expectLuaError("bad type in args", pUTF8.concatCodes, 0x40, {}, 0x40)
-	self:expectLuaError("invalid code point (too big) in args", pUTF8.concatCodes, 0x40, 2^30, 0x40)
-	self:expectLuaError("invalid code point (negative) in args", pUTF8.concatCodes, 0x40, -33, 0x40)
+	self:expectLuaError("bad type in args", pUtf8.concatCodes, 0x40, {}, 0x40)
+	self:expectLuaError("invalid code point (too big) in args", pUtf8.concatCodes, 0x40, 2^30, 0x40)
+	self:expectLuaError("invalid code point (negative) in args", pUtf8.concatCodes, 0x40, -33, 0x40)
 
-	self:expectLuaReturn("no args, no problem (makes an empty string)", pUTF8.concatCodes)
+	self:expectLuaReturn("no args, no problem (makes an empty string)", pUtf8.concatCodes)
 
 	do
 		self:print(3, "[+] expected behavior")
 		local good_string = "!@~¡Æøſㇱㇹ㈅꠲꠹𐅀𐅁𐅅𰀀"
-		local str = pUTF8.concatCodes(
+		local str = pUtf8.concatCodes(
 			0x21, 0x40, 0x7e, 0xa1, 0xc6, 0xf8,
 			0x17f, 0x31f1, 0x31f9, 0x3205, 0xa832,
 			0xa839, 0x10140, 0x10141, 0x10145, 0x30000
@@ -524,10 +524,10 @@ self:registerJob("pUTF8.concatCodes", function(self)
 	end
 
 	resetOpts()
-	self:expectLuaError("surrogate byte (excluded)", pUTF8.concatCodes, 0x40, 0xd800, 0x40)
+	self:expectLuaError("surrogate byte (excluded)", pUtf8.concatCodes, 0x40, 0xd800, 0x40)
 
-	pUTF8.setCheckSurrogates(false)
-	self:expectLuaReturn("surrogate byte (allowed)", pUTF8.concatCodes, 0x40, 0xd800, 0x40)
+	pUtf8.setCheckSurrogates(false)
+	self:expectLuaReturn("surrogate byte (allowed)", pUtf8.concatCodes, 0x40, 0xd800, 0x40)
 	resetOpts()
 	self:lf(4)
 end

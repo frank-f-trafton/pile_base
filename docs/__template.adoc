@@ -1,0 +1,19 @@
+= PILE Base: (module name goes here)
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+
+include::snippets/header.adoc[]
+
+
+(Opening paragraph.)
+
+(A short example, if applicable.)
+
+Dependencies:
+
+
+toc::[]
+
+
+include::snippets/footer.adoc[]

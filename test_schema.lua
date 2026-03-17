@@ -1,5 +1,5 @@
--- Test: pile_schema.lua
--- VERSION: 2.101
+-- Test: p_schema.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -12,9 +12,9 @@ local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
 
 
-local pAssert = require(PATH .. "pile_assert")
-local pSchema = require(PATH .. "pile_schema")
-local pTable = require(PATH .. "pile_table")
+local pAssert = require(PATH .. "p_assert")
+local pSchema = require(PATH .. "p_schema")
+local pTable = require(PATH .. "p_table")
 
 
 local cli_verbosity
@@ -37,7 +37,7 @@ local function _metatableStandIn(n, v)
 end
 
 
-local self = errTest.new("PILE Schema", cli_verbosity)
+local self = errTest.new("pSchema", cli_verbosity)
 
 
 -- [===[

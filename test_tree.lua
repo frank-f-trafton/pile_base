@@ -1,5 +1,5 @@
--- Test: pile_tree.lua
--- VERSION: 2.101
+-- Test: p_tree.lua
+-- VERSION: 2.105
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
@@ -9,7 +9,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pTree = require(PATH .. "pile_tree")
+local pTree = require(PATH .. "p_tree")
 
 
 local cli_verbosity
@@ -23,7 +23,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE Tree", cli_verbosity)
+local self = errTest.new("pTree", cli_verbosity)
 
 
 self:registerFunction("pTree.nodeNew", pTree.nodeNew)

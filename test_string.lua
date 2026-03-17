@@ -1,5 +1,5 @@
--- Test: pile_string.lua
--- VERSION: 2.101
+-- Test: p_string.lua
+-- VERSION: 2.105
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -10,7 +10,7 @@ require(PATH .. "test.strict")
 
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
-local pString = require(PATH .. "pile_string")
+local pString = require(PATH .. "p_string")
 
 
 local cli_verbosity
@@ -24,8 +24,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("PILE String", cli_verbosity)
-
+local self = errTest.new("pString", cli_verbosity)
 
 
 -- [===[

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pPath</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pPath</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pPath</em> provides functions for working with paths.</p>
+</div>
+<div class="paragraph">
+<p>This module is intended for <a href="https://www.love2d.org/">LÖVE</a>'s virtual filesystem paths. As such, its functions assume that all paths use <code>/</code> as directory separators, and they are not aware of <code>.</code> and <code>..</code>.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: None.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pPath</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"p_path"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">my_path</span> <span class="o">=</span> <span class="n">pPath</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">)</span> <span class="c1">--&gt; "foo/bar"</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api">API</a>
+<ul class="sectlevel2">
+<li><a href="#_ppath_getextension">pPath.getExtension</a></li>
+<li><a href="#_ppath_join">pPath.join</a></li>
+<li><a href="#_ppath_splitpathandextension">pPath.splitPathAndExtension</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api">API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_ppath_getextension">pPath.getExtension</h3>
+<div class="paragraph">
+<p>Gets the extension at the end of a file path.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">pPath</span><span class="p">.</span><span class="n">getExtension</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>path</code>: The file path.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The extension (including the dot), or an empty string if the path did not end with an extension.</p>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>When the file path ends with multiple extensions, like <code>my_file.txt.zip</code>, only the last part (<code>.zip</code>) is returned.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ppath_join">pPath.join</h3>
+<div class="paragraph">
+<p>Joins two path fragments.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">joined</span> <span class="o">=</span> <span class="n">pPath</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>a</code>: The first path fragment.</p>
+</li>
+<li>
+<p><code>b</code>: The second path fragment.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The joined path.</p>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This function:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Adds a slash between <code>a</code> and <code>b</code>, when <code>a</code> is not an empty string.</p>
+</li>
+<li>
+<p>Removes leading and trailing slashes.</p>
+</li>
+<li>
+<p>Does <em>not</em> remove multiple consecutive slashes within fragments, like <code>foo//bar</code>.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_ppath_splitpathandextension">pPath.splitPathAndExtension</h3>
+<div class="paragraph">
+<p>Splits the extension from a file path.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">main</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">pPath</span><span class="p">.</span><span class="n">splitPathAndExtension</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>path</code>: The file path.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The main path component and the extension (or an empty string if there was no extension).</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-13 17:15:52 -0300
+</div>
+</div>
+</body>
+</html>

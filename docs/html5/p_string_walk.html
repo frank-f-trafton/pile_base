@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>PILE Base: pStringWalk</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>PILE Base: pStringWalk</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="index.html">Home</a> | <a href="modules.html">Modules</a></p>
+</div>
+<div class="paragraph">
+<p><em>pStringWalk</em> creates string parsing objects.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">W</span> <span class="o">=</span> <span class="n">pStringWalk</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"foobar"</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">first</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">litReq</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"Missing crucial 'foo'"</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">second</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">litReq</span><span class="p">(</span><span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"Missing irreplacable 'bar'"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span> <span class="c1">--&gt; foo	bar</span></code></pre>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api_pstringwalk_the_module">API: pStringWalk (The Module)</a>
+<ul class="sectlevel2">
+<li><a href="#_pstringwalk_countlinechar">pStringWalk.countLineChar</a></li>
+<li><a href="#_pstringwalk_new">pStringWalk.new</a></li>
+</ul>
+</li>
+<li><a href="#_api_walker_the_object">API: Walker (The Object)</a>
+<ul class="sectlevel2">
+<li><a href="#_w_status">W:_status</a></li>
+<li><a href="#_wassert">W:assert</a></li>
+<li><a href="#_wbytes">W:bytes</a></li>
+<li><a href="#_wbytesreq">W:bytesReq</a></li>
+<li><a href="#_werror">W:error</a></li>
+<li><a href="#_wfind">W:find</a></li>
+<li><a href="#_wfindreq">W:findReq</a></li>
+<li><a href="#_wgetbytemode">W:getByteMode</a></li>
+<li><a href="#_wgetindex">W:getIndex</a></li>
+<li><a href="#_wgetlinechardisplay">W:getLineCharDisplay</a></li>
+<li><a href="#_wgetlinecharnumbers">W:getLineCharNumbers</a></li>
+<li><a href="#_wgetname">W:getName</a></li>
+<li><a href="#_wgettersemode">W:getTerseMode</a></li>
+<li><a href="#_wgoeos">W:goEOS</a></li>
+<li><a href="#_wiseos">W:isEOS</a></li>
+<li><a href="#_wlit">W:lit</a></li>
+<li><a href="#_wlitreq">W:litReq</a></li>
+<li><a href="#_wmatch">W:match</a></li>
+<li><a href="#_wmatchreq">W:matchReq</a></li>
+<li><a href="#_wpeek">W:peek</a></li>
+<li><a href="#_wplain">W:plain</a></li>
+<li><a href="#_wplainreq">W:plainReq</a></li>
+<li><a href="#_wpop">W:pop</a></li>
+<li><a href="#_wpopall">W:popAll</a></li>
+<li><a href="#_wpush">W:push</a></li>
+<li><a href="#_wreq">W:req</a></li>
+<li><a href="#_wreset">W:reset</a></li>
+<li><a href="#_wseek">W:seek</a></li>
+<li><a href="#_wsetbytemode">W:setByteMode</a></li>
+<li><a href="#_wsetlinechardisplay">W:setLineCharDisplay</a></li>
+<li><a href="#_wsetname">W:setName</a></li>
+<li><a href="#_wsetstring">W:setString</a></li>
+<li><a href="#_wsettersemode">W:setTerseMode</a></li>
+<li><a href="#_wstep">W:step</a></li>
+<li><a href="#_wwarn">W:warn</a></li>
+<li><a href="#_wws">W:ws</a></li>
+<li><a href="#_wwsnext">W:wsNext</a></li>
+<li><a href="#_wwsreq">W:wsReq</a></li>
+</ul>
+</li>
+<li><a href="#_module_notes">Module Notes</a>
+<ul class="sectlevel2">
+<li><a href="#_walkers">Walkers</a></li>
+<li><a href="#_walker_options">Walker Options</a>
+<ul class="sectlevel3">
+<li><a href="#_byte_mode">Byte Mode</a></li>
+<li><a href="#_line_char_display">Line Char Display</a></li>
+<li><a href="#_terse_mode">Terse Mode</a></li>
+<li><a href="#_walker_name">Walker Name</a></li>
+</ul>
+</li>
+<li><a href="#_field_names">Field Names</a></li>
+<li><a href="#_16_captures">16 Captures</a></li>
+<li><a href="#_req_methods">'Req' methods</a></li>
+<li><a href="#_errors_within_protected_calls">Errors Within Protected Calls</a></li>
+<li><a href="#_unicode_code_points">Unicode Code Points</a></li>
+<li><a href="#_terms">Terms</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_pstringwalk_the_module">API: pStringWalk (The Module)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_pstringwalk_countlinechar">pStringWalk.countLineChar</h3>
+<div class="paragraph">
+<p>Gets the line and character numbers for a byte position in a UTF-8 string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ln</span><span class="p">,</span> <span class="n">cn</span>  <span class="o">=</span> <span class="n">pStringWalk</span><span class="p">.</span><span class="n">countLineChar</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">ln</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string to scan.</p>
+</li>
+<li>
+<p><code>i</code>: The byte position in the string.</p>
+</li>
+<li>
+<p><code>j</code>: Where to start scanning in the string (1 on the first call).</p>
+</li>
+<li>
+<p><code>ln</code>: The initial line number to use (1 on the first call).</p>
+</li>
+<li>
+<p><code>cn</code>: The initial character number to use (1 on the first call).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The line and character numbers.</p>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This function can be used instead of <a href="#_wgetlinecharnumbers">W:getLineCharNumbers</a> for collecting sequential line and character numbers in a loop. While the walker method begins counting from the first byte every time, this function can start from any valid UTF-8 start byte.</p>
+</div>
+<div class="paragraph">
+<p>The results are unreliable if the UTF-8 encoding is bad, if <code>i</code> is out of bounds or greater than <code>j</code>, or if any of the numeric arguments are not integers.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pstringwalk_new">pStringWalk.new</h3>
+<div class="paragraph">
+<p>Creates a new walker.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">W</span> <span class="o">=</span> <span class="n">pStringWalk</span><span class="p">.</span><span class="n">new</span><span class="p">([</span><span class="n">s</span><span class="p">],</span> <span class="p">[</span><span class="n">name</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[s]</code>: <em>(empty string)</em> An optional string to assign.</p>
+</li>
+<li>
+<p><code>[name]</code>: <em>(nil)</em> An optional name to use when generating warnings and error messages.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The <a href="#_walkers">walker</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_walker_the_object">API: Walker (The Object)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_w_status">W:_status</h3>
+<div class="paragraph">
+<p>Prints details about the walker&#8217;s internal state to the terminal. Intended for debugging.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">_status</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wassert">W:assert</h3>
+<div class="paragraph">
+<p>Raises an error if <code>exp</code> evaluates to false.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">retval</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="nb">assert</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="p">[</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>exp</code>: The expression to evaluate.</p>
+</li>
+<li>
+<p><code>[err]</code>: The error message.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> the result of <code>exp</code>, for the convenience of variable assignment.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wbytes">W:bytes</h3>
+<div class="paragraph">
+<p>Gets a substring, from the walker&#8217;s position to an offset in bytes. If the offset is end-of-string (for example, attempting to get 10 bytes from the string <code>"foo"</code>), then <code>nil</code> is returned.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sub_str</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">bytes</span><span class="p">([</span><span class="n">n</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: <em>(1)</em> How many bytes to read from the walker&#8217;s position.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The substring, or <code>nil</code> if the offset goes beyond the end of the string.</p>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>It&#8217;s an error to provide an offset of zero or less, or a fractional value.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wbytesreq">W:bytesReq</h3>
+<div class="paragraph">
+<p>Like <a href="#_wbytes">W:bytes</a>, but raises an error when the request is unsuccessful.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sub_str</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">bytesReq</span><span class="p">([</span><span class="n">n</span><span class="p">],</span> <span class="p">[</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: <em>(1)</em> How many bytes to read from the walker&#8217;s position.</p>
+</li>
+<li>
+<p><code>[err]</code>: The error message.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The substring.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_werror">W:error</h3>
+<div class="paragraph">
+<p>Raises an error. Depending on the walker&#8217;s <a href="#_walker_options">configuration</a>, the output may include a name, a line number, and a character number. If the walker is in <a href="#_terse_mode">Terse Mode</a>, then a generic error message will be displayed instead.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="nb">error</span><span class="p">([</span><span class="n">str</span><span class="p">],</span> <span class="p">[</span><span class="n">level</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[str]</code>: The error string to pass to <a href="https://www.lua.org/manual/5.1/manual.html#pdf-error"><strong>error</strong></a>. Any non-string value will be converted to one.</p>
+</li>
+<li>
+<p><code>[level]</code>: <em>(2)</em> The stack level to pass to <a href="https://www.lua.org/manual/5.1/manual.html#pdf-error"><strong>error</strong></a>.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wfind">W:find</h3>
+<div class="paragraph">
+<p>Calls <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.find"><strong>string.find</strong></a> at the current position. If a match is found, returns the <code>i</code> and <code>j</code> indices and captures, and advances the walker&#8217;s position past <code>j</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="cm">--[[, captures...]]</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">find</span><span class="p">(</span><span class="n">ptn</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ptn</code>: The search pattern string.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The boundaries of the result, and up to 16 captures, or <code>nil</code> if there wasn&#8217;t a match.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wfindreq">W:findReq</h3>
+<div class="paragraph">
+<p>Like <a href="#_wfind">W:find</a>, but raises an error when the search is unsuccessful.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="cm">--[[, captures...]]</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">findReq</span><span class="p">(</span><span class="n">ptn</span><span class="p">,</span> <span class="p">[</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ptn</code>: The search pattern string.</p>
+</li>
+<li>
+<p><code>[err]</code>: The error message.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The boundaries of the result, and up to 16 captures.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wgetbytemode">W:getByteMode</h3>
+<div class="paragraph">
+<p>Gets the <a href="#_byte_mode">Byte Mode</a> setting.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">getByteMode</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> or <code>false</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wgetindex">W:getIndex</h3>
+<div class="paragraph">
+<p>Gets the walker&#8217;s position in bytes. If there are stack frames, then the lowest stack position is used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">getIndex</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Byte index of the walker in the string.</p>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The walker&#8217;s current byte index can be read directly at <code>W.I</code>. This may be wanted instead of the position of the lowest stack frame.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wgetlinechardisplay">W:getLineCharDisplay</h3>
+<div class="paragraph">
+<p>Gets the display settings for <a href="#_line_char_display">line and character numbers</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">line</span><span class="p">,</span> <span class="n">char</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">getLineCharDisplay</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> two booleans: the first for line number display, the second for character number display.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wgetlinecharnumbers">W:getLineCharNumbers</h3>
+<div class="paragraph">
+<p>Gets a line and character number for the walker&#8217;s position. If there are stack frames, then the lowest stack position is used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ln</span><span class="p">,</span> <span class="n">cn</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">getLineCharNumbers</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The walker&#8217;s line number and character number.</p>
+</div>
+<h4 id="_notes_4" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This method is <em>only</em> valid for correctly encoded UTF-8 strings.</p>
+</div>
+<div class="paragraph">
+<p>The count always starts from index 1 of the string. To count line and character numbers incrementally, see the function <a href="#_pstringwalk_countlinechar">pStringWalk.countLineChar</a>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wgetname">W:getName</h3>
+<div class="paragraph">
+<p>Gets the current <a href="#_walker_name">walker name</a>, if any.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">name</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">getName</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The walker name, or <code>nil</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wgettersemode">W:getTerseMode</h3>
+<div class="paragraph">
+<p>Gets the <a href="#_terse_mode">Terse Mode</a> setting.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">getTerseMode</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> or <code>false</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wgoeos">W:goEOS</h3>
+<div class="paragraph">
+<p>Moves the walker position to end-of-string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">goEOS</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wiseos">W:isEOS</h3>
+<div class="paragraph">
+<p>Tells if the walker position is end-of-string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">eos</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">isEOS</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the walker position is end-of-string, <code>false</code> if not.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wlit">W:lit</h3>
+<div class="paragraph">
+<p>Compares a substring at the walker&#8217;s position against a string literal. If a match is found, returns the substring and advances the walker&#8217;s position. If not, returns <code>nil</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">match</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">lit</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string literal to compare.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The matching substring, or <code>nil</code>.</p>
+</div>
+<h4 id="_notes_5" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The search is anchored to the walker&#8217;s position. To search the remainder of the string for a literal substring, use <a href="#_wplain">W:plain</a> or <a href="#_wplainreq">W:plainReq</a>.</p>
+</div>
+<div class="paragraph">
+<p>The successful return value is always the same as the <code>s</code> argument. This allows for short circuit evaluations, like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">facing_dir</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">lit</span><span class="p">(</span><span class="s2">"left"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">W</span><span class="p">:</span><span class="n">litReq</span><span class="p">(</span><span class="s2">"right"</span><span class="p">,</span> <span class="s2">"bad direction"</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wlitreq">W:litReq</h3>
+<div class="paragraph">
+<p>Like <a href="#_wlit">W:lit</a>, but raises an error when the search is unsuccessful.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">litReq</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="p">[</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string literal to compare.</p>
+</li>
+<li>
+<p><code>[err]</code>: The error message.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The match.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wmatch">W:match</h3>
+<div class="paragraph">
+<p>Behaves like <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.match"><strong>string.match</strong></a>. If a match is found at the current position, returns the captures (or the whole result, if the pattern contained no captures) and advances the position.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">match</span> <span class="cm">--[[or captures...]]</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">match</span><span class="p">(</span><span class="n">ptn</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ptn</code>: The search pattern string.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The match, or up to 16 captures, or <code>nil</code>.</p>
+</div>
+<h4 id="_notes_6" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This method uses <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.find"><strong>string.find</strong></a> under the hood, but it modifies the output to be like that of <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.match"><strong>string.match</strong></a>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wmatchreq">W:matchReq</h3>
+<div class="paragraph">
+<p>Like <a href="#_wmatch">W:match</a>, but raises an error if the search was unsuccessful.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">match</span> <span class="cm">--[[or captures...]]</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">matchReq</span><span class="p">(</span><span class="n">ptn</span><span class="p">,</span> <span class="p">[</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ptn</code>: The search pattern string.</p>
+</li>
+<li>
+<p><code>[err]</code>: The error message.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The match, or up to 16 captures.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wpeek">W:peek</h3>
+<div class="paragraph">
+<p>Gets a substring, from the walker&#8217;s current position to an offset in bytes. Does not advance the walker.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sub_str</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">peek</span><span class="p">([</span><span class="n">n</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[n]</code>: <em>(1)</em> How many bytes to read from the walker&#8217;s position. A value of 1 will return the current byte.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The substring.</p>
+</div>
+<h4 id="_notes_7" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>If the walker position is end-of-string, then an empty string is returned.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s an error to provide an offset of zero or less, or a fractional value.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wplain">W:plain</h3>
+<div class="paragraph">
+<p>Calls <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.find"><strong>string.find</strong></a> at the current position, in <em>plain mode</em>. If a match is found, returns the <code>i</code> and <code>j</code> indices, and advances the position past <code>j</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">plain</span><span class="p">(</span><span class="n">ptn</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ptn</code>: The search pattern string.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The boundaries of the result, or <code>nil</code> if there wasn&#8217;t a match.</p>
+</div>
+<h4 id="_notes_8" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>All pattern-matching symbols are treated as ordinary characters. As such, this method does not support captures.</p>
+</div>
+<div class="paragraph">
+<p>This method does <em>not</em> anchor the search to the walker position. For that, use <a href="#_wlit">W:lit</a> or <a href="#_wlitreq">W:litReq</a></p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wplainreq">W:plainReq</h3>
+<div class="paragraph">
+<p>Like <a href="#_wplain">W:plain</a>, but raises an error if the search was unsuccessful.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">plainReq</span><span class="p">(</span><span class="n">ptn</span><span class="p">,</span> <span class="p">[</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ptn</code>: The search pattern string.</p>
+</li>
+<li>
+<p><code>[err]</code>: The error message.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The boundaries of the result.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wpop">W:pop</h3>
+<div class="paragraph">
+<p>Pops the last string and position from the stack.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">pop</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_9" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Stack frames are not automatically popped when reaching end-of-string.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s an error to call this on an empty stack.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wpopall">W:popAll</h3>
+<div class="paragraph">
+<p>Pops all strings from the stack.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">popAll</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_10" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Unlike <a href="#_wpop">W:pop</a>, this method does not raise an error when the stack is empty.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wpush">W:push</h3>
+<div class="paragraph">
+<p>Pushes a new string, moving the existing string and position to the stack. The walker&#8217;s new position is 1.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">push</span><span class="p">(</span><span class="n">str</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>str</code>: The new string to push.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wreq">W:req</h3>
+<div class="paragraph">
+<p>The assertion method used by the <code>*Req</code> method variations. Raises an error if the first return value is <code>nil</code>/<code>false</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="cm">--[[, etc.]]</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">req</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="p">[</span><span class="n">err</span><span class="p">],</span> <span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>fn</code>: The function to call. It takes a walker as its first argument, and <code>&#8230;&#8203;</code> as its remaining arguments.</p>
+</li>
+<li>
+<p><code>[err]</code>: The error message.</p>
+</li>
+<li>
+<p><code>&#8230;&#8203;</code>: Additional arguments for <code>fn</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> Up to 18 values returned by <code>fn</code>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wreset">W:reset</h3>
+<div class="paragraph">
+<p>Resets the position to 1 and empties the string stack.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">reset</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wseek">W:seek</h3>
+<div class="paragraph">
+<p>Sets the walker&#8217;s byte position, clamped between 1 and <code>#str + 1</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">seek</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The desired byte position.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new (clamped) byte position.</p>
+</div>
+<h4 id="_notes_11" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This method can move the walker to a UTF-8 <em>continuation byte</em>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wsetbytemode">W:setByteMode</h3>
+<div class="paragraph">
+<p>Turns <a href="#_byte_mode">Byte Mode</a> on or off.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">setByteMode</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to enable Byte Mode, <code>false</code>/<code>nil</code> to disable it.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_12" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><a href="#_terse_mode">Terse Mode</a> overrides this setting.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wsetlinechardisplay">W:setLineCharDisplay</h3>
+<div class="paragraph">
+<p>Turns on or off the printing of <a href="#_line_char_display">line and character numbers</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">setLineCharDisplay</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">char</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>line</code>: <code>true</code> to enable the printing of line numbers, <code>false</code>/<code>nil</code> to disable it.</p>
+</li>
+<li>
+<p><code>char</code>: <code>true</code> to enable the printing of character numbers, <code>false</code>/<code>nil</code> to disable it.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_13" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><a href="#_byte_mode">Byte Mode</a> and <a href="#_terse_mode">Terse Mode</a> both override these settings.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wsetname">W:setName</h3>
+<div class="paragraph">
+<p>Sets or clears the <a href="#_walker_name">walker name</a>, which can appear in warnings and error messages.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">setName</span><span class="p">([</span><span class="n">name</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[name]</code>: <em>(nil)</em> The name, or <code>nil</code> to unset any current name.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_14" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The name is not cleared by <a href="#_wsetstring">W:setString</a> or <a href="#_wreset">W:reset</a>.</p>
+</div>
+<div class="paragraph">
+<p><a href="#_terse_mode">Terse Mode</a> overrides this setting.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wsetstring">W:setString</h3>
+<div class="paragraph">
+<p>Assigns a string to the walker, resets the position to 1, and empties the string stack.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">setString</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The string to assign.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wsettersemode">W:setTerseMode</h3>
+<div class="paragraph">
+<p>Sets <a href="#_terse_mode">Terse Mode</a>. When active, error messages display only a generic message, with no positional information (byte index, line + character number) and no <a href="#_walker_name">name</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">setTerseMode</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to enable Terse Mode, <code>false</code>/<code>nil</code> to disable it.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wstep">W:step</h3>
+<div class="paragraph">
+<p>Moves the walker&#8217;s byte position forward or backward. The final position is clamped between 1 and <code>#str + 1</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">step</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: How many bytes to advance or rewind (negative).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new byte position.</p>
+</div>
+<h4 id="_notes_15" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This method can move the walker to a UTF-8 <em>continuation byte</em>.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wwarn">W:warn</h3>
+<div class="paragraph">
+<p>Prints a warning message to the console. Depending on the walker&#8217;s <a href="#_walker_options">configuration</a>, the output may include a name, a line number, and a character number. If the walker is in <a href="#_terse_mode">Terse Mode</a>, no message is printed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">warn</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&#8230;&#8203;</code>: Arguments for <a href="https://www.lua.org/manual/5.1/manual.html#pdf-print"><strong>print</strong></a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wws">W:ws</h3>
+<div class="paragraph">
+<p>Advances the walker position past ASCII whitespace until it either rests on a non-whitespace byte or reaches end-of-string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">advanced</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">ws</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the walker position advanced, <code>false</code> if not.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wwsnext">W:wsNext</h3>
+<div class="paragraph">
+<p>If the walker is currently on a non-whitespace character, advances to the next bit of whitespace, or to the end of the string if none is found. Does not advance if the walker is already on whitespace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">wsNext</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_wwsreq">W:wsReq</h3>
+<div class="paragraph">
+<p>Like <a href="#_wws">W:ws</a>, but raises an error if the position did not advance.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">W</span><span class="p">:</span><span class="n">wsReq</span><span class="p">([</span><span class="n">err</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[err]</code>: The error message.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_module_notes">Module Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_walkers">Walkers</h3>
+<div class="paragraph">
+<p>A walker object ties Lua search functions to an internal position. Generally, when a search is successful, the position advances past the match region, and when unsuccessful, it stays put (or throws an error). Some knowledge of Lua&#8217;s <a href="https://www.lua.org/manual/5.1/manual.html#5.4"><strong>string</strong></a> module is necessary to understand how walkers work.</p>
+</div>
+<div class="paragraph">
+<p>By convention, the walker is assigned to the variable <code>W</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_walker_options">Walker Options</h3>
+<div class="sect3">
+<h4 id="_byte_mode">Byte Mode</h4>
+<div class="paragraph">
+<p>When active, the walker position is reported in warnings and errors as a byte index. Use this when the walker&#8217;s string contains arbitrary data.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#_wgetbytemode">W:getByteMode</a>, <a href="#_wsetbytemode">W:setByteMode</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_line_char_display">Line Char Display</h4>
+<div class="paragraph">
+<p>When active, line and character numbers are included in warnings and errors.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#_wgetlinechardisplay">W:getLineCharDisplay</a>, <a href="#_wsetlinechardisplay">W:setLineCharDisplay</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_terse_mode">Terse Mode</h4>
+<div class="paragraph">
+<p>When active, errors display only a generic message, with no name or positional information (byte index, line + character number). Warnings are <em>completely</em> silenced.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#_wgettersemode">W:getTerseMode</a>, <a href="#_wsettersemode">W:setTerseMode</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_walker_name">Walker Name</h4>
+<div class="paragraph">
+<p>The walker name is included in errors and warnings when Terse Mode is off.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#_wgetname">W:getName</a>, <a href="#_wsetname">W:setName</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_field_names">Field Names</h3>
+<div class="paragraph">
+<p>It&#8217;s convenient to attach state to a walker while parsing. Besides method names, the following field names are <strong>reserved for internal use</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Any field that is a single, upper-case ASCII letter (A-Z).</p>
+</li>
+<li>
+<p>Any field that begins with an underscore.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_16_captures">16 Captures</h3>
+<div class="paragraph">
+<p>The limit of 16 returned captures is not connected to Lua&#8217;s actual maximum returnable values; it is a limitation of the library. Captures #17 and up may be correctly processed by <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.find"><strong>string.find</strong></a> and <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.match"><strong>string.match</strong></a>, but they will not be returned by the walker methods.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_req_methods">'Req' methods</h3>
+<div class="paragraph">
+<p>Methods ending in <code>req</code> will raise an error when unsuccessful. These methods take an optional argument, <code>err</code>, for the error string. If <code>err</code> is not provided, a generic error message will be used instead. As with Lua&#8217;s <a href="https://www.lua.org/manual/5.1/manual.html#pdf-assert"><strong>assert</strong></a> function, avoid constructing the error string directly within the method call, as those arguments will be evaluated even if the method is successful:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">chunk</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">matchReq</span><span class="p">(</span><span class="s2">"foobar"</span><span class="p">,</span> <span class="s2">"missing foobar for "</span> <span class="o">..</span> <span class="n">some_upvalue</span><span class="p">)</span>
+<span class="c1">--                                                       ^</span>
+<span class="c1">--                                           This concatenates every time!</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_errors_within_protected_calls">Errors Within Protected Calls</h3>
+<div class="paragraph">
+<p>When a walker raises an error within a <a href="https://www.lua.org/manual/5.1/manual.html#pdf-pcall"><strong>pcall</strong></a>, its state is <em>not</em> cleaned up. Any such walker should either be discarded or fully reset.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_unicode_code_points">Unicode Code Points</h3>
+<div class="paragraph">
+<p>Lua&#8217;s string search library treats all characters as single bytes. In UTF-8, the first 127 code points are one byte, while the rest are 2, 3 or 4 bytes in length. It&#8217;s easy to match code points 0-127, but multi-byte characters do not work with sets (<code>[a-zA-Z]</code>) or pattern items (<code>?</code>, <code>*</code>, etc.).</p>
+</div>
+<div class="paragraph">
+<p>That said, it&#8217;s possible to match single code points with a pattern defined in Lua 5.3: <a href="https://www.lua.org/manual/5.3/manual.html#pdf-utf8.charpattern"><strong>utf8.charpattern</strong></a>. <em>pStringWalk</em> contains a modified version of this pattern, stored in <code>pStringWalk.ptn_code</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- Matches one UTF-8 character at the walker's position</span>
+<span class="kd">local</span> <span class="n">u8_str</span> <span class="o">=</span> <span class="n">W</span><span class="p">:</span><span class="n">match</span><span class="p">(</span><span class="n">pStringWalk</span><span class="p">.</span><span class="n">ptn_code</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>The pattern assumes that the UTF-8 encoding is valid</strong>, so it can return invalid code points if the string is corrupt. There are multiple ways to check a string&#8217;s UTF-8 encoding from Lua, including Lua 5.3&#8217;s <a href="https://www.lua.org/manual/5.3/manual.html#pdf-utf8.len"><strong>utf8.len</strong></a> (which is included in <a href="https://www.love2d.org"><strong>LÖVE</strong></a>), <a href="https://github.com/kikito/utf8_validator.lua"><strong>utf8_validator.lua</strong></a>, and PILE Base&#8217;s own <a href="p_utf8.html">pUtf8</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_terms">Terms</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Continuation byte</em>: The second, third or fourth byte of a code point that is encoded in UTF-8.</p>
+</li>
+<li>
+<p><em>EOS</em>: End of String, signified by the byte index being greater than the string length.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>VERSION: 2.105</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-16 17:42:03 -0300
+</div>
+</div>
+</body>
+</html>
