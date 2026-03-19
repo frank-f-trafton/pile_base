@@ -1,5 +1,6 @@
 = PILE Base: pAssert
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,9 @@ include::snippets/header.adoc[]
 
 __pAssert__ provides Lua assertions with (mostly) apropos error messages.
 
-Dependencies: xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----
@@ -51,7 +54,7 @@ pAssert.assert(n, v, [err])
 [discrete]
 ==== Notes
 
-Like <<#_passert_notnilnotfalse>>, but with different error messages.
+Like <<_passert_notnilnotfalse>>, but with different error messages.
 
 '''
 
@@ -184,7 +187,7 @@ pAssert.integerRangeEval(n, v, min, max)
 
 === pAssert.namedMap
 
-The value is in a xref:p_table.adoc#_namedmaps[NamedMap] (or any other Lua table) as a key.
+The value is in a <<p_table.adoc#_namedmap,NamedMap>> (or any other Lua table) as a key.
 
 [source,lua]
 ----
@@ -202,7 +205,7 @@ pAssert.namedMap(n, v, map)
 
 === pAssert.namedMapEval
 
-The value is `false`/`nil`, or it appears in a xref:p_table.adoc#_namedmaps[NamedMap] (or any other Lua table) as a key.
+The value is `false`/`nil`, or it appears in a <<p_table.adoc#_namedmap,NamedMap>> (or any other Lua table) as a key.
 
 [source,lua]
 ----
@@ -614,7 +617,7 @@ pAssert.someFunction(n, v)
 
 …where `n` is the name tag (usually an argument count), and `v` is the value to check. If the value passes, nothing happens. If a problem is determined, then the assertion will __(surprise!)__ raise an error.
 
-The name tag can be used in a few different ways (see xref:p_assert.adoc#_uses_of_name_tags[Uses of Name Tags]).
+The name tag can be <<_uses_of_name_tags,used in a few different ways>>.
 
 
 === What's NaN?

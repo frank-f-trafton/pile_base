@@ -1,5 +1,6 @@
 = PILE Base: pTree
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,10 @@ include::snippets/header.adoc[]
 
 __pTree__ provides functions for working with Lua tables as nodes in a tree.
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----
@@ -51,7 +55,7 @@ local child = pTree.nodeAdd(self, [pos])
 
 === pTree.nodeAssertIndex
 
-Like xref:p_tree.adoc#_ptree_nodegetindex[pTree.nodeGetIndex], but assumes the caller has already checked the parent and obtained a reference to the table of siblings. **Cannot be used with root nodes.**
+Like <<_ptree_nodegetindex>>, but assumes the caller has already checked the parent and obtained a reference to the table of siblings. **Cannot be used with root nodes.**
 
 [source,lua]
 ----
@@ -89,7 +93,7 @@ This function incurs some overhead, because it makes a list of visited nodes eve
 
 === pTree.nodeAssertParent
 
-Gets the node's parent. Like xref:p_tree.adoc#_ptree_nodegetparent[pTree.nodeGetParent], but raises an error if the parent value is not a table. **Cannot be used with root nodes.**
+Gets the node's parent. Like <<_ptree_nodegetparent>>, but raises an error if the parent value is not a table. **Cannot be used with root nodes.**
 
 [source,lua]
 ----

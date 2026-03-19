@@ -1,5 +1,6 @@
 = PILE Base: pHook
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,10 @@ include::snippets/header.adoc[]
 
 __pHook__ creates callable arrays of functions.
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----
@@ -41,7 +45,7 @@ The `__call` metamethod for calling hooks in forward order.
 local a,b,c,d = pHook.callHooks(hl, ...)
 ----
 
-* `hl`: The calling xref:p_hook.adoc#_hooklists[HookList].
+* `hl`: The calling <<_hooklists,HookList>>.
 
 * `...`: Arguments for the hooks.
 
@@ -59,7 +63,7 @@ The `__call` metamethod for calling hooks in backward order.
 local a,b,c,d = pHook.callHooks(hl, ...)
 ----
 
-* `hl`: The calling xref:p_hook.adoc#_hooklists[HookList].
+* `hl`: The calling <<_hooklists,HookList>>.
 
 * `...`: Arguments for the hooks.
 
@@ -70,7 +74,7 @@ local a,b,c,d = pHook.callHooks(hl, ...)
 
 === pHook.newHookList
 
-Creates a new xref:p_hook.adoc#_hooklists[HookList] array.
+Creates a new <<_hooklists,HookList>> array.
 
 [source,lua]
 ----
@@ -86,7 +90,7 @@ local hooks = pHook.newHookList([back])
 
 === pHook.wrap
 
-Returns a function that calls a xref:p_hook.adoc#_hooklists[HookList]. May be useful in cases where a function expects a function (and not a table) as an argument.
+Returns a function that calls a <<_hooklists,HookList>>. May be useful in cases where a function expects a function (and not a table) as an argument.
 
 [source,lua]
 ----

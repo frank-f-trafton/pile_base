@@ -1,5 +1,6 @@
 = PILE Base: pUtf8
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,10 @@ include::snippets/header.adoc[]
 
 __pUtf8__ provides functions for working with UTF-8 strings.
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName]
 
 See also: xref:p_utf8_conv.adoc[pUtf8Conv], for converting between UTF-8 and UTF-16.
 
@@ -113,7 +117,7 @@ local str = pUtf8.concatCodes(...)
 [discrete]
 ==== Notes
 
-This function allocates a temporary table. To convert single code points, xref:p_utf8.adoc#_putf8_stringfromcode[pUtf8.stringFromCode] may be used instead.
+This function allocates a temporary table. To convert single code points, <<_putf8_stringfromcode>> may be used instead.
 
 '''
 

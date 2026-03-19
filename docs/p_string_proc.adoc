@@ -1,5 +1,6 @@
 = PILE Base: pStringProc
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,11 @@ include::snippets/header.adoc[]
 
 __pStringProc__ is an auxiliary module for xref:p_string_walk.adoc[pStringWalk] which parses strings according to grammar productions. The format is similar to, **but not fully compatible with** the version of eBNF that https://www.w3.org/TR/REC-xml/#sec-notation[**appears in the XML specification**].
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_string_walk.adoc[pStringWalk]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName],
+xref:p_string_walk.adoc[pStringWalk]
 
 // This module is too complex for an embedded example.
 
@@ -28,7 +33,7 @@ Checks the types of keys and values in a symbol lookup table, raising an error u
 pStringProc.checkSymbols(symbols)
 ----
 
-* `symbols`: The xref:p_string_proc.adoc#_symbols[symbol] lookup table. All keys must be strings, and all values must be one of: `string`, `number`, `function`, or boolean `true`.
+* `symbols`: The <<_symbols,symbol>> lookup table. All keys must be strings, and all values must be one of: `string`, `number`, `function`, or boolean `true`.
 
 
 [discrete]
@@ -41,14 +46,14 @@ The iteration order is undefined.
 
 === pStringProc.checkWords
 
-Checks xref:p_string_proc.adoc#_word[words] in a production table against the keys in a symbol lookup table. Raises an error if the symbol table does not have entries for all words in the production table.
+Checks <<_word,words>> in a production table against the keys in a symbol lookup table. Raises an error if the symbol table does not have entries for all words in the production table.
 
 [source,lua]
 ----
 pStringProc.checkWords(symbols, t)
 ----
 
-* `symbols`: The xref:p_string_proc.adoc#_symbols[symbol] lookup table.
+* `symbols`: The <<_symbols,symbol>> lookup table.
 
 * `t`: The production table to check.
 
@@ -66,7 +71,7 @@ local t = pStringProc.toTable(s)
 
 * `s`: The production string to convert.
 
-**Returns:** The converted table, to be used with xref:p_string_proc.adoc#_pstringproc_traverse[pStringProc.traverse].
+**Returns:** The converted table, to be used with <<_pstringproc_traverse>>.
 
 '''
 
@@ -80,11 +85,11 @@ Processes a string, following a grammar production table and a table of symbols.
 local res = pStringProc.traverse(W, t, symbols)
 ----
 
-* `W`: The xref:p_string_walk.adoc#_walkers[walker] object, configured with the string to be processed and its start position.
+* `W`: The <<p_string_walk.adoc#_walkers,walker>> object, configured with the string to be processed and its start position.
 
-* `t`: A production table for the string, having been created by xref:p_string_proc.adoc#_pstringproc_totable[pStringProc.toTable].
+* `t`: A production table for the string, having been created by <<_pstringproc_totable,pStringProc.toTable>>.
 
-* `symbols`: A lookup table of xref:p_string_proc.adoc#_symbols[symbols].
+* `symbols`: A lookup table of <<_symbols,symbols>>.
 
 **Returns:** A table of return values, or `false` if the walker's string failed to match the grammar.
 
@@ -178,7 +183,7 @@ From highest to lowest: `()`, `A[?*+]`, `A B`, `A | B`
 
 === Traverse Return Tables
 
-On success, xref:p_string_proc.adoc#_pstringproc_traverse[pStringProc.traverse] returns a table of values that were fetched while processing the string:
+On success, <<_pstringproc_traverse>> returns a table of values that were fetched while processing the string:
 
 * Quoted string literals: appended with the quotes stripped.
 
@@ -205,7 +210,7 @@ Values can be any of the following:
 
 * Function:
 
-** Takes `W` (the xref:p_string_walk.adoc#_walkers[walker]) as its only argument.
+** Takes `W` (the <<p_string_walk.adoc#_walkers,walker>>) as its only argument.
 
 ** Returns `false`/`nil`, `true`, a string, a number, or a table.
 

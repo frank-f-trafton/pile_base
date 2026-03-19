@@ -1,5 +1,6 @@
 = PILE Base: pPool
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -7,11 +8,14 @@
 include::snippets/header.adoc[]
 
 
-(**This module is experimental.** Please see the xref:p_pool.adoc#_module_notes[Module Notes] at the end of this page.)
+(**This module is experimental.** Please see the <<_module_notes>> at the end of this page.)
 
 __pPool__ creates stacks of pooled resources (usually tables or userdata).
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----

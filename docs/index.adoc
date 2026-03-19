@@ -1,5 +1,6 @@
 = PILE Base: Home
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -8,6 +9,8 @@
 include::snippets/header.adoc[]
 
 __PILE Base__ is a utility library for https://lua.org/[**Lua**], versions 5.1 - 5.4.
+
+* http://www.github.com/frank-f-trafton/pile_base[**Git repository**]
 
 
 //toc::[]
@@ -28,11 +31,6 @@ PILE Base includes code from:
 * https://github.com/frank-f-trafton/utf8_tools[**Utf8Tools**] was included in 2024 (as the UTF-8 modules).
 
 * https://github.com/frank-f-trafton/string_walk[**StringWalk**] (formerly https://github.com/frank-f-trafton/string_reader[**StringReader**]) was included in 2026.
-
-
-== Links
-
-* http://www.github.com/frank-f-trafton/pile_base[**Online Git repository**]
 
 
 == License

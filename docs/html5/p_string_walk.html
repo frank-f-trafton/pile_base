@@ -23,7 +23,10 @@
 <p><em>pStringWalk</em> creates string parsing objects.</p>
 </div>
 <div class="paragraph">
-<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a></p>
+<p>Dependencies:
+<a href="p_assert.html">pAssert</a>,
+<a href="p_interp.html">pInterp</a>,
+<a href="p_name.html">pName</a></p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -356,7 +359,7 @@
 <div class="sect2">
 <h3 id="_wgetindex">W:getIndex</h3>
 <div class="paragraph">
-<p>Gets the walker&#8217;s position in bytes. If there are stack frames, then the lowest stack position is used.</p>
+<p>Gets the walker&#8217;s position, in bytes. If there are stack frames, then the lowest stack position is used.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -383,7 +386,7 @@
 </div>
 </div>
 <div class="paragraph">
-<p><strong>Returns:</strong> two booleans: the first for line number display, the second for character number display.</p>
+<p><strong>Returns:</strong> Two booleans: the first for line number display, the second for character number display.</p>
 </div>
 <hr>
 </div>
@@ -412,7 +415,7 @@
 <div class="sect2">
 <h3 id="_wgetname">W:getName</h3>
 <div class="paragraph">
-<p>Gets the current <a href="#_walker_name">walker name</a>, if any.</p>
+<p>Gets the current <a href="#_walker_name">Walker Name</a>, if any.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -420,7 +423,7 @@
 </div>
 </div>
 <div class="paragraph">
-<p><strong>Returns:</strong> The walker name, or <code>nil</code>.</p>
+<p><strong>Returns:</strong> The Walker Name, or <code>nil</code>.</p>
 </div>
 <hr>
 </div>
@@ -633,7 +636,7 @@
 <p>All pattern-matching symbols are treated as ordinary characters. As such, this method does not support captures.</p>
 </div>
 <div class="paragraph">
-<p>This method does <em>not</em> anchor the search to the walker position. For that, use <a href="#_wlit">W:lit</a> or <a href="#_wlitreq">W:litReq</a></p>
+<p>This method does <em>not</em> anchor the search to the walker position. For that, use <a href="#_wlit">W:lit</a> or <a href="#_wlitreq">W:litReq</a>.</p>
 </div>
 <hr>
 </div>
@@ -852,7 +855,7 @@
 <div class="sect2">
 <h3 id="_wsetname">W:setName</h3>
 <div class="paragraph">
-<p>Sets or clears the <a href="#_walker_name">walker name</a>, which can appear in warnings and error messages.</p>
+<p>Sets or clears the <a href="#_walker_name">Walker Name</a>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -871,7 +874,7 @@
 </div>
 <h4 id="_notes_14" class="discrete">Notes</h4>
 <div class="paragraph">
-<p>The name is not cleared by <a href="#_wsetstring">W:setString</a> or <a href="#_wreset">W:reset</a>.</p>
+<p>The Walker Name is not cleared by <a href="#_wsetstring">W:setString</a> or <a href="#_wreset">W:reset</a>.</p>
 </div>
 <div class="paragraph">
 <p><a href="#_terse_mode">Terse Mode</a> overrides this setting.</p>
@@ -903,7 +906,7 @@
 <div class="sect2">
 <h3 id="_wsettersemode">W:setTerseMode</h3>
 <div class="paragraph">
-<p>Sets <a href="#_terse_mode">Terse Mode</a>. When active, error messages display only a generic message, with no positional information (byte index, line + character number) and no <a href="#_walker_name">name</a>.</p>
+<p>Turns <a href="#_terse_mode">Terse Mode</a> on or off.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -951,7 +954,7 @@
 <div class="sect2">
 <h3 id="_wwarn">W:warn</h3>
 <div class="paragraph">
-<p>Prints a warning message to the console. Depending on the walker&#8217;s <a href="#_walker_options">configuration</a>, the output may include a name, a line number, and a character number. If the walker is in <a href="#_terse_mode">Terse Mode</a>, no message is printed.</p>
+<p>Prints a warning message to the console. Depending on the walker&#8217;s <a href="#_walker_options">configuration</a>, the output may include a name, a line number, and a character number.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -967,6 +970,10 @@
 </div>
 <div class="paragraph">
 <p><strong>Returns:</strong> <code>W</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_16" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Warnings are not printed when <a href="#_terse_mode">Terse Mode</a> is active.</p>
 </div>
 <hr>
 </div>
@@ -1073,7 +1080,7 @@
 <div class="sect3">
 <h4 id="_walker_name">Walker Name</h4>
 <div class="paragraph">
-<p>The walker name is included in errors and warnings when Terse Mode is off.</p>
+<p>The Walker Name is included in errors and warnings when Terse Mode is off.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1165,7 +1172,7 @@
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-16 17:42:03 -0300
+Last updated 2026-03-19 13:26:51 -0300
 </div>
 </div>
 </body>

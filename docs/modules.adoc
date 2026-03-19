@@ -1,5 +1,6 @@
 = PILE Base: Index of Modules
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5

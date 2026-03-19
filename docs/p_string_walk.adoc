@@ -1,5 +1,6 @@
 = PILE Base: pStringWalk
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,10 @@ include::snippets/header.adoc[]
 
 __pStringWalk__ creates string parsing objects.
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----
@@ -52,7 +56,7 @@ local ln, cn  = pStringWalk.countLineChar(s, i, j, ln, cn)
 [discrete]
 ==== Notes
 
-This function can be used instead of xref:p_string_walk.adoc#_wgetlinecharnumbers[W:getLineCharNumbers] for collecting sequential line and character numbers in a loop. While the walker method begins counting from the first byte every time, this function can start from any valid UTF-8 start byte.
+This function can be used instead of <<_wgetlinecharnumbers>> for collecting sequential line and character numbers in a loop. While the walker method begins counting from the first byte every time, this function can start from any valid UTF-8 start byte.
 
 The results are unreliable if the UTF-8 encoding is bad, if `i` is out of bounds or greater than `j`, or if any of the numeric arguments are not integers.
 
@@ -72,7 +76,7 @@ local W = pStringWalk.new([s], [name])
 
 * `[name]`: __(nil)__ An optional name to use when generating warnings and error messages.
 
-**Returns:** The xref:p_string_walk.adoc#_walkers[walker].
+**Returns:** The <<_walkers,walker>>.
 
 
 == API: Walker (The Object)
@@ -132,7 +136,7 @@ It's an error to provide an offset of zero or less, or a fractional value.
 
 === W:bytesReq
 
-Like xref:p_string_walk.adoc#_wbytes[W:bytes], but raises an error when the request is unsuccessful.
+Like <<_wbytes>>, but raises an error when the request is unsuccessful.
 
 [source,lua]
 ----
@@ -150,7 +154,7 @@ local sub_str = W:bytesReq([n], [err])
 
 === W:error
 
-Raises an error. Depending on the walker's xref:p_string_walk.adoc#_walker_options[configuration], the output may include a name, a line number, and a character number. If the walker is in xref:p_string_walk.adoc#_terse_mode[Terse Mode], then a generic error message will be displayed instead.
+Raises an error. Depending on the walker's <<_walker_options,configuration>>, the output may include a name, a line number, and a character number. If the walker is in <<_terse_mode>>, then a generic error message will be displayed instead.
 
 [source,lua]
 ----
@@ -182,7 +186,7 @@ local i, j --[[, captures...]] = W:find(ptn)
 
 === W:findReq
 
-Like xref:p_string_walk.adoc#_wfind[W:find], but raises an error when the search is unsuccessful.
+Like <<_wfind>>, but raises an error when the search is unsuccessful.
 
 [source,lua]
 ----
@@ -200,7 +204,7 @@ local i, j --[[, captures...]] = W:findReq(ptn, [err])
 
 === W:getByteMode
 
-Gets the xref:p_string_walk.adoc#_byte_mode[Byte Mode] setting.
+Gets the <<_byte_mode>> setting.
 
 [source,lua]
 ----
@@ -214,7 +218,7 @@ local enabled = W:getByteMode()
 
 === W:getIndex
 
-Gets the walker's position in bytes. If there are stack frames, then the lowest stack position is used.
+Gets the walker's position, in bytes. If there are stack frames, then the lowest stack position is used.
 
 [source,lua]
 ----
@@ -234,14 +238,14 @@ The walker's current byte index can be read directly at `W.I`. This may be wante
 
 === W:getLineCharDisplay
 
-Gets the display settings for xref:p_string_walk.adoc#_line_char_display[line and character numbers].
+Gets the display settings for <<_line_char_display,line and character numbers>>.
 
 [source,lua]
 ----
 local line, char = W:getLineCharDisplay()
 ----
 
-**Returns:** two booleans: the first for line number display, the second for character number display.
+**Returns:** Two booleans: the first for line number display, the second for character number display.
 
 '''
 
@@ -263,28 +267,28 @@ local ln, cn = W:getLineCharNumbers()
 
 This method is __only__ valid for correctly encoded UTF-8 strings.
 
-The count always starts from index 1 of the string. To count line and character numbers incrementally, see the function xref:p_string_walk.adoc#_pstringwalk_countlinechar[pStringWalk.countLineChar].
+The count always starts from index 1 of the string. To count line and character numbers incrementally, see the function <<_pstringwalk_countlinechar>>.
 
 '''
 
 
 === W:getName
 
-Gets the current xref:p_string_walk.adoc#_walker_name[walker name], if any.
+Gets the current <<_walker_name>>, if any.
 
 [source,lua]
 ----
 local name = W:getName()
 ----
 
-**Returns:** The walker name, or `nil`.
+**Returns:** The Walker Name, or `nil`.
 
 '''
 
 
 === W:getTerseMode
 
-Gets the xref:p_string_walk.adoc#_terse_mode[Terse Mode] setting.
+Gets the <<_terse_mode>> setting.
 
 [source,lua]
 ----
@@ -340,7 +344,7 @@ local match = W:lit(s)
 [discrete]
 ==== Notes
 
-The search is anchored to the walker's position. To search the remainder of the string for a literal substring, use xref:p_string_walk.adoc#_wplain[W:plain] or xref:p_string_walk.adoc#_wplainreq[W:plainReq].
+The search is anchored to the walker's position. To search the remainder of the string for a literal substring, use <<_wplain>> or <<_wplainreq>>.
 
 The successful return value is always the same as the `s` argument. This allows for short circuit evaluations, like:
 
@@ -354,7 +358,7 @@ local facing_dir = W:lit("left") or W:litReq("right", "bad direction")
 
 === W:litReq
 
-Like xref:p_string_walk.adoc#_wlit[W:lit], but raises an error when the search is unsuccessful.
+Like <<_wlit>>, but raises an error when the search is unsuccessful.
 
 [source,lua]
 ----
@@ -394,7 +398,7 @@ This method uses https://www.lua.org/manual/5.1/manual.html#pdf-string.find[**st
 
 === W:matchReq
 
-Like xref:p_string_walk.adoc#_wmatch[W:match], but raises an error if the search was unsuccessful.
+Like <<_wmatch>>, but raises an error if the search was unsuccessful.
 
 [source,lua]
 ----
@@ -453,14 +457,14 @@ local i, j = W:plain(ptn)
 
 All pattern-matching symbols are treated as ordinary characters. As such, this method does not support captures.
 
-This method does __not__ anchor the search to the walker position. For that, use xref:p_string_walk.adoc#_wlit[W:lit] or xref:p_string_walk.adoc#_wlitreq[W:litReq]
+This method does __not__ anchor the search to the walker position. For that, use <<_wlit>> or <<_wlitreq>>.
 
 '''
 
 
 === W:plainReq
 
-Like xref:p_string_walk.adoc#_wplain[W:plain], but raises an error if the search was unsuccessful.
+Like <<_wplain>>, but raises an error if the search was unsuccessful.
 
 [source,lua]
 ----
@@ -513,7 +517,7 @@ W:popAll()
 [discrete]
 ==== Notes
 
-Unlike xref:p_string_walk.adoc#_wpop[W:pop], this method does not raise an error when the stack is empty.
+Unlike <<_wpop>>, this method does not raise an error when the stack is empty.
 
 '''
 
@@ -593,7 +597,7 @@ This method can move the walker to a UTF-8 __continuation byte__.
 
 === W:setByteMode
 
-Turns xref:p_string_walk.adoc#_byte_mode[Byte Mode] on or off.
+Turns <<_byte_mode>> on or off.
 
 [source,lua]
 ----
@@ -608,14 +612,14 @@ W:setByteMode(enabled)
 [discrete]
 ==== Notes
 
-xref:p_string_walk.adoc#_terse_mode[Terse Mode] overrides this setting.
+<<_terse_mode>> overrides this setting.
 
 '''
 
 
 === W:setLineCharDisplay
 
-Turns on or off the printing of xref:p_string_walk.adoc#_line_char_display[line and character numbers].
+Turns on or off the printing of <<_line_char_display,line and character numbers>>.
 
 [source,lua]
 ----
@@ -632,14 +636,14 @@ W:setLineCharDisplay(line, char)
 [discrete]
 ==== Notes
 
-xref:p_string_walk.adoc#_byte_mode[Byte Mode] and xref:p_string_walk.adoc#_terse_mode[Terse Mode] both override these settings.
+<<_byte_mode>> and <<_terse_mode>> both override these settings.
 
 '''
 
 
 === W:setName
 
-Sets or clears the xref:p_string_walk.adoc#_walker_name[walker name], which can appear in warnings and error messages.
+Sets or clears the <<_walker_name>>.
 
 [source,lua]
 ----
@@ -654,9 +658,9 @@ W:setName([name])
 [discrete]
 ==== Notes
 
-The name is not cleared by xref:p_string_walk.adoc#_wsetstring[W:setString] or xref:p_string_walk.adoc#_wreset[W:reset].
+The Walker Name is not cleared by <<_wsetstring>> or <<_wreset>>.
 
-xref:p_string_walk.adoc#_terse_mode[Terse Mode] overrides this setting.
+<<_terse_mode>> overrides this setting.
 
 '''
 
@@ -679,7 +683,7 @@ W:setString(s)
 
 === W:setTerseMode
 
-Sets xref:p_string_walk.adoc#_terse_mode[Terse Mode]. When active, error messages display only a generic message, with no positional information (byte index, line + character number) and no xref:p_string_walk.adoc#_walker_name[name].
+Turns <<_terse_mode>> on or off.
 
 [source,lua]
 ----
@@ -716,7 +720,7 @@ This method can move the walker to a UTF-8 __continuation byte__.
 
 === W:warn
 
-Prints a warning message to the console. Depending on the walker's xref:p_string_walk.adoc#_walker_options[configuration], the output may include a name, a line number, and a character number. If the walker is in xref:p_string_walk.adoc#_terse_mode[Terse Mode], no message is printed.
+Prints a warning message to the console. Depending on the walker's <<_walker_options,configuration>>, the output may include a name, a line number, and a character number.
 
 [source,lua]
 ----
@@ -726,6 +730,12 @@ W:warn(...)
 * `...`: Arguments for https://www.lua.org/manual/5.1/manual.html#pdf-print[**print**].
 
 **Returns:** `W`, for method chaining.
+
+
+[discrete]
+==== Notes
+
+Warnings are not printed when <<_terse_mode>> is active.
 
 '''
 
@@ -758,7 +768,7 @@ W:wsNext()
 
 === W:wsReq
 
-Like xref:p_string_walk.adoc#_wws[W:ws], but raises an error if the position did not advance.
+Like <<_wws>>, but raises an error if the position did not advance.
 
 [source,lua]
 ----
@@ -785,28 +795,28 @@ By convention, the walker is assigned to the variable `W`.
 
 When active, the walker position is reported in warnings and errors as a byte index. Use this when the walker's string contains arbitrary data.
 
-* xref:p_string_walk.adoc#_wgetbytemode[W:getByteMode], xref:p_string_walk.adoc#_wsetbytemode[W:setByteMode]
+* <<_wgetbytemode>>, <<_wsetbytemode>>
 
 
 ==== Line Char Display
 
 When active, line and character numbers are included in warnings and errors.
 
-* xref:p_string_walk.adoc#_wgetlinechardisplay[W:getLineCharDisplay], xref:p_string_walk.adoc#_wsetlinechardisplay[W:setLineCharDisplay]
+* <<_wgetlinechardisplay>>, <<_wsetlinechardisplay>>
 
 
 ==== Terse Mode
 
 When active, errors display only a generic message, with no name or positional information (byte index, line + character number). Warnings are __completely__ silenced.
 
-* xref:p_string_walk.adoc#_wgettersemode[W:getTerseMode], xref:p_string_walk.adoc#_wsettersemode[W:setTerseMode]
+* <<_wgettersemode>>, <<_wsettersemode>>
 
 
 ==== Walker Name
 
-The walker name is included in errors and warnings when Terse Mode is off.
+The Walker Name is included in errors and warnings when Terse Mode is off.
 
-* xref:p_string_walk.adoc#_wgetname[W:getName], xref:p_string_walk.adoc#_wsetname[W:setName]
+* <<_wgetname>>, <<_wsetname>>
 
 
 === Field Names

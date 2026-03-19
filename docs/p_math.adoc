@@ -1,5 +1,6 @@
 = PILE Base: pMath
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -96,7 +97,7 @@ local dist_sq = pMath.distSq(x1, y1, x2, y2)
 
 Taken from https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumedistancex1-y1-x2-y2--squared[**lume**].
 
-This function skips xref:p_math.adoc#_pmath_dist[pMath.dist]'s call to https://www.lua.org/manual/5.1/manual.html#pdf-math.sqrt[**math.sqrt**]. It may be faster when comparing the distances of two sets of points.
+This function skips <<_pmath_dist>>'s call to https://www.lua.org/manual/5.1/manual.html#pdf-math.sqrt[**math.sqrt**]. It may be faster when comparing the distances of two sets of points.
 
 '''
 
@@ -144,14 +145,14 @@ local rounded = pMath.roundInf(n)
 [discrete]
 ==== Notes
 
-See xref:p_math.adoc#_rounding_error[Module Notes: Rounding Error]
+See Module Notes: <<_rounding_error>>.
 
 '''
 
 
 === pMath.roundInfIncrement
 
-Rounds a number toward infinity. Like xref:p_math.adoc#_pmath_roundinf[pMath.roundInf], but with support for increments other than 1.
+Rounds a number toward infinity. Like <<_pmath_roundinf>>, but with support for increments other than 1.
 
 [source,lua]
 ----
@@ -170,7 +171,7 @@ local rounded = roundInfIncrement(n, incr)
 
 Taken from https://github.com/rxi/lume/tree/master?tab=readme-ov-file#lumeroundx--increment[**lume**].
 
-See xref:p_math.adoc#_rounding_error[Module Notes: Rounding Error]
+See Module Notes: <<_rounding_error>>.
 
 '''
 
@@ -252,7 +253,7 @@ A `max` of zero will produce NaN.
 
 === Rounding Error
 
-xref:p_math.adoc#_pmath_roundinf[pMath.roundInf] and xref:p_math.adoc#_pmath_roundinfincrement[pMath.roundInfIncrement] are susceptible to floating point rounding error when the input is extremely close to, but not exactly 0.5 or -0.5:
+<<_pmath_roundinf>> and <<_pmath_roundinfincrement>> are susceptible to floating point rounding error when the input is extremely close to, but not exactly 0.5 or -0.5:
 
 [source,lua]
 ----

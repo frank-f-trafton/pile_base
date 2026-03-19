@@ -1,5 +1,6 @@
 = PILE Base: pSchema
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,10 @@ include::snippets/header.adoc[]
 
 __pSchema__ validates the contents of tables.
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----
@@ -65,7 +69,7 @@ Checks a model table, raising an error if a problem is found.
 pSchema.checkModel(md)
 ----
 
-* `md`: The xref:p_schema.adoc#_model[model] to check.
+* `md`: The <<_model,model>> to check.
 
 '''
 
@@ -86,7 +90,7 @@ local n = pSchema.getMaxMessages()
 
 === pSchema.newKeysX
 
-Creates a new xref:p_schema.adoc#_model[model] with a xref:p_schema.adoc#_keys['keys'] filter and the xref:p_schema.adoc#_model_options[model option] `reject_unhandled` enabled. (This is a common configuration in the workloads that __pSchema__ was designed for.)
+Creates a new <<_model,model>> with a <<_keys,'keys'>> filter and the <<_model_options,model option>> `reject_unhandled` enabled. (This is a common configuration in the workloads that __pSchema__ was designed for.)
 
 [source,lua]
 ----
@@ -109,7 +113,7 @@ Creates a new model table.
 local md = pSchema.newModel(t)
 ----
 
-* `t`: The table to use as the xref:p_schema.adoc#_model[model]. Should be a freshly created table with no metatable.
+* `t`: The table to use as the <<_model,model>>. Should be a freshly created table with no metatable.
 
 **Returns:** The table.
 
@@ -145,7 +149,7 @@ Tests a table against a model.
 local ok, err = pSchema.validate(model, tbl, [name], [fatal])
 ----
 
-* `model`: The xref:p_schema.adoc#_model[model] table.
+* `model`: The <<_model,model>> table.
 
 * `tbl`: The table to validate.
 
@@ -164,12 +168,12 @@ local ok, err = pSchema.validate(model, tbl, [name], [fatal])
 
 ==== Model
 
-A table that describes how one kind of table should be validated. Has xref:p_schema.adoc#_filter[filters] which associate keys with xref:p_schema.adoc#_handler[handler] functions and other models.
+A table that describes how one kind of table should be validated. Has <<_filter,filters>> which associate keys with <<_handler,handler>> functions and other models.
 
 
 ==== Handler
 
-A function that validates one value in a table. handlers are based on the function signature used in xref:p_assert.adoc#_the_passert_function_signature[pAssert]. On failure, handlers should raise an error; on success, they should do nothing.
+A function that validates one value in a table. handlers are based on the function signature used in <<p_assert.adoc#_the_passert_function_signature,pAssert>>. On failure, handlers should raise an error; on success, they should do nothing.
 
 [source,lua]
 ----
@@ -195,7 +199,7 @@ end
 
 ==== Reference
 
-An instance of a xref:p_schema.adoc#_handler[handler] or a xref:p_schema.adoc#_model[model].
+An instance of a <<_handler,handler>> or a <<_model,model>>.
 
 
 ==== Filter

@@ -1,5 +1,6 @@
 = PILE Base: pInterp
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5

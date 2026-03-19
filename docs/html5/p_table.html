@@ -23,7 +23,10 @@
 <p><em>pTable</em> provides some helper functions for Lua tables.</p>
 </div>
 <div class="paragraph">
-<p>Dependencies: <a href="p_assert.html">pAssert</a>, <a href="p_interp.html">pInterp</a>, <a href="p_name.html">pName</a></p>
+<p>Dependencies:
+<a href="p_assert.html">pAssert</a>,
+<a href="p_interp.html">pInterp</a>,
+<a href="p_name.html">pName</a></p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -75,8 +78,8 @@
 </li>
 <li><a href="#_module_notes">Module Notes</a>
 <ul class="sectlevel2">
-<li><a href="#_namedmaps">NamedMaps</a></li>
-<li><a href="#_double_variables">Double Variables</a></li>
+<li><a href="#_namedmap">NamedMap</a></li>
+<li><a href="#_double_variable">Double Variable</a></li>
 </ul>
 </li>
 </ul>
@@ -682,7 +685,7 @@
 <div class="sect2">
 <h3 id="_ptable_newnamedmap">pTable.newNamedMap</h3>
 <div class="paragraph">
-<p>Creates a <a href="#_namedmaps">NamedMap</a>.</p>
+<p>Creates a <a href="#_namedmap">NamedMap</a>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -707,7 +710,7 @@
 <div class="sect2">
 <h3 id="_ptable_newnamedmapv">pTable.newNamedMapV</h3>
 <div class="paragraph">
-<p>Creates a <a href="#_namedmaps">NamedMap</a>. Like <a href="#_ptable_newnamedmap">pTable.newNamedMap</a>, but uses a vararg list to populate keys. All values in the returned table are <code>true</code>.</p>
+<p>Creates a <a href="#_namedmap">NamedMap</a>. Like <a href="#_ptable_newnamedmap">pTable.newNamedMap</a>, but uses a vararg list to populate keys. All values in the returned table are <code>true</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -928,7 +931,7 @@
 <div class="sect2">
 <h3 id="_ptable_setdouble">pTable.setDouble</h3>
 <div class="paragraph">
-<p>Assigns a <a href="#_double_variables">double variable</a>, falling back to a default value when <code>false</code>/<code>nil</code> is provided.</p>
+<p>Assigns a <a href="#_double_variable">Double Variable</a>, falling back to a default value when <code>false</code>/<code>nil</code> is provided.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -991,7 +994,7 @@
 <div class="sect2">
 <h3 id="_ptable_updatedouble">pTable.updateDouble</h3>
 <div class="paragraph">
-<p>Updates a <a href="#_double_variables">double variable</a>'s internal value, if the user-facing value is <code>false</code>/<code>nil</code>.</p>
+<p>Updates a <a href="#_double_variable">Double Variable</a>'s internal value, if the user-facing value is <code>false</code>/<code>nil</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1054,12 +1057,12 @@
 <h2 id="_module_notes">Module Notes</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_namedmaps">NamedMaps</h3>
+<h3 id="_namedmap">NamedMap</h3>
 <div class="paragraph">
 <p>A NamedMap is an <a href="https://en.wikipedia.org/wiki/Enumerated_type"><strong>enum</strong></a>-like table with a name registered in the <a href="p_name.html">pName</a> module.</p>
 </div>
 <div class="paragraph">
-<p>A NamedMap&#8217;s name can be retrieved with <a href="p_name.html#_pname_safeget">pName.safeGet</a>. For example:</p>
+<p>A NamedMap&#8217;s name can be retrieved with <a href="p_name.html#_pname_safeget">pName:safeGet</a>. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1077,7 +1080,7 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_double_variables">Double Variables</h3>
+<h3 id="_double_variable">Double Variable</h3>
 <div class="paragraph">
 <p>The double variable functions work on two copies of a setting in a table. The first, user-facing copy may be <code>false</code>/<code>nil</code> to indicate that a default value should be used. The second, internal copy mirrors the first, except that a default value is substituted for <code>false</code>/<code>nil</code>.</p>
 </div>
@@ -1103,7 +1106,7 @@
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-16 21:39:41 -0300
+Last updated 2026-03-19 13:21:39 -0300
 </div>
 </div>
 </body>

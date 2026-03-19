@@ -1,5 +1,6 @@
 = PILE Base: pTable
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,10 @@ include::snippets/header.adoc[]
 
 __pTable__ provides some helper functions for Lua tables.
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----
@@ -44,7 +48,7 @@ local dupe_i = pTable.arrayHasDuplicateValues(t)
 
 === pTable.assertResolve
 
-A wrapper for xref:p_table.adoc#_ptable_resolve[pTable.resolve] which raises an error if no value was found.
+A wrapper for <<_ptable_resolve>> which raises an error if no value was found.
 
 [source,lua]
 ----
@@ -344,7 +348,7 @@ Completely empty tables are also considered OK.
 
 === pTable.isArrayOnlyZero
 
-Like xref:p_table.adoc#_ptable_isarrayonly[pTable.isArrayOnly], but carves out an exception for index zero.
+Like <<_ptable_isarrayonly>>, but carves out an exception for index zero.
 
 [source,lua]
 ----
@@ -512,7 +516,7 @@ local hash = pTable.newLutV("four", "five", "six")
 
 === pTable.newNamedMap
 
-Creates a xref:p_table.adoc#_namedmaps[NamedMap].
+Creates a <<_namedmap>>.
 
 [source,lua]
 ----
@@ -530,7 +534,7 @@ local n_map = pTable.newNamedMap([name], [t])
 
 === pTable.newNamedMapV
 
-Creates a xref:p_table.adoc#_namedmaps[NamedMap]. Like xref:p_table.adoc#_ptable_newnamedmap[pTable.newNamedMap], but uses a vararg list to populate keys. All values in the returned table are `true`.
+Creates a <<_namedmap>>. Like <<_ptable_newnamedmap>>, but uses a vararg list to populate keys. All values in the returned table are `true`.
 
 [source,lua]
 ----
@@ -699,7 +703,7 @@ end
 
 === pTable.setDouble
 
-Assigns a xref:p_table.adoc#_double_variables[double variable], falling back to a default value when `false`/`nil` is provided.
+Assigns a <<_double_variable>>, falling back to a default value when `false`/`nil` is provided.
 
 [source,lua]
 ----
@@ -747,7 +751,7 @@ Both `t[i]` and `t[j]` must be non-`nil`.
 
 === pTable.updateDouble
 
-Updates a xref:p_table.adoc#_double_variables[double variable]'s internal value, if the user-facing value is `false`/`nil`.
+Updates a <<_double_variable>>'s internal value, if the user-facing value is `false`/`nil`.
 
 [source,lua]
 ----
@@ -796,11 +800,11 @@ The behavior is undefined when the array length is zero.
 == Module Notes
 
 
-=== NamedMaps
+=== NamedMap
 
 A NamedMap is an https://en.wikipedia.org/wiki/Enumerated_type[**enum**]-like table with a name registered in the xref:p_name.adoc[pName] module.
 
-A NamedMap's name can be retrieved with xref:p_name.adoc#_pname_safeget[pName.safeGet]. For example:
+A NamedMap's name can be retrieved with <<p_name.adoc#_pname_safeget,pName:safeGet>>. For example:
 
 [source,lua]
 ----
@@ -817,7 +821,7 @@ checkNamedMap(nm_obj_side, "sideways")
 ----
 
 
-=== Double Variables
+=== Double Variable
 
 The double variable functions work on two copies of a setting in a table. The first, user-facing copy may be `false`/`nil` to indicate that a default value should be used. The second, internal copy mirrors the first, except that a default value is substituted for `false`/`nil`.
 

@@ -1,5 +1,6 @@
 = PILE Base: (module name goes here)
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 

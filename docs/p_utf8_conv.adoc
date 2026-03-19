@@ -1,5 +1,6 @@
 = PILE Base: pUtf8Conv
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,11 @@ include::snippets/header.adoc[]
 
 __pUtf8Conv__ contains auxiliary functions for converting UTF-16 and ISO 8859-1 (Latin 1) to UTF-8 and back.
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_interp.adoc[pInterp], xref:p_name.adoc[pName], xref:p_utf8.adoc[pUtf8]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_name.adoc[pName],
+xref:p_utf8.adoc[pUtf8]
 
 // Text encoding conversions are not well illustrated by an example here, IMO.
 

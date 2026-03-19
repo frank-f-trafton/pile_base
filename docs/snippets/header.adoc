@@ -1,1 +1,1 @@
-link:index.html[Home] | link:modules.html[Modules]
+xref:index.adoc[Home] | xref:modules.adoc[Modules]

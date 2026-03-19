@@ -1,5 +1,6 @@
 = PILE Base: pLine
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -11,7 +12,11 @@ __pLine__ provides functions for placing and mutating axis-aligned line segments
 
 This is a one-dimensional version of xref:p_rect.adoc[pRect].
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_math.adoc[pMath], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_math.adoc[pMath],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----
@@ -40,7 +45,7 @@ Centers LineSegment `b` within LineSegment `a`.
 pLine.center(a, b)
 ----
 
-* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+* `a`: The reference <<_linesegment>>.
 
 * `b`: The LineSegment to center.
 
@@ -58,7 +63,7 @@ Copies a LineSegment's position and length.
 pLine.copy(a, b)
 ----
 
-* `a`: The source xref:p_line.adoc#_linesegment[LineSegment].
+* `a`: The source <<_linesegment>>.
 
 * `b`: The LineSegment to overwrite.
 
@@ -76,7 +81,7 @@ Expands a LineSegment by shifting its sides.
 pLine.expand(a, x1, x2)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
 * `x1`: How much to expand the left side.
 
@@ -96,7 +101,7 @@ Expands a LineSegment's left side.
 pLine.expandLeft(a, x1)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
 * `x1`: How much to expand the left side.
 
@@ -114,7 +119,7 @@ Expands a LineSegment's right side.
 pLine.expandRight(a, x2)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
 * `x2`: How much to expand the right side.
 
@@ -125,16 +130,16 @@ pLine.expandRight(a, x2)
 
 === pLine.expandT
 
-Expands a LineSegment by shifting its sides.  Like xref:p_line.adoc#_pline_expand[pLine.expand], but takes a LineDelta table.
+Expands a LineSegment by shifting its sides.  Like <<_pline_expand>>, but takes a LineDelta table.
 
 [source,lua]
 ----
 pLine.expandT(a, ld)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
-* `ld`: The xref:p_line.adoc#_linedelta[LineDelta] to use.
+* `ld`: The <<_linedelta>> to use.
 
 **Returns:** `a`, for method chaining.
 
@@ -150,7 +155,7 @@ Flips the LineSegment in relation to another LineSegment.
 pLine.flip(a, b)
 ----
 
-* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+* `a`: The reference <<_linesegment>>.
 
 * `b`: The LineSegment to flip.
 
@@ -168,7 +173,7 @@ Gets the range of a group of LineSegments.
 local x1, x2 = pLine.getBounds(...)
 ----
 
-* `...`: A vararg list of xref:p_line.adoc#_linesegment[LineSegments].
+* `...`: A vararg list of <<_linesegment,LineSegments>>.
 
 **Returns:** The furthest left and right positions.
 
@@ -182,14 +187,14 @@ If no arguments are provided, then both returned positions will be zero.
 
 === pLine.getBoundsT
 
-Gets the range of a group of LineSegments. Like xref:p_line.adoc#_pline_getbounds[pLine.getBounds], but takes an array of LineSegments rather than a vararg list.
+Gets the range of a group of LineSegments. Like <<_pline_getbounds>>, but takes an array of LineSegments rather than a vararg list.
 
 [source,lua]
 ----
 local x1, x2 = pLine.getBoundsT(list)
 ----
 
-* `list`: An array of xref:p_line.adoc#_linesegment[LineSegments].
+* `list`: An array of <<_linesegment,LineSegments>>.
 
 **Returns:** The furthest left and right positions.
 
@@ -211,7 +216,7 @@ Places LineSegment `b` within the boundaries of LineSegment `a` at an interpolat
 pLine.placeInner(a, b, unit)
 ----
 
-* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+* `a`: The reference <<_linesegment>>.
 
 * `b`: The LineSegment to place.
 
@@ -238,7 +243,7 @@ Places LineSegment ``b``'s center point within the boundaries of LineSegment ``a
 pLine.placeMidpoint(a, b, unit)
 ----
 
-* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+* `a`: The reference <<_linesegment>>.
 
 * `b`: The LineSegment to place.
 
@@ -263,7 +268,7 @@ Places LineSegment `b` within or just outside the boundaries of LineSegment `a` 
 pLine.placeOuter(a, b, unit)
 ----
 
-* `a`: The reference xref:p_line.adoc#_linesegment[LineSegment].
+* `a`: The reference <<_linesegment>>.
 
 * `b`: The LineSegment to place.
 
@@ -288,7 +293,7 @@ Checks if a position is within a LineSegment.
 local overlap = pLine.positionOverlap(a, x)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to check.
+* `a`: The <<_linesegment>> to check.
 
 * `x`: The position.
 
@@ -306,7 +311,7 @@ Shortens a LineSegment by shifting its sides.
 pLine.reduce(a, x1, x2)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
 * `x1`: How much to shorten the left side.
 
@@ -326,7 +331,7 @@ Shortenes a LineSegment's left side.
 pLine.reduceLeft(a, x1)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
 * `x1`: How much to shorten the left side.
 
@@ -344,7 +349,7 @@ Shortens a LineSegment's right side.
 pLine.reduceRight(a, x2)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
 * `x2`: How much to shorten the right side.
 
@@ -355,16 +360,16 @@ pLine.reduceRight(a, x2)
 
 === pLine.reduceT
 
-Shortens a LineSegment by shifting its sides. Like xref:p_line.adoc#_pline_reduce[pLine.reduce], but takes a LineDelta table.
+Shortens a LineSegment by shifting its sides. Like <<_pline_reduce>>, but takes a LineDelta table.
 
 [source,lua]
 ----
 pLine.reduceT(a, ld)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
-* `ld`: The xref:p_line.adoc#_linedelta[LineDelta] to use.
+* `ld`: The <<_linedelta>> to use.
 
 **Returns:** `a`, for method chaining.
 
@@ -380,7 +385,7 @@ Sets a LineSegment's position and length.
 pLine.set(a, x, w)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to modify.
+* `a`: The <<_linesegment>> to modify.
 
 * `x`: The new position.
 
@@ -400,7 +405,7 @@ Splits a LineSegment.
 pLine.split(a, b, side, len)
 ----
 
-* `a`: The input xref:p_line.adoc#_linesegment[LineSegment].
+* `a`: The input <<_linesegment>>.
 
 * `b`: The output LineSegment.
 
@@ -422,7 +427,7 @@ Shortens LineSegment `a` by cutting a chunk from its left side, and overwrites L
 pLine.splitLeft(a, b, len)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to shorten.
+* `a`: The <<_linesegment>> to shorten.
 
 * `b`: The LineSegment to be assigned the removed part.
 
@@ -440,7 +445,7 @@ Splits or copies a LineSegment, based on the arguments provided.
 pLine.splitOrOverlay(a, b, placement, len)
 ----
 
-* `a`: The input xref:p_line.adoc#_linesegment[LineSegment].
+* `a`: The input <<_linesegment>>.
 
 * `b`: The output LineSegment.
 
@@ -462,7 +467,7 @@ Shortens LineSegment `a` by cutting a chunk from its right side, and overwrites 
 pLine.splitRight(a, b, len)
 ----
 
-* `a`: The xref:p_line.adoc#_linesegment[LineSegment] to shorten.
+* `a`: The <<_linesegment>> to shorten.
 
 * `b`: The LineSegment to be assigned the removed part.
 

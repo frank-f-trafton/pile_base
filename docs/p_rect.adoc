@@ -1,5 +1,6 @@
 = PILE Base: pRect
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 :toclevels: 5
@@ -9,7 +10,11 @@ include::snippets/header.adoc[]
 
 __pRect__ provides functions for placing and mutating axis-aligned rectangles.
 
-Dependencies: xref:p_assert.adoc[pAssert], xref:p_math.adoc[pMath], xref:p_name.adoc[pName]
+Dependencies:
+xref:p_assert.adoc[pAssert],
+xref:p_interp.adoc[pInterp],
+xref:p_math.adoc[pMath],
+xref:p_name.adoc[pName]
 
 [source,lua]
 ----
@@ -38,7 +43,7 @@ Centers Rectangle `b` within Rectangle `a`.
 pRect.center(a, b)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to center.
 
@@ -56,7 +61,7 @@ Horizontally centers Rectangle `b` within Rectangle `a`.
 pRect.centerHorizontal(a, b)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to center.
 
@@ -74,7 +79,7 @@ Vertically centers Rectangle `b` within Rectangle `a`.
 pRect.centerVertical(a, b)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to center.
 
@@ -92,7 +97,7 @@ Overwrites the position and dimensions of Rectangle `b` with those of `a`.
 pRect.copy(a, b)
 ----
 
-* `a`: The source xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The source <<_rectangle>>.
 
 * `b`: The Rectangle to overwrite.
 
@@ -111,7 +116,7 @@ pRect.expand(r, x1, y1, x2, y2)
 ----
 
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to expand.
+* `r`: The <<_rectangle>> to expand.
 
 * `x1`, `y1`: How much to expand the left and top sides.
 
@@ -131,7 +136,7 @@ Expands a Rectangle's bottom side.
 pRect.expandBottom(r, y2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `y2`: How much to expand the bottom side.
 
@@ -149,7 +154,7 @@ Expands a Rectangle's left and right sides.
 pRect.expandHorizontal(r, x1, x2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `x1`, `x2`: How much to expand the left and right sides.
 
@@ -167,7 +172,7 @@ Expand a Rectangle's left side.
 pRect.expandLeft(r, x1)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `x1`: How much to expand the left side.
 
@@ -185,7 +190,7 @@ Expands a Rectangle's right side.
 pRect.expandRight(r, x2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `x2`: How much to expand the right side.
 
@@ -196,16 +201,16 @@ pRect.expandRight(r, x2)
 
 === pRect.expandT
 
-Expands a Rectangle by shifting its sides. Like xref:p_rect.adoc#_prect_expand[pRect.expand], but takes a SideDelta.
+Expands a Rectangle by shifting its sides. Like <<_prect_expand>>, but takes a SideDelta.
 
 [source,lua]
 ----
 pRect.expandT(r, sd)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
-* `sd`: The xref:p_rect.adoc#_sidedelta[SideDelta] to use.
+* `sd`: The <<_sidedelta>> to use.
 
 **Returns:** `r`, for method chaining.
 
@@ -221,7 +226,7 @@ Expands a Rectangle's top side.
 pRect.expandTop(r, y1)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `y1`: How much to expand the top side.
 
@@ -239,7 +244,7 @@ Expands a Rectangle's top and bottom sides.
 pRect.expandVertical(r, y1, y2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `y1`, `y2`: How much to expand the top and bottom sides.
 
@@ -257,7 +262,7 @@ Horizontally flips a Rectangle within another Rectangle.
 pRect.flipHorizontal(a, b)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to flip.
 
@@ -275,7 +280,7 @@ Vertically flips a Rectangle within another Rectangle.
 pRect.flipVertical(a, b)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to flip.
 
@@ -293,7 +298,7 @@ Gets the horizontal and vertical ranges of a group of Rectangles.
 local x1, y1, x2, y2 = pRect.getBounds(...)
 ----
 
-* `...`: A vararg list of xref:p_rect.adoc#_rectangle[Rectangles].
+* `...`: A vararg list of <<_rectangle,Rectangles>>.
 
 **Returns:** The furthest left, top, right and bottom positions.
 
@@ -308,14 +313,14 @@ If no Rectangles are provided, this function will return zero for all positions.
 
 === pRect.getBoundsT
 
-Gets the horizontal and vertical ranges of a group of Rectangles. Like xref:p_rect.adoc#_prect_getbounds[pRect.getBounds], but takes an array instead of a vararg list.
+Gets the horizontal and vertical ranges of a group of Rectangles. Like <<_prect_getbounds>>, but takes an array instead of a vararg list.
 
 [source,lua]
 ----
 local x1, y1, x2, y2 = pRect.getBoundsT(list)
 ----
 
-* `list`: An array of xref:p_rect.adoc#_rectangle[Rectangles].
+* `list`: An array of <<_rectangle,Rectangles>>.
 
 **Returns:** The furthest left, top, right and bottom positions.
 
@@ -337,7 +342,7 @@ Places Rectangle `b` within the boundaries of Rectangle `a` at an interpolated p
 pRect.placeInner(a, b, ux, uy)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -365,7 +370,7 @@ Horizontally places Rectangle `b` within the boundaries of Rectangle `a` at an i
 pRect.placeInnerHorizontal(a, b, ux)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -385,7 +390,7 @@ Vertically places Rectangle `b` within the boundaries of Rectangle `a` at an int
 pRect.placeInnerVertical(a, b, uy)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -405,7 +410,7 @@ Places Rectangle ``b``'s center point within the boundaries of Rectangle ``a``, 
 pRect.placeMidpoint(a, b, ux, uy)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -431,7 +436,7 @@ Horizontally places Rectangle ``b``'s center point within the boundaries of Rect
 pRect.placeMidpointHorizontal(a, b, ux)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -451,7 +456,7 @@ Vertically places Rectangle ``b``'s center point within the boundaries of Rectan
 pRect.placeMidpointVertical(a, b, uy)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -471,7 +476,7 @@ Places Rectangle `b` within or just outside the boundaries of Rectangle `a` at a
 pRect.placeOuter(a, b, ux, uy)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -497,7 +502,7 @@ Horizontally places Rectangle `b` within or just outside the boundaries of Recta
 pRect.placeOuterHorizontal(a, b, ux)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -517,7 +522,7 @@ Vertically places Rectangle `b` within or just outside the boundaries of Rectang
 pRect.placeOuterVertical(a, b, uy)
 ----
 
-* `a`: The reference xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The reference <<_rectangle>>.
 
 * `b`: The Rectangle to place.
 
@@ -537,7 +542,7 @@ Checks if a point is within a Rectangle.
 local overlap = pRect.pointOverlap(r, x, y)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to check.
+* `r`: The <<_rectangle>> to check.
 
 * `x`, `y`: The point's position.
 
@@ -555,7 +560,7 @@ Shortens a Rectangle by shifting its sides.
 pRect.reduce(r, x1, y1, x2, y2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to expand.
+* `r`: The <<_rectangle>> to expand.
 
 * `x1`, `y1`: How much to shorten the left and top sides.
 
@@ -575,7 +580,7 @@ Shortens a Rectangle's bottom side.
 pRect.reduceBottom(r, y2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `y2`: How much to shorten the bottom side.
 
@@ -593,7 +598,7 @@ Shortens a Rectangle's left and right sides.
 pRect.reduceHorizontal(r, x1, x2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `x1`, `x2`: How much to shorten the left and right sides.
 
@@ -611,7 +616,7 @@ Shortens a Rectangle's left side.
 pRect.reduceLeft(r, x1)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `x1`: How much to shorten the left side.
 
@@ -629,7 +634,7 @@ Shortens a Rectangle's right side.
 pRect.reduceRight(r, x2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `x2`: How much to shorten the right side.
 
@@ -640,16 +645,16 @@ pRect.reduceRight(r, x2)
 
 === pRect.reduceT
 
-Shortens a Rectangle by shifting its sides. Like xref:p_rect.adoc#_prect_reduce[pRect.reduce], but takes a SideDelta.
+Shortens a Rectangle by shifting its sides. Like <<_prect_reduce>>, but takes a SideDelta.
 
 [source,lua]
 ----
 pRect.reduceT(r, sd)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to shorten.
+* `r`: The <<_rectangle>> to shorten.
 
-* `sd`: The xref:p_rect.adoc#_sidedelta[SideDelta] to use.
+* `sd`: The <<_sidedelta>> to use.
 
 **Returns:** `r`, for method chaining.
 
@@ -665,7 +670,7 @@ Shortens a Rectangle's top side.
 pRect.reduceTop(r, y1)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `y1`: How much to shorten the top side.
 
@@ -683,7 +688,7 @@ Shortens a Rectangle's top and bottom sides.
 pRect.reduceVertical(r, y1, y2)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to change.
+* `r`: The <<_rectangle>> to change.
 
 * `y1`, `y2`: How much to shorten the top and bottom sides.
 
@@ -701,7 +706,7 @@ Sets a Rectangle's position and dimensions.
 pRect.set(r, x, y, w, h)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to modify.
+* `r`: The <<_rectangle>> to modify.
 
 * `x`, `y`: The new position.
 
@@ -721,7 +726,7 @@ Sets a Rectangle's dimensions.
 pRect.setDimensions(r, w, h)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to modify.
+* `r`: The <<_rectangle>> to modify.
 
 * `w`, `h`: The new dimensions.
 
@@ -739,7 +744,7 @@ Sets a Rectangle's position.
 pRect.setPosition(r, x, y)
 ----
 
-* `r`: The xref:p_rect.adoc#_rectangle[Rectangle] to modify.
+* `r`: The <<_rectangle>> to modify.
 
 * `x`, `y`: The new position.
 
@@ -757,7 +762,7 @@ Splits a Rectangle.
 pRect.split(a, b, side, len)
 ----
 
-* `a`: The input xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The input <<_rectangle>>.
 
 * `b`: The output Rectangle (to be assigned the removed part of `a`).
 
@@ -779,7 +784,7 @@ Shortens Rectangle `a` by cutting a chunk from its bottom side, and overwrites R
 pRect.splitBottom(a, b, len)
 ----
 
-* `a`: The xref:p_rect.adoc#_rectangle[Rectangle] to shorten.
+* `a`: The <<_rectangle>> to shorten.
 
 * `b`: The Rectangle to be assigned the removed part.
 
@@ -797,7 +802,7 @@ Shortens Rectangle `a` by cutting a chunk from its left side, and overwrites Rec
 pRect.splitLeft(a, b, len)
 ----
 
-* `a`: The xref:p_rect.adoc#_rectangle[Rectangle] to shorten.
+* `a`: The <<_rectangle>> to shorten.
 
 * `b`: The Rectangle to be assigned the removed part.
 
@@ -815,7 +820,7 @@ Splits or copies a Rectangle, based on the arguments provided.
 pRect.splitOrOverlay(a, b, placement, len)
 ----
 
-* `a`: The input xref:p_rect.adoc#_rectangle[Rectangle].
+* `a`: The input <<_rectangle>>.
 
 * `b`: The output Rectangle.
 
@@ -837,7 +842,7 @@ Shortens Rectangle `a` by cutting a chunk from its right side, and overwrites Re
 pRect.splitRight(a, b, len)
 ----
 
-* `a`: The xref:p_rect.adoc#_rectangle[Rectangle] to shorten.
+* `a`: The <<_rectangle>> to shorten.
 
 * `b`: The Rectangle to be assigned the removed part.
 
@@ -855,7 +860,7 @@ Shortens Rectangle `a` by cutting a chunk from its top side, and overwrites Rect
 pRect.splitTop(a, b, len)
 ----
 
-* `a`: The xref:p_rect.adoc#_rectangle[Rectangle] to shorten.
+* `a`: The <<_rectangle>> to shorten.
 
 * `b`: The Rectangle to be assigned the removed part.
 

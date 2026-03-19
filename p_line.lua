@@ -40,8 +40,8 @@ local M = {}
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
-local pMath = require(PATH .. "p_math")
 local pAssert = require(PATH .. "p_assert")
+local pMath = require(PATH .. "p_math")
 
 
 local _lerp, _roundInf = pMath.lerp, pMath.roundInf
