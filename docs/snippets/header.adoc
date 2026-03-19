@@ -1,1 +1,2 @@
-xref:index.adoc[Home] | xref:modules.adoc[Modules]
+xref:index.adoc[Home] |
+xref:modules.adoc[Modules]
