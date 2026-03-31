@@ -1,5 +1,5 @@
 -- Test: pStringProc
--- VERSION: 2.105
+-- VERSION: 2.106
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 

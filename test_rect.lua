@@ -1,5 +1,5 @@
 -- Test: p_rect.lua
--- VERSION: 2.105
+-- VERSION: 2.106
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -1960,8 +1960,8 @@ self:registerJob("pRect.placeMidpoint()", function(self)
 		local b = {x=0, y=0, w=50, h=50}
 		self:expectLuaReturn("place point, bottom-right", pRect.placeMidpoint, a, b, 1.0, 1.0)
 
-		self:isEqual(b.x, 225)
-		self:isEqual(b.y, 225)
+		self:isEqual(b.x, 175)
+		self:isEqual(b.y, 175)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
 		--]]
@@ -1976,8 +1976,8 @@ self:registerJob("pRect.placeMidpoint()", function(self)
 		local b = {x=0, y=0, w=50, h=50}
 		self:expectLuaReturn("place inner, center", pRect.placeMidpoint, a, b, 0.5, 0.5)
 
-		self:isEqual(b.x, 150)
-		self:isEqual(b.y, 150)
+		self:isEqual(b.x, 125)
+		self:isEqual(b.y, 125)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
 		--]]
@@ -2026,7 +2026,7 @@ self:registerJob("pRect.placeMidpointHorizontal()", function(self)
 		local b = {x=0, y=0, w=50, h=50}
 		self:expectLuaReturn("place point-horizontal, right", pRect.placeMidpointHorizontal, a, b, 1.0)
 
-		self:isEqual(b.x, 225)
+		self:isEqual(b.x, 175)
 		self:isEqual(b.y, 0)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
@@ -2042,7 +2042,7 @@ self:registerJob("pRect.placeMidpointHorizontal()", function(self)
 		local b = {x=0, y=0, w=50, h=50}
 		self:expectLuaReturn("place inner-horizontal, center", pRect.placeMidpointHorizontal, a, b, 0.5)
 
-		self:isEqual(b.x, 150)
+		self:isEqual(b.x, 125)
 		self:isEqual(b.y, 0)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
@@ -2092,7 +2092,7 @@ self:registerJob("pRect.placeMidpointVertical()", function(self)
 		self:expectLuaReturn("place point-vertical, bottom", pRect.placeMidpointVertical, a, b, 1.0)
 
 		self:isEqual(b.x, 0)
-		self:isEqual(b.y, 225)
+		self:isEqual(b.y, 175)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
 		--]]
@@ -2108,7 +2108,7 @@ self:registerJob("pRect.placeMidpointVertical()", function(self)
 		self:expectLuaReturn("place inner-vertical, center", pRect.placeMidpointVertical, a, b, 0.5)
 
 		self:isEqual(b.x, 0)
-		self:isEqual(b.y, 150)
+		self:isEqual(b.y, 125)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
 		--]]
@@ -2156,8 +2156,8 @@ self:registerJob("pRect.placeOuter()", function(self)
 		local b = {x=0, y=0, w=50, h=50}
 		self:expectLuaReturn("place outer, bottom-right", pRect.placeOuter, a, b, 1.0, 1.0)
 
-		self:isEqual(b.x, 250)
-		self:isEqual(b.y, 250)
+		self:isEqual(b.x, 200)
+		self:isEqual(b.y, 200)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
 		--]]
@@ -2172,8 +2172,8 @@ self:registerJob("pRect.placeOuter()", function(self)
 		local b = {x=0, y=0, w=50, h=50}
 		self:expectLuaReturn("place outer, center", pRect.placeOuter, a, b, 0.5, 0.5)
 
-		self:isEqual(b.x, 150)
-		self:isEqual(b.y, 150)
+		self:isEqual(b.x, 125)
+		self:isEqual(b.y, 125)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
 		--]]
@@ -2222,7 +2222,7 @@ self:registerJob("pRect.placeOuterHorizontal()", function(self)
 		local b = {x=0, y=0, w=50, h=50}
 		self:expectLuaReturn("place outer-horizontal, right", pRect.placeOuterHorizontal, a, b, 1.0)
 
-		self:isEqual(b.x, 250)
+		self:isEqual(b.x, 200)
 		self:isEqual(b.y, 0)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
@@ -2238,7 +2238,7 @@ self:registerJob("pRect.placeOuterHorizontal()", function(self)
 		local b = {x=0, y=0, w=50, h=50}
 		self:expectLuaReturn("place outer-horizontal, center", pRect.placeOuterHorizontal, a, b, 0.5)
 
-		self:isEqual(b.x, 150)
+		self:isEqual(b.x, 125)
 		self:isEqual(b.y, 0)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
@@ -2288,7 +2288,7 @@ self:registerJob("pRect.placeOuterVertical()", function(self)
 		self:expectLuaReturn("place outer-vertical, bottom", pRect.placeOuterVertical, a, b, 1.0)
 
 		self:isEqual(b.x, 0)
-		self:isEqual(b.y, 250)
+		self:isEqual(b.y, 200)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
 		--]]
@@ -2304,7 +2304,7 @@ self:registerJob("pRect.placeOuterVertical()", function(self)
 		self:expectLuaReturn("place outer-vertical, center", pRect.placeOuterVertical, a, b, 0.5)
 
 		self:isEqual(b.x, 0)
-		self:isEqual(b.y, 150)
+		self:isEqual(b.y, 125)
 		self:isEqual(b.w, 50)
 		self:isEqual(b.h, 50)
 		--]]

@@ -2,6 +2,25 @@
 
 *(Date format: YYYY-MM-DD)*
 
+# v2.106 (2026-03-31)
+
+* `p_rect.lua`:
+
+  * Fixed these placement functions:
+
+    * `pRect.placeMidpoint()`
+
+	* `pRect.placeMidpointHorizontal()`
+
+	* `pRect.placeMidpointVertical()`
+
+	* `pRect.placeOuter()`
+
+	* `pRect.placeOuterHorizontal()`
+
+	* `pRect.placeOuterVertical()`
+
+
 # v2.105 (2026-03-16)
 
 * Renamed all modules from `pile_something.lua` to `p_something.lua`.
